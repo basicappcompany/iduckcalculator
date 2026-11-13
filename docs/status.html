@@ -254,7 +254,7 @@
    DATA. Edit here. States: done | progress | todo | waiting | later.  Owners: me | you | both | external | none.
    "me" = I can do it with no input. "you" = only you can. "both" = I do the mechanics, you sign in / approve / supply a secret.
    =================================================================================================================== */
-const VERIFIED = "13 Nov 2026 (pnpm verify, pnpm build and pnpm test:e2e passed locally; CI green on main; live site checked through the Cloudflare edge. Lighthouse measured on two pages only. Not checked: canonical and social tags, real email delivery)";
+const VERIFIED = "14 Nov 2026 (pnpm verify, pnpm build and pnpm seo:check passed; CI green on main; live site and headers checked through the Cloudflare edge; browser tests last run in full on 13 Nov with 115 passing. Not checked: social tags, real email delivery, Google and Bing indexing, which take days)";
 const REPO = "https://github.com/basicappcompany/iduckcalculator";
 
 /* The calculator plan, one source for both the Phases list and the Tools table. [slug, name, emoji]. Flip `ready` in the same PR that ships a calculator. */
@@ -304,7 +304,7 @@ const PHASES = [
     I("1.3", "Create the private GitHub repository `iduckcalculator`", "done", "none", { when: "13 Nov", note: "Private, matching the sister repos. https://github.com/basicappcompany/iduckcalculator" }),
     I("1.4", "Put the first commit on `main`", "done", "none", { when: "13 Nov", note: "Done through the normal flow: pull request #1 (`first-calculators`) merged into `main` with green CI. Nothing was pushed straight to `main`." }),
     I("1.5", "Tooling config and PROGRESS.md committed", "done", "none", { when: "13 Nov", note: "On `main` (commits `ebb1620`, `f23e6db`, then #1). Astro 7.4.10, Preact 11.2.0, Tailwind 4.3.5, TypeScript 6.0.3, Vitest 5.1.0, Playwright 1.65.0, pnpm 12.14.0, read from `package.json`." }),
-    I("1.6", "Is DuckConvert a real sister site?", "waiting", "you", { prio: 5, blockedBy: "Your answer", note: "The Cloudflare account has an `iduckconvert.com` zone, but no repo or live site was checked. The footer and sidebar link only iDuckPDF and iDuckIMG; tell me when DuckConvert is live and I will add it." }),
+    I("1.6", "Is DuckConvert a real sister site?", "done", "none", { when: "13 Nov", note: "Yes: https://iduckconvert.com answers 200 and links back to this site. It is now in the sidebar, the footer, About and the Organization `sameAs`. iduckimg.com has no link to this site in its page source; iduckpdf.com is built in the browser, so its links could not be read." }),
   ]},
   { num: 2, name: "Foundation", summary: "The shell, the theme and the generic calculator engine. Built once, used by every calculator.", items: [
     I("2.1", "Astro scaffold, theme and shell", "done", "none", { when: "13 Nov", note: "Sidebar, top bar, Ctrl K search, theme toggle and language switch are on `main`; Playwright covers search, theme and language." }),
@@ -325,9 +325,9 @@ const PHASES = [
     I("10.2", "Guide: Old vs new tax regime explained", "todo", "me", { prio: 6, effort: "research first", note: "Not written. It depends on the income tax calculator (5.1), and the official slabs have to be read first." }),
     I("10.3", "Guide: SIP vs lumpsum", "done", "none", { when: "13 Nov", note: "Built at /guides/sip-vs-lumpsum/." }),
     I("10.4", "Guide: How to calculate percentage", "done", "none", { when: "13 Nov", note: "Built at /guides/how-to-calculate-percentage/." }),
-    I("10.5", "sitemap.xml, robots.txt, canonical tags, Open Graph and Twitter tags, favicon, llms.txt, `_headers` (noindex on the pages.dev hosts only)", "done", "none", { when: "13 Nov", note: "Live: the sitemap has 52 URLs, `/robots.txt`, `/llms.txt` and `/og.png` return 200, `iduckcalculator.pages.dev` sends `X-Robots-Tag: noindex` and the real domain does not. Canonical and social tags were not re-read this run." }),
+    I("10.5", "sitemap.xml, robots.txt, canonical tags, Open Graph and Twitter tags, favicon, llms.txt, `_headers` (noindex on the pages.dev hosts only)", "done", "none", { when: "13 Nov", note: "Live: the sitemap has 96 URLs, each with a lastmod; every indexable page has a robots meta tag (index,follow,max-image-preview:large,max-snippet:-1) and a matching canonical, checked by `pnpm seo:check` in CI; `/robots.txt` has Allow groups for the AI crawlers and Bingbot; `/llms.txt` and `/og.png` return 200; `iduckcalculator.pages.dev` sends `X-Robots-Tag: noindex` and the real domain does not. Social tags were not re-read." }),
     I("10.6", "1200x630 og.png in the same style", "done", "none", { when: "13 Nov", note: "`/og.png` returns 200 on the live site. Its pixel size was not re-measured this run." }),
-    I("10.7", "A how-to guide for every live calculator", "done", "none", { when: "13 Nov", note: "42 guides (3 earlier ones plus 39 new), grouped by topic on the guides page, each with steps, worked examples, FAQs and links to its calculators. Every one of the 43 calculators is linked from a guide, and `tests/unit/guides.test.ts` recomputes each figure the guides quote with the same calculators. The guide for each tax and scheme calculator waits for that calculator." }),
+    I("10.7", "A how-to guide for every live calculator", "done", "none", { when: "13 Nov", note: "44 guides (3 earlier ones plus 41 new), grouped by topic on the guides page, each with steps, worked examples, FAQs and links to its calculators. Every one of the 43 calculators has a guide of its own and is linked from one, and `tests/unit/guides.test.ts` recomputes each figure the guides quote with the same calculators. The guide for each tax and scheme calculator waits for that calculator." }),
   ]},
   { num: 11, name: "Launch", summary: "The parts that need your accounts.", items: [
     I("11.1", "Cloudflare Pages project connected to the repo", "done", "none", { when: "13 Nov", note: "Git integration deploys `main`: build `pnpm build`, output `dist`, Node 22.23.4 pinned in `.node-version`." }),
@@ -336,7 +336,11 @@ const PHASES = [
     I("11.4", "Tips-only support: payment provider and wording", "later", "you", { decision: true, note: "The brief says no ads, tips only. The Support page says tips are not open yet until a provider is chosen (Dodo Payments is what iDuckPDF uses)." }),
     I("11.5", "Native Turkish read-through", "later", "you", { note: "Never marked reviewed until a person has read it." }),
     I("11.6", "Mobile Lighthouse score of 95 or more", "done", "none", { when: "13 Nov", note: "Measured with PageSpeed Insights (mobile) on the live site: the home page and the scientific calculator page both score 100 for Performance, Accessibility, Best Practices and SEO. The calculator page first scored 96 on Accessibility (low contrast on the result card label); fixed in PR #4 and re-measured. Only two pages were measured, not all 43." }),
-    I("11.7", "Search Console: add the property and submit the sitemap", "later", "you", { effort: "10 min", note: "Not done. Submit https://iduckcalculator.com/sitemap-index.xml after Email Routing is confirmed." }),
+    I("11.7", "Search Console and Bing: add the site and submit the sitemap", "done", "none", { when: "13 Nov", note: "Google Search Console: a Domain property, verified with a DNS TXT record (keep that record in DNS), sitemap-index.xml submitted, status Success. Bing Webmaster Tools: imported from Search Console, sitemap submitted, status Processing (Bing says up to 48 hours). Indexing itself takes days; check the Pages report in Search Console." }),
+    I("11.8", "Security headers and Content-Security-Policy", "done", "none", { when: "13 Nov", note: "A strict policy (no `unsafe-inline`, no `unsafe-eval`, no outside hosts) with inline scripts allowed by hash, generated at build by `scripts/csp.mjs`, plus HSTS, nosniff, frame, referrer and permissions policies and COOP. securityheaders.com went from D to A+ and Mozilla Observatory from D (35) to A+ (130). Every browser test runs under the production policy. Also `security.txt`, a Dependabot config and a CI dependency audit." }),
+    I("11.9", "Account security settings (GitHub, Cloudflare, GoDaddy)", "todo", "you", { prio: 2, effort: "20 min", note: "Account settings I do not change. Details and click-by-click steps are in AUDIT.md.", steps: ["GitHub: turn on two-factor login and Dependabot alerts. Secret scanning and branch protection need a paid plan because the repo is private on the free tier; decide whether they are worth it.", "Cloudflare: Always Use HTTPS, minimum TLS 1.2, TLS 1.3, Automatic HTTPS Rewrites and Bot Fight Mode; turn on Crawler Hints and confirm AI crawlers are allowed.", "GoDaddy: confirm domain lock and auto-renew.", "Cloudflare and GoDaddy, last: DNSSEC (enable, copy the DS record to GoDaddy, check the site still loads)."] }),
+    I("11.10", "SPF and DMARC records: tighten or leave", "waiting", "you", { prio: 4, decision: true, blockedBy: "Your decision", note: "The domain receives mail through Email Routing, whose SPF record would be replaced by `v=spf1 -all`, and a DMARC record (`p=quarantine`, reporting to GoDaddy) already exists. Recommended: keep Cloudflare's SPF include with `-all` and set DMARC to `p=reject`. See AUDIT.md (A6b)." }),
+    I("11.11", "Dependabot pull request #9: TypeScript 6 to 7", "todo", "you", { prio: 5, effort: "5 min", note: "Opened by the new Dependabot config. It is a major version bump in dev tooling only. It has not been merged; review it or close it." }),
   ]},
 ];
 
@@ -351,6 +355,8 @@ const DECISIONS = [
   ["How-to guides", "One guide per calculator topic, written answer-first with a worked example. Every number in a guide is recomputed by a test from the calculators, so a guide cannot drift from the maths. Health guides carry the not-medical-advice note.", "13 Nov"],
   ["Start page theme", "The home page is always light, whatever the system setting or a saved choice says, and the theme button is hidden there. Every other page follows the system or the saved choice.", "13 Nov"],
   ["Ask the helper", "Duck: a plain matcher, not an AI, styled like iDuckIMG (duck avatar, speech bubbles, typing pause, tool cards). It answers simple sums and \"X% of Y\" itself, greets, and says what it can do. It runs in the browser and sends nothing anywhere.", "13 Nov"],
+  ["Security headers", "One strict Content-Security-Policy for every page with no `unsafe-inline` and no outside hosts: inline scripts are allowed by hash, generated at build. Inline style attributes and event handlers are not allowed (the build fails if one appears). Account-level security settings stay with the account owner.", "13 Nov"],
+  ["Answer-first pages", "Each calculator page opens with a 40 to 60 word answer built from tested parts (what it is, the formula, a worked example). Finance and health pages say where the maths comes from, when it was last reviewed and that it is an estimate, not advice.", "13 Nov"],
   ["Contact mail", "hello@ and feedback@iduckcalculator.com forward to `the company inbox` through Cloudflare Email Routing. Receive only; the catch-all stays off.", "13 Nov"],
 ];
 
@@ -364,16 +370,20 @@ const TIMELINE = [
   ["13 Nov 2026", "Mobile Lighthouse measured", "Home page and scientific calculator page score 100 on all four categories after a contrast fix on the result card (PR #4)."],
   ["13 Nov 2026", "39 how-to guides added", "A guide for every live calculator (42 in all), grouped by topic. Writing them found and fixed the age calculator showing negative days for birthdays on the 29th to 31st, and \"1 days\" style wording."],
   ["13 Nov 2026", "Helper redesigned, start page always light", "Duck chat in the iDuckIMG style that answers sums and percentages itself; the home page no longer follows a dark system setting."],
+  ["13 Nov 2026", "Security hardening", "A strict Content-Security-Policy and security headers (securityheaders.com and Mozilla Observatory D to A+), security.txt, Dependabot and a CI dependency audit."],
+  ["13 Nov 2026", "Answer-first pages and trust notes", "A formula answer, question headings and a computed reference table on every calculator; last-reviewed dates, formula references and estimate-only lines on finance and health pages; a How we check page."],
+  ["13 Nov 2026", "Search Console and Bing set up", "The site is verified in Google Search Console and imported into Bing Webmaster Tools; both have the sitemap."],
   ["13 Nov 2026", "Email Routing configured", "MX, SPF and DKIM live; hello@ and feedback@ forward to the company inbox. Delivery not yet tested."],
 ];
 
 const SCORECARD = [
   { k: "Calculators", v: READY.length + " built of " + TOOLS_DATA.length + " planned", d: "Measured from the registry in `src/lib/calc`. Not built: income tax, salary, HRA, gratuity, GST, TDS, PPF, Sukanya and NPS (the official rules have to be read first)." },
-  { k: "Unit tests", v: "317 passing", d: "Vitest, 5 files (`pnpm test`). They check every calculator's page fields and a known answer for each of the 43." },
-  { k: "Browser tests", v: "111 passing", d: "Playwright (`pnpm test:e2e`): every page loads with no errors and no sideways scroll, live results, currency, Ctrl K, theme, Turkish, home sections, 404, helper, footer." },
-  { k: "CI", v: "Green", d: "The run on `main` after PR #1 succeeded in 1m47s: check, lint, test, build and e2e." },
-  { k: "Pages", v: "98 built", d: "From `pnpm build`. The sitemap lists 93 URLs." },
-  { k: "Lighthouse, mobile", v: "100 / 100 / 100 / 100", d: "Performance, Accessibility, Best Practices, SEO, from PageSpeed Insights on 13 Nov 2026: home page (FCP 0.9 s, LCP 0.9 s, TBT 0 ms, CLS 0) and the scientific calculator page. Other pages were not measured." },
+  { k: "Unit tests", v: "342 passing", d: "Vitest, 8 files (`pnpm test`). They check every calculator's page fields and a known answer for each of the 43, every figure the 44 guides quote, every reference table, the answer text and the security headers." },
+  { k: "Browser tests", v: "115 passing", d: "Playwright (`pnpm test:e2e`): every page loads with no errors and no sideways scroll, live results, currency, Ctrl K, theme, Turkish, home sections, 404, helper, footer." },
+  { k: "CI", v: "Green", d: "The latest run on `main` succeeded: check, lint, test, dependency audit, build, SEO audit and e2e." },
+  { k: "Security headers", v: "A+ / A+", d: "securityheaders.com and Mozilla Observatory, measured on 13 Nov 2026 (both were D before the headers went live)." },
+  { k: "Pages", v: "101 built", d: "From `pnpm build`. The sitemap lists 96 URLs, each with a lastmod." },
+  { k: "Lighthouse, mobile", v: "100 / 100 / 100 / 100", d: "Performance, Accessibility, Best Practices, SEO, from PageSpeed Insights on 13 Nov 2026: the home page, the EMI page and the BMI guide (LCP 0.9 s, CLS 0, TBT 0 to 30 ms). Other pages were not measured." },
   { k: "Dependencies", v: "Exact pins", d: "All exact in `package.json` (Astro 7.4.10, Preact 11.2.0, Tailwind 4.3.5, Vitest 5.1.0, Playwright 1.65.0); the lockfile is committed." },
 ];
 

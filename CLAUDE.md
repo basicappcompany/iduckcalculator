@@ -53,6 +53,7 @@ Contact mail: Cloudflare Email Routing forwards hello@ and feedback@iduckcalcula
 - The e2e test "typing into the EMI calculator updates the result live" failed once when the machine was heavily loaded and passed alone and on repeat. If it fails, re-run it before suspecting the code.
 - The home page (`/`) is always light: `AppShell.astro` sets `data-theme="light"` and `data-force-light` there and CSS hides `#theme-toggle`. Tests of the dark theme must use another page, such as `/emi-calculator/`.
 - The helper (`src/lib/helper.ts`, `src/components/ChatHelper.tsx`) is a plain matcher, not an AI: it handles greetings, simple sums via `expr.ts`, "X% of Y", topic answers and calculator matches. Keep it free of network calls.
+- Search Console and Bing have the sitemap; the Google verification TXT record in Cloudflare DNS must stay. Account security settings are listed in AUDIT.md; do not change them without the owner.
 - Turkish covers the page chrome only; calculator copy stays English. Never mark it reviewed before a native speaker reads it.
 - Date maths: `ymd()` in `src/lib/calc/defs/dates.ts` counts years, months and days. A start day later than the previous month is long (31 Jan to 1 Mar) falls back to clamped month arithmetic, and a 29 Feb birthday counts as 1 March in other years. Do not swap it for a different convention without changing the age and date-difference tests.
 - Not built yet: income tax, salary, HRA, gratuity, GST, TDS, PPF, Sukanya, NPS (official sources not read), and the "old vs new tax regime" guide.
