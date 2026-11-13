@@ -49,5 +49,6 @@ Measured at last sync: 59 unit tests in 4 files, 69 browser tests, 59 pages buil
 - Email Routing is set up for hello@ and feedback@iduckcalculator.com (MX, SPF, DKIM live; both rules Active, forwarding to the company inbox; catch-all off). A real test message has not been sent: send one from another mailbox to each address and confirm it arrives.
 - Tax, salary, GST, TDS, PPF, Sukanya and NPS calculators are not built. The official sources must be read first (they were unreadable from this machine earlier), and each page needs a "rules as of" date.
 - DuckConvert: the Cloudflare account has an iduckconvert.com zone, but the footer and sidebar link iDuckPDF and iDuckImg only until it is live.
-- Not yet done: mobile Lighthouse measurement, Search Console property and sitemap submission, tips provider (Dodo Payments), native Turkish read-through.
+- Mobile Lighthouse (PageSpeed Insights, 13 Nov): home page and scientific calculator page score 100 on Performance, Accessibility, Best Practices and SEO. Only those two pages were measured.
+- Not yet done: Search Console property and sitemap submission, tips provider (Dodo Payments), native Turkish read-through.
 - Some office or VPN resolvers still cache the old GoDaddy parking page for iduckcalculator.com (up to 48 hours from the nameserver change); check the live site with `curl --resolve` or from a phone on mobile data.

@@ -254,7 +254,7 @@
    DATA. Edit here. States: done | progress | todo | waiting | later.  Owners: me | you | both | external | none.
    "me" = I can do it with no input. "you" = only you can. "both" = I do the mechanics, you sign in / approve / supply a secret.
    =================================================================================================================== */
-const VERIFIED = "13 Nov 2026 (pnpm verify, pnpm build and pnpm test:e2e passed locally; CI green on main; live site checked through the Cloudflare edge. Not measured: Lighthouse, canonical and social tags, real email delivery)";
+const VERIFIED = "13 Nov 2026 (pnpm verify, pnpm build and pnpm test:e2e passed locally; CI green on main; live site checked through the Cloudflare edge. Lighthouse measured on two pages only. Not checked: canonical and social tags, real email delivery)";
 const REPO = "https://github.com/basicappcompany/iduckcalculator";
 
 /* The calculator plan, one source for both the Phases list and the Tools table. [slug, name, emoji]. Flip `ready` in the same PR that ships a calculator. */
@@ -334,7 +334,7 @@ const PHASES = [
     I("11.3", "Cloudflare Email Routing for hello@ and feedback@iduckcalculator.com", "progress", "you", { prio: 2, effort: "5 min", note: "Set up on 13 Nov: three MX, SPF and DKIM records are live in public DNS, and both rules are Active, forwarding to `the company inbox` (already verified). Receive only; the catch-all is off. A real message has not been sent through it, so I cannot call it done.", steps: ["From a different mailbox, or your phone, send a test email to `hello@iduckcalculator.com` and another to `feedback@iduckcalculator.com`.", "Both should arrive in the `the company inbox` inbox (check spam if not).", "Tell me they arrived and I will mark this done."] }),
     I("11.4", "Tips-only support: payment provider and wording", "later", "you", { decision: true, note: "The brief says no ads, tips only. The Support page says tips are not open yet until a provider is chosen (Dodo Payments is what iDuckPDF uses)." }),
     I("11.5", "Native Turkish read-through", "later", "you", { note: "Never marked reviewed until a person has read it." }),
-    I("11.6", "Mobile Lighthouse score of 95 or more", "later", "me", { note: "Not measured yet. To be run against the live home page and one calculator." }),
+    I("11.6", "Mobile Lighthouse score of 95 or more", "done", "none", { when: "13 Nov", note: "Measured with PageSpeed Insights (mobile) on the live site: the home page and the scientific calculator page both score 100 for Performance, Accessibility, Best Practices and SEO. The calculator page first scored 96 on Accessibility (low contrast on the result card label); fixed in PR #4 and re-measured. Only two pages were measured, not all 43." }),
     I("11.7", "Search Console: add the property and submit the sitemap", "later", "you", { effort: "10 min", note: "Not done. Submit https://iduckcalculator.com/sitemap-index.xml after Email Routing is confirmed." }),
   ]},
 ];
@@ -357,6 +357,7 @@ const TIMELINE = [
   ["13 Nov 2026", "First release merged", "PR #1: the shell, the calculator engine and 41 calculators, merged with green CI."],
   ["13 Nov 2026", "Site live", "Cloudflare Pages deploys `main`; iduckcalculator.com answers through Cloudflare with a valid certificate."],
   ["13 Nov 2026", "Basic and scientific calculators", "Both built, with known-answer tests, plus a countdown-timer test: 43 of 52 calculators live."],
+  ["13 Nov 2026", "Mobile Lighthouse measured", "Home page and scientific calculator page score 100 on all four categories after a contrast fix on the result card (PR #4)."],
   ["13 Nov 2026", "Email Routing configured", "MX, SPF and DKIM live; hello@ and feedback@ forward to the company inbox. Delivery not yet tested."],
 ];
 
@@ -366,7 +367,7 @@ const SCORECARD = [
   { k: "Browser tests", v: "69 passing", d: "Playwright (`pnpm test:e2e`): every page loads with no errors and no sideways scroll, live results, currency, Ctrl K, theme, Turkish, home sections, 404, helper, footer." },
   { k: "CI", v: "Green", d: "The run on `main` after PR #1 succeeded in 1m47s: check, lint, test, build and e2e." },
   { k: "Pages", v: "59 built", d: "From `pnpm build`. The sitemap lists 54 URLs." },
-  { k: "Lighthouse, mobile", v: "Not measured", d: "Target is 95 or more. To be run against the live site." },
+  { k: "Lighthouse, mobile", v: "100 / 100 / 100 / 100", d: "Performance, Accessibility, Best Practices, SEO, from PageSpeed Insights on 13 Nov 2026: home page (FCP 0.9 s, LCP 0.9 s, TBT 0 ms, CLS 0) and the scientific calculator page. Other pages were not measured." },
   { k: "Dependencies", v: "Exact pins", d: "All exact in `package.json` (Astro 7.4.10, Preact 11.2.0, Tailwind 4.3.5, Vitest 5.1.0, Playwright 1.65.0); the lockfile is committed." },
 ];
 
