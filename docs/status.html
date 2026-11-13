@@ -320,13 +320,14 @@ const PHASES = [
     I("2.11", "Known-answer unit test for the countdown timer", "done", "none", { when: "13 Nov", note: "Uses a fixed clock: from noon on 1 Dec 2026 to 1 Jan 2027 is 30 days 12 hours. Every live calculator now has a known-answer test." }),
   ]},
   ...CALCS.map(calcPhase),
-  { num: 10, name: "Guides and SEO", summary: "Four starter guides and the search and sharing metadata.", items: [
+  { num: 10, name: "Guides and SEO", summary: "How-to guides for every calculator, and the search and sharing metadata.", items: [
     I("10.1", "Guide: How EMI is calculated", "done", "none", { when: "13 Nov", note: "Live at /guides/how-emi-is-calculated/ (200 through the Cloudflare edge)." }),
     I("10.2", "Guide: Old vs new tax regime explained", "todo", "me", { prio: 6, effort: "research first", note: "Not written. It depends on the income tax calculator (5.1), and the official slabs have to be read first." }),
     I("10.3", "Guide: SIP vs lumpsum", "done", "none", { when: "13 Nov", note: "Built at /guides/sip-vs-lumpsum/." }),
     I("10.4", "Guide: How to calculate percentage", "done", "none", { when: "13 Nov", note: "Built at /guides/how-to-calculate-percentage/." }),
     I("10.5", "sitemap.xml, robots.txt, canonical tags, Open Graph and Twitter tags, favicon, llms.txt, `_headers` (noindex on the pages.dev hosts only)", "done", "none", { when: "13 Nov", note: "Live: the sitemap has 52 URLs, `/robots.txt`, `/llms.txt` and `/og.png` return 200, `iduckcalculator.pages.dev` sends `X-Robots-Tag: noindex` and the real domain does not. Canonical and social tags were not re-read this run." }),
     I("10.6", "1200x630 og.png in the same style", "done", "none", { when: "13 Nov", note: "`/og.png` returns 200 on the live site. Its pixel size was not re-measured this run." }),
+    I("10.7", "A how-to guide for every live calculator", "done", "none", { when: "13 Nov", note: "42 guides (3 earlier ones plus 39 new), grouped by topic on the guides page, each with steps, worked examples, FAQs and links to its calculators. Every one of the 43 calculators is linked from a guide, and `tests/unit/guides.test.ts` recomputes each figure the guides quote with the same calculators. The guide for each tax and scheme calculator waits for that calculator." }),
   ]},
   { num: 11, name: "Launch", summary: "The parts that need your accounts.", items: [
     I("11.1", "Cloudflare Pages project connected to the repo", "done", "none", { when: "13 Nov", note: "Git integration deploys `main`: build `pnpm build`, output `dist`, Node 22.23.4 pinned in `.node-version`." }),
@@ -347,6 +348,7 @@ const DECISIONS = [
   ["Language", "EN-US and TR. Turkish starts with the page chrome; calculator copy follows. Never published as reviewed before a person reads it.", "13 Nov"],
   ["Promises", "No sign-up, no ads, everything runs in the browser, tips-only support. There is no ad slot component in this project.", "13 Nov"],
   ["Workflow", "Never push to `main`: branch, pull request, fix CI on the same PR, merge when green. Small commits. `pnpm verify` before each one. Docs-only changes are batched into one pull request at the end of the day.", "13 Nov"],
+  ["How-to guides", "One guide per calculator topic, written answer-first with a worked example. Every number in a guide is recomputed by a test from the calculators, so a guide cannot drift from the maths. Health guides carry the not-medical-advice note.", "13 Nov"],
   ["Start page theme", "The home page is always light, whatever the system setting or a saved choice says, and the theme button is hidden there. Every other page follows the system or the saved choice.", "13 Nov"],
   ["Ask the helper", "Duck: a plain matcher, not an AI, styled like iDuckImg (duck avatar, speech bubbles, typing pause, tool cards). It answers simple sums and \"X% of Y\" itself, greets, and says what it can do. It runs in the browser and sends nothing anywhere.", "13 Nov"],
   ["Contact mail", "hello@ and feedback@iduckcalculator.com forward to `the company inbox` through Cloudflare Email Routing. Receive only; the catch-all stays off.", "13 Nov"],
@@ -360,16 +362,17 @@ const TIMELINE = [
   ["13 Nov 2026", "Site live", "Cloudflare Pages deploys `main`; iduckcalculator.com answers through Cloudflare with a valid certificate."],
   ["13 Nov 2026", "Basic and scientific calculators", "Both built, with known-answer tests, plus a countdown-timer test: 43 of 52 calculators live."],
   ["13 Nov 2026", "Mobile Lighthouse measured", "Home page and scientific calculator page score 100 on all four categories after a contrast fix on the result card (PR #4)."],
+  ["13 Nov 2026", "39 how-to guides added", "A guide for every live calculator (42 in all), grouped by topic. Writing them found and fixed the age calculator showing negative days for birthdays on the 29th to 31st, and \"1 days\" style wording."],
   ["13 Nov 2026", "Helper redesigned, start page always light", "Duck chat in the iDuckImg style that answers sums and percentages itself; the home page no longer follows a dark system setting."],
   ["13 Nov 2026", "Email Routing configured", "MX, SPF and DKIM live; hello@ and feedback@ forward to the company inbox. Delivery not yet tested."],
 ];
 
 const SCORECARD = [
   { k: "Calculators", v: READY.length + " built of " + TOOLS_DATA.length + " planned", d: "Measured from the registry in `src/lib/calc`. Not built: income tax, salary, HRA, gratuity, GST, TDS, PPF, Sukanya and NPS (the official rules have to be read first)." },
-  { k: "Unit tests", v: "62 passing", d: "Vitest, 4 files (`pnpm test`). They check every calculator's page fields and a known answer for each of the 43." },
-  { k: "Browser tests", v: "72 passing", d: "Playwright (`pnpm test:e2e`): every page loads with no errors and no sideways scroll, live results, currency, Ctrl K, theme, Turkish, home sections, 404, helper, footer." },
+  { k: "Unit tests", v: "317 passing", d: "Vitest, 5 files (`pnpm test`). They check every calculator's page fields and a known answer for each of the 43." },
+  { k: "Browser tests", v: "111 passing", d: "Playwright (`pnpm test:e2e`): every page loads with no errors and no sideways scroll, live results, currency, Ctrl K, theme, Turkish, home sections, 404, helper, footer." },
   { k: "CI", v: "Green", d: "The run on `main` after PR #1 succeeded in 1m47s: check, lint, test, build and e2e." },
-  { k: "Pages", v: "59 built", d: "From `pnpm build`. The sitemap lists 54 URLs." },
+  { k: "Pages", v: "98 built", d: "From `pnpm build`. The sitemap lists 93 URLs." },
   { k: "Lighthouse, mobile", v: "100 / 100 / 100 / 100", d: "Performance, Accessibility, Best Practices, SEO, from PageSpeed Insights on 13 Nov 2026: home page (FCP 0.9 s, LCP 0.9 s, TBT 0 ms, CLS 0) and the scientific calculator page. Other pages were not measured." },
   { k: "Dependencies", v: "Exact pins", d: "All exact in `package.json` (Astro 7.4.10, Preact 11.2.0, Tailwind 4.3.5, Vitest 5.1.0, Playwright 1.65.0); the lockfile is committed." },
 ];

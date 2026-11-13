@@ -1,5 +1,5 @@
 import { cagr, compound, compoundYears, inflate, recurringDeposit, retirementCorpus, simpleInterest, sipFutureValue, sipYears, stepUpSip, swp, type YearRow } from '../../finance';
-import { fail, n, num, sel, type CalcDef, type Result } from '../types';
+import { fail, n, num, sel, yearsMonths, type CalcDef, type Result } from '../types';
 
 /** Growth tables: invested so far, gain so far and the balance, per year. */
 function growth(rows: YearRow[], opening = 0): Pick<Result, 'table' | 'chart'> {
@@ -184,7 +184,7 @@ export const SAVINGS: CalcDef[] = [
       const rows = plan.years;
       return {
         metrics: [
-          { label: plan.lasts ? 'Balance left at the end' : 'Money runs out after', value: plan.lasts ? plan.finalBalance : `${Math.floor(plan.monthsLasted / 12)} years ${plan.monthsLasted % 12} months`, kind: plan.lasts ? 'money' : 'text', big: true },
+          { label: plan.lasts ? 'Balance left at the end' : 'Money runs out after', value: plan.lasts ? plan.finalBalance : yearsMonths(plan.monthsLasted), kind: plan.lasts ? 'money' : 'text', big: true },
           { label: 'Total withdrawn', value: plan.totalWithdrawn, kind: 'money' },
           { label: 'Starting investment', value: corpus, kind: 'money' },
         ],

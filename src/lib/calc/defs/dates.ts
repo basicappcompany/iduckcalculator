@@ -22,6 +22,14 @@ export const dateOf = (v: Values, id: string): Date | null => parseDate(s(v, id)
 export const daysBetween = (a: Date, b: Date): number => Math.round((b.getTime() - a.getTime()) / DAY);
 const daysInMonth = (y: number, m0: number) => new Date(Date.UTC(y, m0 + 1, 0)).getUTCDate();
 
+/** `from` moved forward by `m` months; if the target month is shorter, the last day of it (31 Jan + 1 month = 28 Feb). */
+function plusMonths(from: Date, m: number): Date {
+  const total = from.getUTCFullYear() * 12 + from.getUTCMonth() + m;
+  const y = Math.floor(total / 12);
+  const mo = total - y * 12;
+  return new Date(Date.UTC(y, mo, Math.min(from.getUTCDate(), daysInMonth(y, mo))));
+}
+
 /** Whole years, months and days from `from` to `to` (to is on or after from). */
 export function ymd(from: Date, to: Date): { years: number; months: number; days: number } {
   let years = to.getUTCFullYear() - from.getUTCFullYear();
@@ -36,6 +44,9 @@ export function ymd(from: Date, to: Date): { years: number; months: number; days
     years -= 1;
     months += 12;
   }
+  // Borrowing the previous month is not enough when the start day is later than that month is long (31 Jan to 1 Mar):
+  // count the whole months with the start day clamped to the month end (31 Jan + 1 month = 28 Feb), then the days left.
+  if (days < 0) days = daysBetween(plusMonths(from, years * 12 + months), to);
   return { years, months, days };
 }
 
@@ -123,7 +134,7 @@ export const DATES: CalcDef[] = [
         metrics: [
           { label: 'Days between', value: days, kind: 'number', decimals: 0, big: true },
           { label: 'In years, months and days', value: `${plural(d.years, 'year')}, ${plural(d.months, 'month')}, ${plural(d.days, 'day')}`, kind: 'text' },
-          { label: 'Weeks and days', value: `${Math.floor(days / 7)} weeks ${days % 7} days`, kind: 'text' },
+          { label: 'Weeks and days', value: `${plural(Math.floor(days / 7), 'week')} ${plural(days % 7, 'day')}`, kind: 'text' },
           { label: 'Hours', value: days * 24, kind: 'number', decimals: 0 },
         ],
         note: 'The start day is not counted, the end day is. Add 1 if you need both days included.',
@@ -315,12 +326,12 @@ export const DATES: CalcDef[] = [
       const now = new Date();
       const t = new Date(target.getUTCFullYear(), target.getUTCMonth(), target.getUTCDate()).getTime();
       const ms = t - now.getTime();
-      if (ms <= 0) return { metrics: [{ label: 'That date has passed', value: `${Math.ceil(-ms / DAY)} days ago`, kind: 'text', big: true }] };
+      if (ms <= 0) return { metrics: [{ label: 'That date has passed', value: `${plural(Math.ceil(-ms / DAY), 'day')} ago`, kind: 'text', big: true }] };
       const days = Math.floor(ms / DAY);
       return {
         metrics: [
           { label: 'Time left', value: `${days} days ${Math.floor((ms % DAY) / 3_600_000)} hours ${Math.floor((ms % 3_600_000) / 60_000)} minutes`, kind: 'text', big: true },
-          { label: 'Weeks and days', value: `${Math.floor(days / 7)} weeks ${days % 7} days`, kind: 'text' },
+          { label: 'Weeks and days', value: `${plural(Math.floor(days / 7), 'week')} ${plural(days % 7, 'day')}`, kind: 'text' },
           { label: 'Total hours', value: Math.floor(ms / 3_600_000), kind: 'number', decimals: 0 },
           { label: 'Date', value: longDate(target), kind: 'text' },
         ],

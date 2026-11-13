@@ -121,3 +121,21 @@ describe('countdown timer', () => {
     expect(run('countdown-timer', { target: 'not a date' }).error).toBeTruthy();
   });
 });
+
+describe('age and date difference across short months', () => {
+  const age = (dob: string, asof: string) => run('age-calculator', { dob, asof }).metrics[0]!.value;
+  it('never shows negative days', () => {
+    expect(age('1990-01-31', '2026-03-01')).toBe('36 years, 1 month, 1 day'); // 31 Jan + 1 month = 28 Feb, then 1 day
+    expect(age('1995-06-15', '2026-01-01')).toBe('30 years, 6 months, 17 days'); // the worked example on the page
+    expect(age('2000-02-29', '2026-03-01')).toBe('26 years, 0 months, 0 days'); // a leap-day birthday is kept on 1 March
+    expect(age('2000-03-31', '2000-04-30')).toBe('0 years, 0 months, 30 days');
+    expect(age('2000-05-31', '2000-06-30')).toBe('0 years, 0 months, 30 days');
+    expect(age('2000-12-31', '2001-01-01')).toBe('0 years, 0 months, 1 day');
+  });
+  it('keeps date difference in step with it', () => {
+    const d = (from: string, to: string) => run('date-difference-calculator', { from, to }).metrics.find((m) => m.label.startsWith('In years'))!.value;
+    expect(d('2026-01-01', '2026-12-25')).toBe('0 years, 11 months, 24 days');
+    expect(d('2026-01-31', '2026-03-01')).toBe('0 years, 1 month, 1 day');
+    expect(d('2024-01-01', '2025-01-01')).toBe('1 year, 0 months, 0 days');
+  });
+});

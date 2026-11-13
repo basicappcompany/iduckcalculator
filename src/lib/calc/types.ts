@@ -155,5 +155,11 @@ export const n = (v: Values, id: string): number => {
   const x = typeof v[id] === 'number' ? (v[id] as number) : parseFloat(String(v[id] ?? ''));
   return Number.isFinite(x) ? x : 0;
 };
+/** "8 years 7 months", "1 year 1 month": a length of time given in months. */
+export const yearsMonths = (total: number): string => {
+  const y = Math.floor(total / 12);
+  const m = total % 12;
+  return `${y} year${y === 1 ? '' : 's'} ${m} month${m === 1 ? '' : 's'}`;
+};
 export const s = (v: Values, id: string): string => String(v[id] ?? '');
 export const fail = (error: string): Result => ({ metrics: [], error });

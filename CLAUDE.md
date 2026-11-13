@@ -28,6 +28,12 @@ Contact mail: Cloudflare Email Routing forwards hello@ and feedback@iduckcalcula
 - `src/pages/` the rest of the site; `src/lib/i18n.ts` EN/TR chrome; `src/lib/seo.ts` has `LAST_UPDATED` (footer date).
 - `tests/unit` (Vitest), `tests/e2e` (Playwright), `docs/status.html` (self-contained project status page, no external requests), `PROGRESS.md` (checklist).
 
+## Guides
+- `src/lib/guides.ts` holds the first three guides and combines the rest from `guides-loans.ts`, `guides-savings.ts`, `guides-maths.ts`, `guides-dates.ts`, `guides-health.ts` and `guides-students.ts`. The guides page groups a guide under its first linked calculator's group.
+- A guide needs: title (60 characters or fewer), description (70 to 160), an answer-first intro (25 to 60 words), steps, sections, 4 or more FAQs, 300 or more words, links to calculators and to related guides.
+- Every number a guide quotes must be recomputed in `tests/unit/guides.test.ts` from the calculators. Add a claim there when you add a guide, and write the figure the way the test formats it (Indian grouping, a real minus sign).
+- Every live calculator must be linked from at least one guide; the test enforces it. Health guides keep the not-medical-advice line.
+
 ## Adding a calculator
 1. Add an entry to the right file in `src/lib/calc/defs/`: slug, name, group, summary, quick answer, title (<= 65 chars), description (70 to 175), fields, `compute`, formula, worked example, `how`, 4 to 6 FAQs, exactly 3 `related` slugs that exist.
 2. Add a known-answer unit test (the worked example's numbers). The registry test already enforces the page fields.
@@ -41,4 +47,5 @@ Contact mail: Cloudflare Email Routing forwards hello@ and feedback@iduckcalcula
 - The home page (`/`) is always light: `AppShell.astro` sets `data-theme="light"` and `data-force-light` there and CSS hides `#theme-toggle`. Tests of the dark theme must use another page, such as `/emi-calculator/`.
 - The helper (`src/lib/helper.ts`, `src/components/ChatHelper.tsx`) is a plain matcher, not an AI: it handles greetings, simple sums via `expr.ts`, "X% of Y", topic answers and calculator matches. Keep it free of network calls.
 - Turkish covers the page chrome only; calculator copy stays English. Never mark it reviewed before a native speaker reads it.
+- Date maths: `ymd()` in `src/lib/calc/defs/dates.ts` counts years, months and days. A start day later than the previous month is long (31 Jan to 1 Mar) falls back to clamped month arithmetic, and a 29 Feb birthday counts as 1 March in other years. Do not swap it for a different convention without changing the age and date-difference tests.
 - Not built yet: income tax, salary, HRA, gratuity, GST, TDS, PPF, Sukanya, NPS (official sources not read), and the "old vs new tax regime" guide.

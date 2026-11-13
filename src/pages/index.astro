@@ -2,7 +2,7 @@
 import AppShell from '../components/AppShell.astro';
 import DuckMark from '../components/DuckMark.astro';
 import { CALCULATORS, calcPath, calcsInGroup, liveGroups, popularCalcs } from '../lib/calc';
-import { GUIDES, guidePath } from '../lib/guides';
+import { GUIDES, guideBySlug, guidePath } from '../lib/guides';
 import { faqLd, organizationLd, websiteLd } from '../lib/seo';
 
 const total = CALCULATORS.length;
@@ -15,6 +15,11 @@ const faqs = [
   { q: 'Are the results accurate?', a: 'The maths is tested against known answers. Real loans, investments and tax can differ because of fees, rounding and rule changes, so treat results as estimates and check with your lender or adviser.' },
   { q: 'Do I need to install anything?', a: 'No. Open a calculator in any modern browser, on a computer or a phone.' },
 ];
+
+// Six guides on the home page; the rest are on the guides page.
+const FEATURED_GUIDES = ['how-emi-is-calculated', 'sip-vs-lumpsum', 'how-to-calculate-percentage', 'how-to-calculate-your-age', 'how-to-calculate-bmi', 'how-to-convert-cgpa-to-percentage']
+  .map(guideBySlug)
+  .filter((g): g is NonNullable<typeof g> => !!g);
 
 const why = [
   { emoji: '🔒', title: 'Your numbers stay with you', text: 'Every calculator runs in your browser. Nothing you type is sent to our servers.' },
@@ -161,7 +166,7 @@ const next = [
     <p class="mt-1 text-muted">Short walkthroughs with worked examples. Each gives the answer first.</p>
     <ul class="card-grid mt-3">
       {
-        GUIDES.map((g) => (
+        FEATURED_GUIDES.map((g) => (
           <li>
             <a href={guidePath(g.slug)} class="card card-link h-full p-4">
               <span class="block text-[17px] font-black">{g.title}</span>

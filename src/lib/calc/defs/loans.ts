@@ -1,5 +1,5 @@
 import { affordableLoan, emi, loanPlan, type YearRow } from '../../finance';
-import { fail, n, num, sel, type CalcDef, type Result, type Values } from '../types';
+import { fail, n, num, sel, yearsMonths, type CalcDef, type Result, type Values } from '../types';
 
 const loanTable = (years: YearRow[]) => ({
   columns: ['Year', 'Paid', 'Principal', 'Interest', 'Balance'],
@@ -190,8 +190,8 @@ export const LOANS: CalcDef[] = [
       return {
         metrics: [
           { label: 'Interest saved', value: base.totalInterest - fast.totalInterest, kind: 'money', big: true },
-          { label: 'Time saved', value: `${Math.floor(saved / 12)} years ${saved % 12} months`, kind: 'text' },
-          { label: 'New loan length', value: `${Math.floor(fast.months / 12)} years ${fast.months % 12} months`, kind: 'text' },
+          { label: 'Time saved', value: yearsMonths(saved), kind: 'text' },
+          { label: 'New loan length', value: yearsMonths(fast.months), kind: 'text' },
           { label: 'Interest without prepaying', value: base.totalInterest, kind: 'money' },
           { label: 'Interest with prepaying', value: fast.totalInterest, kind: 'money' },
         ],

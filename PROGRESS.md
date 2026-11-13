@@ -12,8 +12,8 @@ Last synced 2026-11-13. Live: https://iduckcalculator.com. Detail and owners: `d
 - [x] Scaffold: config, theme (global.css), shell (sidebar, top bar, Ctrl K, theme toggle, language switch, footer)
 - [x] Generic calculator engine: registry, live form, formula, worked example, table, SVG chart, FAQ schema
 - [x] Home, All calculators, settings (theme, currency, language), helper chat, roadmap, request, feedback, support, about, privacy, terms, 404
-- [x] SEO: sitemap (54 URLs), robots, canonical, OG/Twitter tags, og.png, favicon, llms.txt, _headers (canonical and social tags not re-read at last sync)
-- [ ] Four starter guides: 3 of 4 done (EMI, SIP vs lumpsum, percentage); old vs new tax regime waits on the income tax calculator
+- [x] SEO: sitemap (93 URLs), robots, canonical, OG/Twitter tags, og.png, favicon, llms.txt, _headers (canonical and social tags not re-read at last sync)
+- [x] How-to guides: 42, one or more for every live calculator, figures checked by tests. Still to write: old vs new tax regime (waits on the income tax calculator) and a guide for each tax and scheme calculator
 - [x] Turkish (TR) chrome translation (not reviewed by a native speaker)
 - [x] CI (verify + build + e2e) green on main
 
@@ -37,13 +37,14 @@ Last synced 2026-11-13. Live: https://iduckcalculator.com. Detail and owners: `d
 
 ## Step 4: guides
 - [x] How EMI is calculated  - [ ] Old vs new tax regime  - [x] SIP vs lumpsum  - [x] How to calculate percentage
+- [x] 39 more how-to guides, covering all 43 calculators (loans, savings, maths, dates, health, students), grouped on the guides page
 
 ## Step 5: checks
 - [x] Every calculator spot-checked against a known answer (unit tests)
 - [x] Dark/light, Ctrl+K, language switch, no console errors, no sideways scroll on every page (Playwright, 69 passing; the sideways-scroll check was not re-confirmed at a phone-width viewport by hand)
 - [ ] Broken links check (no link checker has been run)
 
-Measured at last sync: 62 unit tests in 4 files, 72 browser tests, 59 pages built, 54 sitemap URLs.
+Measured at last sync: 317 unit tests in 5 files, 111 browser tests, 98 pages built, 93 sitemap URLs.
 
 ## Open items and decisions
 - Email Routing is set up for hello@ and feedback@iduckcalculator.com (MX, SPF, DKIM live; both rules Active, forwarding to the company inbox; catch-all off). A real test message has not been sent: send one from another mailbox to each address and confirm it arrives.
