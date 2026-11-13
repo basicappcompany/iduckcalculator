@@ -1,0 +1,136 @@
+---
+import AppShell from '../components/AppShell.astro';
+import CalculatorTool from '../components/CalculatorTool';
+import { CALCULATORS, CALC_GROUPS, calcBySlug, calcPath, calcsInGroup, groupName } from '../lib/calc';
+import { GUIDES, guidePath } from '../lib/guides';
+import { breadcrumbLd, faqLd, webApplicationLd } from '../lib/seo';
+
+export function getStaticPaths() {
+  return CALCULATORS.map((c) => ({ params: { slug: c.slug }, props: { slug: c.slug } }));
+}
+const { slug } = Astro.props;
+const def = calcBySlug(slug)!;
+const path = calcPath(slug);
+const related = def.related.map((r) => calcBySlug(r)!);
+const mates = calcsInGroup(def.group).filter((c) => c.slug !== slug && !def.related.includes(c.slug)).slice(0, 4);
+const guide = GUIDES.find((g) => g.calcs.includes(slug));
+const group = CALC_GROUPS.find((g) => g.id === def.group)!;
+const jsonLd = [
+  webApplicationLd(def.name, path, def.description),
+  breadcrumbLd([
+    { name: 'Home', path: '/' },
+    { name: 'Calculators', path: '/calculators/' },
+    { name: def.name, path },
+  ]),
+  faqLd(def.faqs),
+];
+---
+
+<AppShell title={def.title} description={def.description} jsonLd={jsonLd}>
+  <p class="eyebrow">
+    <a href="/" class="underline decoration-2 underline-offset-2">Home</a>
+    <span aria-hidden="true"> / </span>
+    {groupName(def.group)}
+  </p>
+  <h1 class="display mt-2 flex items-center gap-3 text-[2rem] min-[400px]:text-4xl sm:text-5xl">
+    <span aria-hidden="true" class="shrink-0 text-[2rem] min-[400px]:text-4xl sm:text-5xl">{def.emoji}</span>
+    <span class="min-w-0 hyphens-auto [overflow-wrap:anywhere]">{def.name}</span>
+  </h1>
+  <p class="mt-3 text-lg text-muted">{def.summary}</p>
+
+  <div class="mt-3 flex flex-wrap gap-2">
+    <span class="pill pill-ok" data-i18n="runs">Runs in your browser</span>
+    <span class="pill" data-i18n="noSignup">No sign-up</span>
+    <span class="pill" data-i18n="noAds">No ads</span>
+  </div>
+
+  <section aria-label="Quick answer" class="card mt-5 p-4">
+    <p class="eyebrow" data-i18n="quick">Quick answer</p>
+    <p class="mt-1 leading-relaxed">{def.quick}</p>
+    {
+      guide && (
+        <p class="mt-2 text-sm">
+          <span aria-hidden="true">📖</span> <span data-i18n="readGuide">Read the guide</span>: <a class="link" href={guidePath(guide.slug)}>{guide.title}</a>
+        </p>
+      )
+    }
+  </section>
+
+  <section class="tool-area mt-5 grid gap-5" aria-label="Calculator">
+    <CalculatorTool client:load slug={slug} />
+  </section>
+
+  {
+    def.rules && (
+      <p class="mt-4 text-sm">
+        <b data-i18n="rulesAsOf">Rules as of</b> {def.rules.asOf}: {def.rules.year}. Sources:{' '}
+        {def.rules.sources.map((s, i) => (
+          <>
+            {i > 0 && ', '}
+            <a class="link" href={s.url} rel="noopener">{s.name}</a>
+          </>
+        ))}
+        .
+      </p>
+    )
+  }
+
+  <div class="prose mt-12">
+    <h2 data-i18n="how">How it works</h2>
+    {def.how.map((p) => <p>{p}</p>)}
+
+    <h2 data-i18n="formula">The formula</h2>
+    <ul class="formula">
+      {def.formula.map((line) => <li>{line}</li>)}
+    </ul>
+
+    <h2 data-i18n="example">A worked example</h2>
+    <p>{def.example}</p>
+  </div>
+
+  <section class="mt-12" aria-label="Common questions">
+    <h2 class="text-3xl font-black tracking-tight" data-i18n="faq">Common questions</h2>
+    <div class="mt-4 grid gap-3">
+      {
+        def.faqs.map((f) => (
+          <details class="card px-4 py-3">
+            <summary class="cursor-pointer text-lg font-black">{f.q}</summary>
+            <p class="mt-2 leading-relaxed">{f.a}</p>
+          </details>
+        ))
+      }
+    </div>
+  </section>
+
+  <nav class="mt-12" aria-label="Related calculators" data-related-nav>
+    <h2 class="text-2xl font-black tracking-tight" data-i18n="related">Related calculators</h2>
+    <ul class="mt-3 grid gap-4 sm:grid-cols-3">
+      {
+        related.map((c) => (
+          <li>
+            <a href={calcPath(c.slug)} class="card card-link h-full p-4">
+              <span class="flex items-center gap-2 text-lg font-black">
+                <span aria-hidden="true">{c.emoji}</span>
+                {c.name}
+              </span>
+              <span class="mt-1 block text-sm text-muted">{c.summary}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    {
+      mates.length > 0 && (
+        <p class="mt-4 text-sm text-muted">
+          More in {group.name}:{' '}
+          {mates.map((c, i) => (
+            <>
+              {i > 0 && ', '}
+              <a class="link" href={calcPath(c.slug)}>{c.name}</a>
+            </>
+          ))}
+        </p>
+      )
+    }
+  </nav>
+</AppShell>

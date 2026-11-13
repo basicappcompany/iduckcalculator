@@ -1,0 +1,14 @@
+---
+import CommunityLayout from '../components/CommunityLayout.astro';
+import SettingsPanel from '../components/SettingsPanel';
+---
+
+<CommunityLayout
+  title="Settings | iDuckCalculator"
+  description="Choose a light or dark theme, a currency and a language, clear what iDuckCalculator saved in your browser, and see the keyboard shortcuts."
+  mark="Settings"
+  intro="Pick how the site looks, which currency to show, and see what it remembers."
+  noindex
+>
+  <SettingsPanel client:load />
+</CommunityLayout>

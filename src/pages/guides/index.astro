@@ -1,0 +1,31 @@
+---
+import CommunityLayout from '../../components/CommunityLayout.astro';
+import { GUIDES, guidePath } from '../../lib/guides';
+import { breadcrumbLd, collectionLd } from '../../lib/seo';
+---
+
+<CommunityLayout
+  title="How-to guides: EMI, SIP vs lumpsum, percentage | iDuckCalculator"
+  description="Short how-to guides with worked examples: how EMI is calculated, SIP versus lumpsum, and how to calculate a percentage. Each gives the answer first."
+  before="How-to"
+  mark="guides"
+  intro="Short walkthroughs with worked examples. Each one gives the answer first, then shows the steps."
+  jsonLd={[
+    collectionLd('How-to guides', '/guides/', 'Worked examples and step-by-step guides.', GUIDES.map((g) => ({ name: g.title, path: guidePath(g.slug) }))),
+    breadcrumbLd([{ name: 'Home', path: '/' }, { name: 'How-to guides', path: '/guides/' }]),
+  ]}
+>
+  <ul class="card-grid">
+    {
+      GUIDES.map((g) => (
+        <li>
+          <a href={guidePath(g.slug)} class="card card-link h-full p-4">
+            <span class="block text-[17px] font-black">{g.title}</span>
+            <span class="mt-1 block text-sm leading-[19px] text-muted">{g.description}</span>
+            <span class="mt-2 block text-xs text-muted">Updated {g.updated}</span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</CommunityLayout>

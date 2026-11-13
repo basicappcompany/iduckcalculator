@@ -1,0 +1,15 @@
+---
+import CommunityLayout from '../components/CommunityLayout.astro';
+import ChatHelper from '../components/ChatHelper';
+---
+
+<CommunityLayout
+  title="Ask the helper | iDuckCalculator"
+  description="Describe what you want to work out in plain words and the helper points you to the right calculator."
+  before="Ask the"
+  mark="helper"
+  intro="Not sure which calculator you need? Say what you want to work out and the helper will point you to it."
+  noindex
+>
+  <ChatHelper client:load />
+</CommunityLayout>

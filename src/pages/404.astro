@@ -1,0 +1,26 @@
+---
+import AppShell from '../components/AppShell.astro';
+import DuckMark from '../components/DuckMark.astro';
+import { popularCalcs, calcPath } from '../lib/calc';
+---
+
+<AppShell title="Page not found | iDuckCalculator" description="That page does not exist. Search for a calculator or go back to the home page." noindex>
+  <section class="text-center">
+    <DuckMark size={96} class="mx-auto" />
+    <h1 class="display mt-4 text-4xl sm:text-5xl">That page <span class="mark">flew</span> away.</h1>
+    <p class="mx-auto mt-4 max-w-xl text-lg text-muted">We could not find it. Try the search (Ctrl K), or pick a popular calculator.</p>
+    <p class="mt-5"><a href="/" class="btn btn-primary btn-lg">Go home</a></p>
+  </section>
+  <ul class="card-grid mt-10">
+    {
+      popularCalcs().map((c) => (
+        <li>
+          <a href={calcPath(c.slug)} class="card card-link h-full p-4">
+            <span class="flex items-center gap-2.5 text-[17px] font-black"><span aria-hidden="true" class="text-[28px] leading-none">{c.emoji}</span>{c.name}</span>
+            <span class="mt-1 block text-sm leading-[19px] text-muted">{c.summary}</span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</AppShell>

@@ -1,0 +1,62 @@
+---
+import CommunityLayout from '../components/CommunityLayout.astro';
+import { CALCULATORS, calcPath, calcsInGroup, liveGroups } from '../lib/calc';
+
+const next = [
+  { name: 'Income tax: old vs new regime', note: 'Side by side, from the official rules for the current financial year, with the date they were read.' },
+  { name: 'In-hand salary from CTC, HRA and gratuity', note: 'Built on the same checked rules.' },
+  { name: 'GST (add and remove) and TDS basics', note: 'Current rates, checked against the official source.' },
+  { name: 'PPF, Sukanya Samriddhi and NPS', note: 'Government schemes: the calculators wait for the current rates and limits to be checked.' },
+  { name: 'Basic and scientific calculators', note: 'A keypad for quick sums.' },
+];
+const later = ['A native Turkish read-through, then more languages', 'Share a result as a link', 'More health and student tools, based on your requests'];
+const groups = liveGroups();
+---
+
+<CommunityLayout
+  title="Roadmap: what is live and what is next | iDuckCalculator"
+  description="See every iDuckCalculator calculator that is live today and what we are building next, including the India tax and savings scheme calculators."
+  before="What's"
+  mark="next"
+  intro="Everything that is live, and what we are thinking about. This list is kept honest: if it is under Live, you can open it now."
+>
+  <section aria-labelledby="live">
+    <h2 id="live" class="text-2xl font-black tracking-tight">Live now ({CALCULATORS.length})</h2>
+    <div class="mt-3 grid gap-4 sm:grid-cols-2">
+      {
+        groups.map((g) => (
+          <div class="card p-4">
+            <h3 class="text-lg font-black">{g.emoji} {g.name}</h3>
+            <ul class="mt-2 grid gap-1 text-sm">
+              {calcsInGroup(g.id).map((c) => (
+                <li>✅ <a class="link" href={calcPath(c.slug)}>{c.name}</a></li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <section aria-labelledby="next">
+    <h2 id="next" class="text-2xl font-black tracking-tight">Next</h2>
+    <ul class="mt-3 grid gap-3">
+      {
+        next.map((n) => (
+          <li class="card p-4">
+            <span class="font-black">🔜 {n.name}</span>
+            <span class="mt-1 block text-sm text-muted">{n.note}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section aria-labelledby="later">
+    <h2 id="later" class="text-2xl font-black tracking-tight">Later</h2>
+    <ul class="mt-3 grid gap-2">
+      {later.map((l) => <li class="card p-3 text-sm">💭 {l}</li>)}
+    </ul>
+    <p class="mt-4 text-sm text-muted">Missing something? <a class="link" href="/request/">Request a calculator</a>.</p>
+  </section>
+</CommunityLayout>
