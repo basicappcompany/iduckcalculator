@@ -32,13 +32,13 @@ const fullTitle = bareTitle.length + BRAND_SUFFIX.length <= 59 ? `${bareTitle}${
 ---
 
 <!doctype html>
-<html lang="en-US" data-theme={isHome ? 'light' : undefined} data-force-light={isHome ? '' : undefined}>
+<html lang="en-US" data-theme="light">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="light dark" />
-    {isHome ? <meta name="theme-color" content="#fffdf5" /> : <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)" />}
-    {!isHome && <meta name="theme-color" content="#fffdf5" media="(prefers-color-scheme: light)" />}
+    <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#fffdf5" media="(prefers-color-scheme: light)" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     {
@@ -68,13 +68,15 @@ const fullTitle = bareTitle.length + BRAND_SUFFIX.length <= 59 ? `${bareTitle}${
     <meta name="twitter:image" content={OG_IMAGE} />
     {jsonLd.map((item) => <script type="application/ld+json" set:html={serialize(item)} />)}
     <!-- Runs before first paint, so a visitor who chose dark mode never sees a flash of light. -->
-    <script is:inline define:vars={{ key: THEME_STORAGE_KEY, forceLight: isHome }}>
+    <script is:inline define:vars={{ key: THEME_STORAGE_KEY }}>
       try {
-        // The start page is always light, whatever the system setting or a saved choice says.
-        const saved = forceLight ? 'light' : localStorage.getItem(key);
+        // Every page is light until the visitor changes it (the HTML already says so). A saved choice wins on every page:
+        // light, dark, or "match my device", which removes the attribute so the system setting applies.
+        const saved = localStorage.getItem(key);
         if (saved === 'dark' || saved === 'light') document.documentElement.setAttribute('data-theme', saved);
+        else if (saved === 'system') document.documentElement.removeAttribute('data-theme');
       } catch {
-        // Storage can be blocked (private mode); the system setting then applies.
+        // Storage can be blocked (private mode); the page then keeps its default.
       }
     </script>
   </head>

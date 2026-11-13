@@ -725,11 +725,6 @@ body {
   min-width: 0;
 }
 
-/* The start page is always light, so the theme button has nothing to do there. */
-:root[data-force-light] #theme-toggle {
-  display: none;
-}
-
 /* Classes instead of inline style attributes, so the Content-Security-Policy can forbid them. */
 .swatch-0 {
   background: var(--d-duck);

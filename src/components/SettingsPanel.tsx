@@ -30,8 +30,8 @@ const read = (key: string, fallback: string): string => {
 export default function SettingsPanel() {
   // Created after the page loads: it needs the browser (window, localStorage), which the build does not have.
   const [theme, setTheme] = useState<ReturnType<typeof browserTheme> | null>(null);
-  const [choice, setChoice] = useState<ThemeChoice>('system');
-  const [saved, setSaved] = useState<ThemeChoice>('system');
+  const [choice, setChoice] = useState<ThemeChoice>('light');
+  const [saved, setSaved] = useState<ThemeChoice | null>(null);
   const [currency, setCurrency] = useState(DEFAULT_CURRENCY);
   const [lang, setLang] = useState('en');
   const [note, setNote] = useState('');
@@ -131,7 +131,7 @@ export default function SettingsPanel() {
           Saved in this browser
         </h2>
         <p class="mt-2 text-sm text-muted" data-testid="saved-summary">
-          {saved === 'system' && currency === DEFAULT_CURRENCY && lang === 'en' ? 'Nothing is saved: everything follows the defaults.' : `Saved: theme ${saved}, currency ${currency}, language ${lang}.`} That is all we keep. The numbers you type are never saved.
+          {saved === null && currency === DEFAULT_CURRENCY && lang === 'en' ? 'Nothing is saved: everything follows the defaults (light theme).' : `Saved: theme ${saved ?? 'light (default)'}, currency ${currency}, language ${lang}.`} That is all we keep. The numbers you type are never saved.
         </p>
         <div class="mt-3 flex flex-wrap items-center gap-3">
           <button type="button" class="btn" onClick={clearAll}>

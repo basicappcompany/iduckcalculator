@@ -149,24 +149,61 @@ test('the theme toggle switches and is remembered', async ({ page }) => {
   expect(bg).toBe(first === 'dark' ? 'rgb(18, 18, 18)' : 'rgb(255, 253, 245)');
 });
 
-test('dark mode follows the system and uses #121212', async ({ browser }) => {
+test('"Match my device" follows a dark system and uses #121212', async ({ browser }) => {
   const ctx = await browser.newContext({ colorScheme: 'dark' });
   const page = await ctx.newPage();
+  await page.addInitScript(() => localStorage.setItem('duck.theme', 'system'));
   await openReady(page, '/emi-calculator/');
   expect(await page.evaluate(() => getComputedStyle(document.body).backgroundColor)).toBe('rgb(18, 18, 18)');
   await ctx.close();
 });
 
-test('the start page is always light, even with a dark system and a saved dark choice', async ({ browser }) => {
+test('the home page defaults to light even when the system is dark, and the toggle switches it and is remembered', async ({ browser }) => {
+  const LIGHT = 'rgb(255, 253, 245)';
+  const DARK = 'rgb(18, 18, 18)';
   const ctx = await browser.newContext({ colorScheme: 'dark' });
   const page = await ctx.newPage();
-  await page.addInitScript(() => localStorage.setItem('duck.theme', 'dark'));
-  await page.goto('/');
   const bg = () => page.evaluate(() => getComputedStyle(document.body).backgroundColor);
-  expect(await bg()).toBe('rgb(255, 253, 245)');
-  await expect(page.locator('#theme-toggle')).toBeHidden();
-  await openReady(page, '/emi-calculator/'); // every other page still honours the choice
+  await openReady(page, '/');
+  expect(await bg(), 'light by default, whatever the system says').toBe(LIGHT);
+  await expect(page.locator('#theme-toggle')).toBeVisible();
+  await page.locator('#theme-toggle').click();
+  expect(await bg()).toBe(DARK);
+  await page.reload();
+  expect(await bg(), 'the choice is remembered on the home page').toBe(DARK);
+  await openReady(page, '/emi-calculator/');
+  expect(await bg(), 'and on every other page').toBe(DARK);
+  await openReady(page, '/');
+  await page.locator('#theme-toggle').click();
+  expect(await bg(), 'and the toggle switches back to light').toBe(LIGHT);
+  await ctx.close();
+});
+
+test('every page is light by default, even with a dark system, and stays that way until changed', async ({ browser }) => {
+  const ctx = await browser.newContext({ colorScheme: 'dark' });
+  const page = await ctx.newPage();
+  const bg = () => page.evaluate(() => getComputedStyle(document.body).backgroundColor);
+  for (const path of ['/', '/emi-calculator/', '/guides/', '/settings/']) {
+    await page.goto(path);
+    expect(await bg(), path).toBe('rgb(255, 253, 245)');
+  }
+  await ctx.close();
+});
+
+test('"Match my device" is remembered on every page, and clearing the saved settings goes back to light', async ({ browser }) => {
+  const ctx = await browser.newContext({ colorScheme: 'dark' });
+  const page = await ctx.newPage();
+  const bg = () => page.evaluate(() => getComputedStyle(document.body).backgroundColor);
+  await openReady(page, '/settings/');
+  await page.getByRole('radio', { name: /Match my device/ }).click();
   expect(await bg()).toBe('rgb(18, 18, 18)');
+  for (const path of ['/', '/emi-calculator/']) {
+    await page.goto(path);
+    expect(await bg(), `${path} follows the device`).toBe('rgb(18, 18, 18)');
+  }
+  await openReady(page, '/settings/');
+  await page.getByRole('button', { name: /Clear saved settings/ }).click();
+  expect(await bg(), 'back to the light default').toBe('rgb(255, 253, 245)');
   await ctx.close();
 });
 

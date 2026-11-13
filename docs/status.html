@@ -254,7 +254,7 @@
    DATA. Edit here. States: done | progress | todo | waiting | later.  Owners: me | you | both | external | none.
    "me" = I can do it with no input. "you" = only you can. "both" = I do the mechanics, you sign in / approve / supply a secret.
    =================================================================================================================== */
-const VERIFIED = "14 Nov 2026 (pnpm verify, pnpm build and pnpm seo:check passed; CI green on main; live site and headers checked through the Cloudflare edge; browser tests last run in full on 13 Nov with 115 passing. Not checked: social tags, real email delivery, Google and Bing indexing, which take days)";
+const VERIFIED = "14 Nov 2026 (pnpm verify, pnpm build and pnpm seo:check passed; CI green on main; live site and headers checked through the Cloudflare edge; browser tests last run in full on 14 Nov with 117 passing. Not checked: social tags, real email delivery, Google and Bing indexing, which take days)";
 const REPO = "https://github.com/basicappcompany/iduckcalculator";
 
 /* The calculator plan, one source for both the Phases list and the Tools table. [slug, name, emoji]. Flip `ready` in the same PR that ships a calculator. */
@@ -353,7 +353,7 @@ const DECISIONS = [
   ["Promises", "No sign-up, no ads, everything runs in the browser, tips-only support. There is no ad slot component in this project.", "13 Nov"],
   ["Workflow", "Never push to `main`: branch, pull request, fix CI on the same PR, merge when green. Small commits. `pnpm verify` before each one. Docs-only changes are batched into one pull request at the end of the day.", "13 Nov"],
   ["How-to guides", "One guide per calculator topic, written answer-first with a worked example. Every number in a guide is recomputed by a test from the calculators, so a guide cannot drift from the maths. Health guides carry the not-medical-advice note.", "13 Nov"],
-  ["Start page theme", "The home page is always light, whatever the system setting or a saved choice says, and the theme button is hidden there. Every other page follows the system or the saved choice.", "13 Nov"],
+  ["Theme", "Every page, home included, defaults to light whatever the device setting is, and has the light/dark toggle. A saved choice (light, dark or Match my device) stays on every page until the visitor changes it, so the theme never changes from one page to the next.", "14 Nov"],
   ["Ask the helper", "Duck: a plain matcher, not an AI, styled like iDuckIMG (duck avatar, speech bubbles, typing pause, tool cards). It answers simple sums and \"X% of Y\" itself, greets, and says what it can do. It runs in the browser and sends nothing anywhere.", "13 Nov"],
   ["Security headers", "One strict Content-Security-Policy for every page with no `unsafe-inline` and no outside hosts: inline scripts are allowed by hash, generated at build. Inline style attributes and event handlers are not allowed (the build fails if one appears). Account-level security settings stay with the account owner.", "13 Nov"],
   ["Answer-first pages", "Each calculator page opens with a 40 to 60 word answer built from tested parts (what it is, the formula, a worked example). Finance and health pages say where the maths comes from, when it was last reviewed and that it is an estimate, not advice.", "13 Nov"],
@@ -369,7 +369,8 @@ const TIMELINE = [
   ["13 Nov 2026", "Basic and scientific calculators", "Both built, with known-answer tests, plus a countdown-timer test: 43 of 52 calculators live."],
   ["13 Nov 2026", "Mobile Lighthouse measured", "Home page and scientific calculator page score 100 on all four categories after a contrast fix on the result card (PR #4)."],
   ["13 Nov 2026", "39 how-to guides added", "A guide for every live calculator (42 in all), grouped by topic. Writing them found and fixed the age calculator showing negative days for birthdays on the 29th to 31st, and \"1 days\" style wording."],
-  ["13 Nov 2026", "Helper redesigned, start page always light", "Duck chat in the iDuckIMG style that answers sums and percentages itself; the home page no longer follows a dark system setting."],
+  ["14 Nov 2026", "Consistent theme", "Light is the default on every page and the home page has its toggle back; a saved theme choice stays the same on every page until changed."],
+  ["13 Nov 2026", "Helper redesigned, start page light", "Duck chat in the iDuckIMG style that answers sums and percentages itself; the home page no longer follows a dark system setting."],
   ["13 Nov 2026", "Security hardening", "A strict Content-Security-Policy and security headers (securityheaders.com and Mozilla Observatory D to A+), security.txt, Dependabot and a CI dependency audit."],
   ["13 Nov 2026", "Answer-first pages and trust notes", "A formula answer, question headings and a computed reference table on every calculator; last-reviewed dates, formula references and estimate-only lines on finance and health pages; a How we check page."],
   ["13 Nov 2026", "Search Console and Bing set up", "The site is verified in Google Search Console and imported into Bing Webmaster Tools; both have the sitemap."],
@@ -378,8 +379,8 @@ const TIMELINE = [
 
 const SCORECARD = [
   { k: "Calculators", v: READY.length + " built of " + TOOLS_DATA.length + " planned", d: "Measured from the registry in `src/lib/calc`. Not built: income tax, salary, HRA, gratuity, GST, TDS, PPF, Sukanya and NPS (the official rules have to be read first)." },
-  { k: "Unit tests", v: "342 passing", d: "Vitest, 8 files (`pnpm test`). They check every calculator's page fields and a known answer for each of the 43, every figure the 44 guides quote, every reference table, the answer text and the security headers." },
-  { k: "Browser tests", v: "115 passing", d: "Playwright (`pnpm test:e2e`): every page loads with no errors and no sideways scroll, live results, currency, Ctrl K, theme, Turkish, home sections, 404, helper, footer." },
+  { k: "Unit tests", v: "347 passing", d: "Vitest, 9 files (`pnpm test`). They check every calculator's page fields and a known answer for each of the 43, every figure the 44 guides quote, every reference table, the answer text and the security headers." },
+  { k: "Browser tests", v: "117 passing", d: "Playwright (`pnpm test:e2e`): every page loads with no errors and no sideways scroll, live results, currency, Ctrl K, theme, Turkish, home sections, 404, helper, footer." },
   { k: "CI", v: "Green", d: "The latest run on `main` succeeded: check, lint, test, dependency audit, build, SEO audit and e2e." },
   { k: "Security headers", v: "A+ / A+", d: "securityheaders.com and Mozilla Observatory, measured on 13 Nov 2026 (both were D before the headers went live)." },
   { k: "Pages", v: "101 built", d: "From `pnpm build`. The sitemap lists 96 URLs, each with a lastmod." },

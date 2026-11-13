@@ -13,9 +13,10 @@ export interface ThemeEnv {
 }
 
 /**
- * One place that knows how the theme works: no attribute means "follow the system", an attribute
- * is an explicit choice that is also saved. The header toggle and the Settings page both use it,
- * so they cannot disagree.
+ * One place that knows how the theme works. Every page starts light: the HTML says data-theme="light" and nothing is saved.
+ * A choice is saved in this browser and wins on every page until it is changed: "light" and "dark" set the attribute;
+ * "system" (match my device) is saved as "system" and removes it, so the device setting applies. The header toggle and the
+ * Settings page both use this, so they cannot disagree.
  */
 export function createTheme(env: ThemeEnv) {
   const choice = (): ThemeChoice => {
@@ -37,30 +38,28 @@ export function createTheme(env: ThemeEnv) {
     choice,
     isDark,
     set(next: ThemeChoice) {
-      if (next === 'system') {
-        env.root.removeAttribute('data-theme');
-        save(() => env.storage?.removeItem(THEME_STORAGE_KEY));
-      } else {
-        env.root.setAttribute('data-theme', next);
-        save(() => env.storage?.setItem(THEME_STORAGE_KEY, next));
-      }
+      if (next === 'system') env.root.removeAttribute('data-theme');
+      else env.root.setAttribute('data-theme', next);
+      save(() => env.storage?.setItem(THEME_STORAGE_KEY, next));
       env.notify();
     },
     /** Flip to the opposite of what is showing now. */
     toggle() {
       this.set(isDark() ? 'light' : 'dark');
     },
-    /** Forget everything we saved in this browser. */
+    /** Forget the saved choice: back to the default, which is light. */
     clearSaved() {
-      this.set('system');
+      env.root.setAttribute('data-theme', 'light');
+      save(() => env.storage?.removeItem(THEME_STORAGE_KEY));
+      env.notify();
     },
-    /** The saved choice, as stored (not what is currently applied). */
-    saved(): ThemeChoice {
+    /** The saved choice as stored, or null when nothing is saved (not what is currently applied). */
+    saved(): ThemeChoice | null {
       try {
         const v = env.storage?.getItem(THEME_STORAGE_KEY);
-        return v === 'light' || v === 'dark' ? v : 'system';
+        return v === 'light' || v === 'dark' || v === 'system' ? v : null;
       } catch {
-        return 'system';
+        return null;
       }
     },
   };
