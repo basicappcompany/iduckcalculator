@@ -23,6 +23,33 @@ export const GST_RULES: RulesInfo = {
   ],
 };
 
+export const GRATUITY_RULES: RulesInfo = {
+  year: 'Code on Social Security, 2020, in force from 21 November 2025',
+  asOf: TAX_RULES_READ_ON,
+  sources: [
+    { name: 'Code on Social Security, 2020: section 53 (gratuity) and section 2(88) (wages)', url: 'https://www.labour.gov.in/static/uploads/2025/07/b0620548445580767b5c0d18c95c26f7.pdf' },
+    { name: 'Labour Ministry FAQs on the Labour Codes, January 2026 (the maximum, currently 20 lakh)', url: 'https://www.labour.gov.in/static/uploads/2026/01/de4758d5bfeffc456d7de97a801891b0.pdf' },
+    { name: 'Labour Ministry additional FAQs, March 2026 (the revised definition of wages applies from 21 November 2025)', url: 'https://www.labour.gov.in/static/uploads/2026/03/a4ccf4c6d97c4f1f36a6d83f8c64213d.pdf' },
+  ],
+};
+
+/** The most gratuity payable, as notified by the Central Government (section 53(3)); the Labour Ministry's January 2026 FAQ says it is currently ₹20 lakh. */
+export const GRATUITY_CAP = 20 * LAKH;
+
+/**
+ * Gratuity under section 53 of the Code on Social Security, 2020, for a monthly-rated employee: fifteen days' wages for each completed year of
+ * service, where a part of a year longer than six months counts as a year, and fifteen days' wages is the monthly wages divided by 26 times 15
+ * (Explanation 3). "Wages" is basic pay, dearness allowance and retaining allowance, but if everything else paid (allowances and so on) is more than
+ * half of the total remuneration, the excess is added back, which makes wages at least half of the total remuneration (section 2(88)).
+ */
+export function gratuity(o: { basicAndDa: number; totalPay: number; years: number; months: number }) {
+  const wages = Math.max(o.basicAndDa, o.totalPay / 2);
+  const countedYears = o.years + (o.months > 6 ? 1 : 0);
+  const perYear = (wages / 26) * 15;
+  const uncapped = perYear * countedYears;
+  return { wages, countedYears, perYear, uncapped, amount: Math.min(uncapped, GRATUITY_CAP), capped: uncapped > GRATUITY_CAP };
+}
+
 export const INCOME_TAX_RULES: RulesInfo = {
   year: TAX_YEAR,
   asOf: TAX_RULES_READ_ON,
@@ -257,6 +284,67 @@ export const TAX: CalcDef[] = [
     ],
     related: ['percentage-calculator', 'discount-calculator', 'profit-loss-calculator'],
     rules: GST_RULES,
+  },
+  {
+    slug: 'gratuity-calculator',
+    name: 'Gratuity calculator',
+    group: 'tax',
+    emoji: '🎁',
+    summary: 'Gratuity from your wages and years of service, under the Code on Social Security.',
+    quick: 'Enter your monthly basic pay plus dearness allowance, your total monthly pay and your years of service. Wages of ₹60,000 and 10 years of service give a gratuity of ₹3,46,154.',
+    keywords: 'gratuity calculator 15 days wages years of service retirement resignation labour code social security 5 years 20 lakh',
+    title: 'Gratuity Calculator: the 15-day wages formula',
+    description: 'Free gratuity calculator. Work out gratuity from wages and years of service with the 15-day formula under the Code on Social Security, up to 20 lakh.',
+    fields: [
+      num('basic', 'Monthly basic pay plus dearness allowance', 60000, { unit: 'money', min: 0, step: 1000, hint: 'The retaining allowance, if you get one, is added too. Do not include HRA, conveyance, overtime, commission or bonus.' }),
+      num('total', 'Total monthly pay', 100000, { unit: 'money', min: 0, step: 1000, hint: 'Everything you are paid in a month, before deductions. If your basic and dearness allowance are less than half of this, half of it is used as wages.' }),
+      num('years', 'Completed years of service', 10, { min: 0, max: 60, step: 1 }),
+      num('months', 'Months more than that', 0, { min: 0, max: 11, step: 1, hint: 'More than 6 months counts as another full year.' }),
+      sel('case', 'Why is gratuity being paid?', 'regular', [['regular', 'Retirement, resignation or superannuation'], ['death', 'Death or disablement']], 'Retirement, resignation or superannuation needs 5 years of continuous service. Death and disablement do not.'),
+    ],
+    compute: (v) => {
+      const basic = n(v, 'basic');
+      const total = n(v, 'total');
+      const years = Math.floor(n(v, 'years'));
+      const months = Math.floor(n(v, 'months'));
+      if (basic < 0 || total < 0 || years < 0 || months < 0 || months > 11) return fail('Enter amounts of 0 or more, and months from 0 to 11.');
+      if (basic === 0 && total === 0) return fail('Enter your monthly pay.');
+      const g = gratuity({ basicAndDa: basic, totalPay: total, years, months });
+      const eligible = s(v, 'case') === 'death' || years >= 5;
+      const metrics: Result['metrics'] = [
+        eligible ? { label: 'Gratuity', value: g.amount, kind: 'money', big: true } : { label: 'Gratuity once you have 5 years of service', value: g.amount, kind: 'money', big: true },
+        { label: 'Wages used', value: g.wages, kind: 'money' },
+        { label: 'Fifteen days’ wages', value: g.perYear, kind: 'money' },
+        { label: 'Years counted', value: g.countedYears, kind: 'number', decimals: 0 },
+      ];
+      const notes: string[] = [];
+      if (!eligible) notes.push('Not payable yet: gratuity on retirement or resignation needs 5 years of continuous service.');
+      if (g.capped) notes.push(`The formula gives ${Math.round(g.uncapped).toLocaleString('en-IN')}, but the maximum payable is ₹20,00,000.`);
+      if (g.wages > basic) notes.push('Half of your total pay is used as wages, because your basic pay and dearness allowance are less than half of it.');
+      notes.push('For a monthly-rated employee under the Code on Social Security, 2020, in force from 21 November 2025. Fixed-term, piece-rated and seasonal workers have different rules, and the calculator does not work out tax on gratuity.');
+      return { metrics, note: notes.join(' ') };
+    },
+    formula: [
+      'Gratuity = wages ÷ 26 × 15 × years of service, up to the ₹20 lakh maximum',
+      'Years of service = completed years, plus one more if the part-year is more than 6 months',
+      'Wages = basic pay + dearness allowance (+ retaining allowance), but at least half of the total monthly pay',
+      'Retirement, resignation or superannuation needs 5 years of continuous service; death and disablement do not',
+    ],
+    example: 'Wages of ₹60,000 a month and 10 years of service: fifteen days’ wages = 60,000 ÷ 26 × 15 = ₹34,615, so gratuity = 34,615 × 10 = ₹3,46,154. If basic pay were only ₹30,000 of a ₹1,00,000 monthly pay, half of the total, ₹50,000, would be used as wages: 50,000 ÷ 26 × 15 × 10 = ₹2,88,462. For 7 years 7 months, 8 years are counted; for 7 years 6 months, 7.',
+    how: [
+      'Gratuity is a lump sum your employer pays when you leave after long service. For every completed year of service the law gives fifteen days’ wages, worked out from the wages you were last paid. For a monthly salary, fifteen days’ wages is the monthly wages divided by 26 and multiplied by 15.',
+      'Since the Code on Social Security came into force on 21 November 2025, wages for gratuity follow the Code’s definition: basic pay and dearness allowance, but never less than half of your total pay. That is why a salary with a small basic and large allowances gives a larger gratuity than it used to.',
+      'A part of a year longer than six months counts as a full year. The most that can be paid is the amount notified by the Central Government, which the Labour Ministry says is currently 20 lakh.',
+    ],
+    faqs: [
+      { q: 'How is gratuity calculated?', a: 'Wages ÷ 26 × 15 × years of service, where wages are your last monthly basic pay plus dearness allowance, or half of your total pay if that is more.' },
+      { q: 'How many years of service do I need?', a: 'Five years of continuous service for retirement, resignation or superannuation. Death and disablement do not need five years.' },
+      { q: 'Do 7 years and 8 months count as 8 years?', a: 'Yes. A part of a year longer than six months counts as a full year, so 7 years and 7 months or more counts as 8.' },
+      { q: 'What is the maximum gratuity?', a: 'The amount notified by the Central Government, which the Labour Ministry says is currently ₹20 lakh.' },
+      { q: 'Is the tax on gratuity included?', a: 'No. The calculator shows the gratuity, not the tax on it.' },
+    ],
+    related: ['percentage-calculator', 'retirement-calculator', 'income-tax-calculator'],
+    rules: GRATUITY_RULES,
   },
 ];
 

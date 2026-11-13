@@ -93,4 +93,44 @@ export const GUIDES_TAX: readonly Guide[] = [
     published: '2026-11-14',
     updated: '2026-11-14',
   },
+  {
+    slug: 'how-to-calculate-gratuity',
+    title: 'How to calculate gratuity with the 15-day formula',
+    description: 'Calculate gratuity from your wages and years of service with the 15 days formula under the Code on Social Security, with worked examples and the cap.',
+    intro: 'Gratuity = wages ÷ 26 × 15 × years of service, up to ₹20 lakh. With wages of ₹60,000 a month and 10 years of service it is ₹3,46,154. You need 5 years of continuous service for it on retirement or resignation, but not on death or disablement.',
+    steps: [
+      'Find your wages: monthly basic pay plus dearness allowance. Here: ₹60,000.',
+      'Compare with half of your total monthly pay. If half the total is higher, use that instead. Here the total is ₹1,00,000, half is ₹50,000, so ₹60,000 stands.',
+      'Work out fifteen days’ wages: 60,000 ÷ 26 × 15 = ₹34,615.',
+      'Count your years of service. A part of a year longer than 6 months counts as a full year.',
+      'Multiply: 34,615 × 10 years = ₹3,46,154. Or enter the numbers in the gratuity calculator.',
+    ],
+    sections: [
+      {
+        h: 'What counts as wages',
+        p: [
+          'Under the Code on Social Security, 2020, which has been in force since 21 November 2025, wages mean basic pay, dearness allowance and any retaining allowance. House rent allowance, conveyance allowance, overtime, commission and bonus are left out. But there is a floor: if those left-out payments are more than half of your total pay, the excess is added back, so wages are never less than half of your total remuneration.',
+          'Suppose your basic pay is ₹30,000 of a ₹1,00,000 monthly pay. Half of the total, ₹50,000, is used as wages, so fifteen days’ wages are 50,000 ÷ 26 × 15 = ₹28,846 and 10 years gives ₹2,88,462.',
+        ],
+      },
+      {
+        h: 'Counting the years',
+        p: ['Only completed years count, plus one more if the part-year is longer than six months. With wages of ₹60,000, 7 years and 7 months counts as 8 years and gives ₹2,76,923, while 7 years and 6 months counts as 7 years and gives ₹2,42,308. For a monthly salary the divisor is always 26, however many days the month has.'],
+      },
+      {
+        h: 'Who gets it, and the maximum',
+        p: ['For retirement, resignation or superannuation you need five years of continuous service. On death or disablement there is no minimum. The most that can be paid is the amount notified by the Central Government, which the Labour Ministry says is currently ₹20 lakh. For example, wages of ₹5,00,000 a month and 30 years of service give ₹86,53,846 on the formula, but only ₹20,00,000 is payable. Fixed-term, piece-rated and seasonal workers have their own rules, which the calculator does not cover.'],
+      },
+    ],
+    faqs: [
+      { q: 'How is gratuity calculated?', a: 'Wages ÷ 26 × 15 × years of service, with wages meaning basic pay plus dearness allowance, or half of total pay if that is more.' },
+      { q: 'Why divide by 26?', a: 'For a monthly salary the law takes a month as 26 working days, so fifteen days’ wages is the monthly wages ÷ 26 × 15.' },
+      { q: 'Do I get gratuity if I leave before five years?', a: 'Not on resignation or retirement. The five-year minimum does not apply on death or disablement.' },
+      { q: 'Is there a maximum?', a: 'Yes. The Central Government notifies it, and the Labour Ministry says it is currently ₹20 lakh.' },
+    ],
+    calcs: ['gratuity-calculator', 'retirement-calculator', 'income-tax-calculator'],
+    related: ['how-to-plan-your-retirement-corpus', 'how-to-choose-old-or-new-tax-regime'],
+    published: '2026-11-14',
+    updated: '2026-11-14',
+  },
 ];

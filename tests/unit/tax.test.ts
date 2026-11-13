@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { calcBySlug, defaultValues } from '../../src/lib/calc';
-import { INCOME_TAX_RULES, NEW_REGIME_SLABS, OLD_REGIME_SLABS, incomeTax, slabTax } from '../../src/lib/calc/defs/tax';
+import { GRATUITY_CAP, GRATUITY_RULES, INCOME_TAX_RULES, gratuity, NEW_REGIME_SLABS, OLD_REGIME_SLABS, incomeTax, slabTax } from '../../src/lib/calc/defs/tax';
 import type { Values } from '../../src/lib/calc/types';
 
 /**
@@ -201,6 +201,63 @@ describe('GST calculator', () => {
       'https://www.pib.gov.in/PressReleasePage.aspx?PRID=2163555&reg=48&lang=2',
       'https://static.pib.gov.in/WriteReadData/specificdocs/documents/2026/oct/doc_10142_20261009_21430401.pdf',
       'https://cbic-gst.gov.in/aces/Documents/faq-on-gst.pdf',
+    ]);
+  });
+});
+
+describe('gratuity calculator', () => {
+  const def = calcBySlug('gratuity-calculator')!;
+  const run = (over: Values = {}) => def.compute({ ...defaultValues(def), ...over });
+  const val = (label: string, over: Values = {}) => run(over).metrics.find((m) => m.label.startsWith(label))!.value as number;
+
+  it('wages 60,000 and 10 years: fifteen days is 60,000 / 26 x 15 = 34,615.38, so gratuity is 3,46,153.85', () => {
+    expect(val('Fifteen days')).toBeCloseTo(34_615.3846, 3);
+    expect(val('Gratuity')).toBeCloseTo(346_153.846, 2);
+    expect(Math.round(val('Gratuity'))).toBe(346_154);
+  });
+  it('the half-of-total-pay floor: basic 30,000 of 1,00,000 uses wages of 50,000, giving 2,88,461.54', () => {
+    const over = { basic: 30_000, total: 100_000 };
+    expect(val('Wages used', over)).toBe(50_000);
+    expect(val('Fifteen days', over)).toBeCloseTo(28_846.1538, 3);
+    expect(Math.round(val('Gratuity', over))).toBe(288_462);
+  });
+  it('basic above half of the total is used as it is', () => {
+    expect(gratuity({ basicAndDa: 60_000, totalPay: 100_000, years: 1, months: 0 }).wages).toBe(60_000);
+    expect(gratuity({ basicAndDa: 50_000, totalPay: 100_000, years: 1, months: 0 }).wages).toBe(50_000);
+  });
+  it('a part-year counts only when it is longer than six months', () => {
+    expect(gratuity({ basicAndDa: 60_000, totalPay: 60_000, years: 7, months: 6 }).countedYears).toBe(7);
+    expect(gratuity({ basicAndDa: 60_000, totalPay: 60_000, years: 7, months: 7 }).countedYears).toBe(8);
+    expect(Math.round(val('Gratuity', { years: 7, months: 7 }))).toBe(276_923); // 8 x 34,615.38
+    expect(Math.round(val('Gratuity', { years: 7, months: 6 }))).toBe(242_308); // 7 x 34,615.38
+  });
+  it('is capped at 20 lakh: wages 5,00,000 and 30 years give 86,53,846 on the formula but 20,00,000 is paid', () => {
+    const g = gratuity({ basicAndDa: 500_000, totalPay: 500_000, years: 30, months: 0 });
+    expect(Math.round(g.uncapped)).toBe(8_653_846);
+    expect(g.capped).toBe(true);
+    expect(g.amount).toBe(GRATUITY_CAP);
+    expect(GRATUITY_CAP).toBe(2_000_000);
+    expect(val('Gratuity', { basic: 500_000, total: 500_000, years: 30 })).toBe(2_000_000);
+  });
+  it('retirement or resignation needs five years; death or disablement does not', () => {
+    const early = run({ years: 4, case: 'regular' });
+    expect(early.metrics[0]!.label).toMatch(/once you have 5 years/);
+    expect(early.note).toMatch(/Not payable yet/);
+    expect(run({ years: 5, case: 'regular' }).metrics[0]!.label).toBe('Gratuity');
+    expect(run({ years: 2, case: 'death' }).metrics[0]!.label).toBe('Gratuity');
+  });
+  it('refuses invalid input', () => {
+    expect(run({ basic: 0, total: 0 }).error).toBeTruthy();
+    expect(run({ months: 12 }).error).toBeTruthy();
+    expect(run({ years: -1 }).error).toBeTruthy();
+  });
+  it('cites the three official sources and the date they were read', () => {
+    expect(def.rules).toBe(GRATUITY_RULES);
+    expect(GRATUITY_RULES.asOf).toBe('2026-11-14');
+    expect(GRATUITY_RULES.sources.map((x) => x.url)).toEqual([
+      'https://www.labour.gov.in/static/uploads/2025/07/b0620548445580767b5c0d18c95c26f7.pdf',
+      'https://www.labour.gov.in/static/uploads/2026/01/de4758d5bfeffc456d7de97a801891b0.pdf',
+      'https://www.labour.gov.in/static/uploads/2026/03/a4ccf4c6d97c4f1f36a6d83f8c64213d.pdf',
     ]);
   });
 });

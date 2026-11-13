@@ -33,6 +33,7 @@ export const ANSWER_META: Record<string, AnswerMeta> = {
   'retirement-calculator': { topic: 'a retirement corpus', what: 'A retirement corpus is the sum needed at retirement to pay your expenses, raised by inflation, for the years you expect to live.' },
   'income-tax-calculator': { topic: 'income tax', what: 'Income tax is charged in slabs, and you can choose the default new regime or the old one.' },
   'gst-calculator': { topic: 'GST', what: 'GST is a percentage added to a price; the main rates are 5% and 18%, with a special 40% rate for a few goods.' },
+  'gratuity-calculator': { topic: 'gratuity', what: 'Gratuity is a lump sum your employer pays when you leave after long service: fifteen days’ wages for each completed year.' },
   'percentage-calculator': { topic: 'a percentage', what: 'A percentage is a number out of 100, and this tool answers the five questions people ask most, from percent of to increase and decrease.' },
   'percentage-change-calculator': { topic: 'percentage change', what: 'Percentage change measures how much a value rose or fell compared with where it started, and a negative result means a fall.' },
   'discount-calculator': { topic: 'a discount', what: 'A discount takes a percentage off a price, and a second discount applies to the price already reduced.' },

@@ -48,6 +48,7 @@ const rd = L('how-to-calculate-rd-maturity', 'rd-calculator');
 const comp = L('how-compound-interest-works', 'compound-interest-calculator');
 const taxg = L('how-to-choose-old-or-new-tax-regime', 'income-tax-calculator');
 const gstg = L('how-to-add-and-remove-gst', 'gst-calculator');
+const gratg = L('how-to-calculate-gratuity', 'gratuity-calculator');
 const simp = L('how-to-calculate-simple-interest', 'simple-interest-calculator');
 const simpComp = L('how-to-calculate-simple-interest', 'compound-interest-calculator');
 const basicG = L('how-to-use-the-basic-calculator', 'basic-calculator');
@@ -139,6 +140,10 @@ const CLAIMS: Claim[] = [
   gstg({ amount: 1000, rate: 5 }, 'Total with GST', 'inr'), gstg({ amount: 10000, rate: 40 }, 'Total with GST', 'inr'),
   gstg({ mode: 'remove', amount: 14000, rate: 40 }, 'Price without GST', 'inr'),
   gstg({ mode: 'remove', amount: 2100, rate: 5 }, 'Price without GST', 'inr'), gstg({ mode: 'remove', amount: 2100, rate: 5 }, 'GST amount', 'inr'),
+  gratg({}, 'Gratuity', 'inr'), gratg({}, 'Fifteen days', 'inr'),
+  gratg({ basic: 30000, total: 100000 }, 'Gratuity', 'inr'), gratg({ basic: 30000, total: 100000 }, 'Fifteen days', 'inr'),
+  gratg({ years: 7, months: 7 }, 'Gratuity', 'inr'), gratg({ years: 7, months: 6 }, 'Gratuity', 'inr'),
+  gratg({ basic: 500000, total: 500000, years: 30 }, 'Gratuity', 'inr'),
   // ---- everyday maths
   pchg({}, 'Percentage increase', 'num'), pchg({ from: 100, to: 80 }, 'Percentage decrease', 'num'), pchg({ from: 50, to: 75 }, 'Percentage increase', 'num'), pchg({ from: 200, to: 150 }, 'Percentage decrease', 'num'),
   disc({}, 'You pay', 'inr'), disc({}, 'You save', 'inr'), disc({}, 'Effective discount', 'num'),
@@ -254,6 +259,12 @@ describe('guides quote the maths the calculators give', () => {
     expect(text).toContain('15,000');
     expect(text).toContain('15% of 2,400 is 360');
     expect(text).toContain('17 mod 5 is 2');
+  });
+
+  it('quotes the gratuity figures worked by hand, including the uncapped amount', () => {
+    const t = JSON.stringify(guideBySlug('how-to-calculate-gratuity'));
+    expect(Math.round((500_000 / 26) * 15 * 30)).toBe(8_653_846);
+    for (const s of ['₹3,46,154', '₹34,615', '₹2,88,462', '₹28,846', '₹2,76,923', '₹2,42,308', '₹86,53,846', '₹20,00,000', '21 November 2025']) expect(t, s).toContain(s);
   });
 
   it('quotes the GST figures worked by hand, including the common mistake', () => {
