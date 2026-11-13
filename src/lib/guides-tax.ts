@@ -173,4 +173,44 @@ export const GUIDES_TAX: readonly Guide[] = [
     published: '2026-11-14',
     updated: '2026-11-14',
   },
+  {
+    slug: 'how-to-calculate-ppf-maturity',
+    title: 'How to calculate PPF maturity, with worked examples',
+    description: 'Work out what a Public Provident Fund account grows to, why depositing before the 5th matters, and the limits and rate, with worked examples.',
+    intro: 'Each year the balance becomes (balance + deposit) × (1 + rate) when you deposit on or before 5 April. At 7.1%, ₹1,50,000 a year for 15 years grows to ₹40,68,209, of which ₹22,50,000 is what you put in and ₹18,18,209 is interest.',
+    steps: [
+      'Choose the yearly deposit, between ₹500 and ₹1,50,000, and the number of years. Here: ₹1,50,000 and 15.',
+      'Take the interest rate. The National Savings Institute shows 7.1% from 1 April 2020, and the Government reviews it every quarter.',
+      'After year 1: (0 + 1,50,000) × 1.071 = ₹1,60,650. For each later year add the deposit and multiply by 1.071.',
+      'After 15 years the balance is ₹40,68,209. Subtract the ₹22,50,000 you invested to get the interest, ₹18,18,209.',
+      'Or enter the deposit, the years and the rate in the PPF calculator, which also shows each year.',
+    ],
+    sections: [
+      {
+        h: 'Why the timing of deposits matters',
+        p: [
+          'The Scheme says interest is earned on the lowest balance in the account between the close of the 5th day and the end of the month, and is credited at the end of each year. A deposit made on or before 5 April therefore earns for all twelve months of the year.',
+          'Spreading the same ₹1,50,000 over twelve monthly deposits of ₹12,500, each on or before the 5th, gives ₹39,44,599 after 15 years instead of ₹40,68,209. That is ₹1,23,610 less, only because the money went in later.',
+        ],
+      },
+      {
+        h: 'The effect of time and amount',
+        p: ['At 7.1% with one deposit a year, ₹50,000 a year grows to ₹13,56,070 after 15 years. ₹1,50,000 a year grows to ₹40,68,209 after 15 years, ₹66,58,288 after 20 years and ₹1,03,08,015 after 25 years. The last years add the most, because interest is earned on interest.'],
+      },
+      {
+        h: 'Limits, term and the rate',
+        p: ['An account takes at least ₹500 and at most ₹1,50,000 in a financial year. It matures after fifteen complete financial years from the end of the year in which it was opened, and can then be extended in blocks of five years with further deposits. The rate is set by the Government and may change each quarter, so treat a long projection as an illustration. The National Savings Institute states that the interest is free from income tax.'],
+      },
+    ],
+    faqs: [
+      { q: 'How is PPF interest calculated?', a: 'On the lowest balance between the close of the 5th day and the end of each month, and credited at the end of the year.' },
+      { q: 'When should I deposit?', a: 'On or before the 5th of the month, or on or before 5 April for a yearly deposit, so the money earns for the whole period.' },
+      { q: 'What is the maximum I can invest?', a: '₹1,50,000 in a financial year. The minimum is ₹500.' },
+      { q: 'What is the PPF rate?', a: 'The National Savings Institute shows 7.1% from 1 April 2020. It is reviewed every quarter.' },
+    ],
+    calcs: ['ppf-calculator', 'sip-calculator', 'compound-interest-calculator'],
+    related: ['how-to-calculate-sip-returns', 'how-compound-interest-works'],
+    published: '2026-11-14',
+    updated: '2026-11-14',
+  },
 ];

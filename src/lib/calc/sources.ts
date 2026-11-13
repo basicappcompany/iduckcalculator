@@ -1,4 +1,5 @@
 import type { CalcDef } from './types';
+import { PPF_RULES } from './defs/schemes';
 import { GRATUITY_RULES, GST_RULES, HRA_RULES, INCOME_TAX_RULES } from './defs/tax';
 
 /**
@@ -52,6 +53,7 @@ export const TRUST: Record<string, Trust> = {
   'gst-calculator': { kind: 'finance', basis: 'Plain percentage arithmetic. The rates (5%, 18% and a special 40%, from 22 September 2025) were read from the official sources below on 14 November 2026. The rate for your item is on the invoice or in the official schedule.', sources: GST_RULES.sources },
   'gratuity-calculator': { kind: 'finance', basis: 'Section 53 of the Code on Social Security, 2020, in force from 21 November 2025: fifteen days’ wages for each completed year, with wages as the Code defines them and the maximum as notified (currently ₹20 lakh). Read from the official sources below on 14 November 2026.', sources: GRATUITY_RULES.sources },
   'hra-calculator': { kind: 'finance', basis: 'Rule 279 of the Income-tax Rules, 2026: the least of the HRA received, the rent minus 10% of salary, and 50% or 40% of salary. Read from the official sources below on 14 November 2026.', sources: HRA_RULES.sources },
+  'ppf-calculator': { kind: 'finance', basis: 'The PPF Scheme, 2019: interest on the lowest balance between the 5th and month-end, credited each year, at the rate the National Savings Institute shows (7.1% from 1 April 2020). Read from the official sources below on 14 November 2026. The Government can change the rate every quarter.', sources: PPF_RULES.sources },
   'bmi-calculator': { kind: 'health', basis: 'Weight in kg divided by height in metres squared, with the WHO categories.', sources: [{ name: 'WHO: obesity and overweight', url: 'https://www.who.int/news-room/fact-sheets/detail/obesity-and-overweight' }] },
   'bmr-calculator': { kind: 'health', basis: 'The Mifflin-St Jeor equation.', sources: [MIFFLIN, BMR_REF] },
   'tdee-calculator': { kind: 'health', basis: 'The Mifflin-St Jeor BMR times a standard activity factor. The factors are conventions, not exact measurements.', sources: [MIFFLIN, BMR_REF] },

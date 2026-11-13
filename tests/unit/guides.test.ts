@@ -50,6 +50,7 @@ const taxg = L('how-to-choose-old-or-new-tax-regime', 'income-tax-calculator');
 const gstg = L('how-to-add-and-remove-gst', 'gst-calculator');
 const gratg = L('how-to-calculate-gratuity', 'gratuity-calculator');
 const hrag = L('how-to-calculate-hra-exemption', 'hra-calculator');
+const ppfg = L('how-to-calculate-ppf-maturity', 'ppf-calculator');
 const simp = L('how-to-calculate-simple-interest', 'simple-interest-calculator');
 const simpComp = L('how-to-calculate-simple-interest', 'compound-interest-calculator');
 const basicG = L('how-to-use-the-basic-calculator', 'basic-calculator');
@@ -149,6 +150,9 @@ const CLAIMS: Claim[] = [
   hrag({ hra: 15000 }, 'HRA exempt', 'inr'),
   hrag({ basic: 20000, hra: 12000, rent: 15000 }, 'HRA exempt', 'inr'), hrag({ basic: 20000, hra: 12000, rent: 15000 }, 'HRA that is taxable', 'inr'),
   hrag({ basic: 20000, hra: 12000, rent: 15000, city: 'other' }, 'HRA exempt', 'inr'),
+  ppfg({}, 'Maturity value', 'inr'), ppfg({}, 'Amount invested', 'inr'), ppfg({}, 'Interest earned', 'inr'),
+  ppfg({ pattern: 'monthly' }, 'Maturity value', 'inr'), ppfg({ yearly: 50000 }, 'Maturity value', 'inr'),
+  ppfg({ years: 20 }, 'Maturity value', 'inr'), ppfg({ years: 25 }, 'Maturity value', 'inr'),
   // ---- everyday maths
   pchg({}, 'Percentage increase', 'num'), pchg({ from: 100, to: 80 }, 'Percentage decrease', 'num'), pchg({ from: 50, to: 75 }, 'Percentage increase', 'num'), pchg({ from: 200, to: 150 }, 'Percentage decrease', 'num'),
   disc({}, 'You pay', 'inr'), disc({}, 'You save', 'inr'), disc({}, 'Effective discount', 'num'),
@@ -264,6 +268,11 @@ describe('guides quote the maths the calculators give', () => {
     expect(text).toContain('15,000');
     expect(text).toContain('15% of 2,400 is 360');
     expect(text).toContain('17 mod 5 is 2');
+  });
+
+  it('quotes the PPF figures worked by hand', () => {
+    const t = JSON.stringify(guideBySlug('how-to-calculate-ppf-maturity'));
+    for (const s of ['₹1,60,650', '₹1,23,610', '₹12,500', '₹22,50,000', '₹500', '₹1,50,000', '7.1%']) expect(t, s).toContain(s);
   });
 
   it('quotes the HRA figures worked by hand', () => {
