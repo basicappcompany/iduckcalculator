@@ -294,6 +294,10 @@ body {
     text-transform: uppercase;
     color: var(--d-muted);
   }
+  /* The muted grey fails contrast on the yellow result card (about 3.9 to 1); use the ink colour there. */
+  .bg-duck .eyebrow {
+    color: var(--d-duckInk);
+  }
 
   /* ---- upload area ---- */
   .dropzone {
