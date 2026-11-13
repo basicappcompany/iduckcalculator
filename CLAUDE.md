@@ -1,6 +1,6 @@
 # iDuckCalculator
 
-Free calculators that run in the browser. https://iduckcalculator.com. Third site in the iDuck family by Basic App Company (iduckpdf.com, iduckimg.com). Repo `basicappcompany/iduckcalculator` (private).
+Free calculators that run in the browser. https://iduckcalculator.com. Part of the iDuck family by Basic App Company (iduckpdf.com, iduckimg.com, iduckconvert.com). Repo `basicappcompany/iduckcalculator` (private).
 
 ## Stack and commands
 Astro 7.4.10 (static output), Preact 11.2.0 islands, Tailwind 4.3.5, TypeScript 6.0.3, Vitest 5.1.0, Playwright 1.65.0, pnpm 12.14.0, Node 22.23.4 (`.node-version`). All versions are exact pins in `package.json`.

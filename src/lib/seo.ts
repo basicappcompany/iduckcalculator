@@ -17,7 +17,7 @@ export function organizationLd(): Json {
     name: 'Basic App Company',
     url: SITE_URL,
     logo: absolute('/favicon.svg'),
-    sameAs: ['https://iduckpdf.com/', 'https://iduckimg.com/'],
+    sameAs: ['https://iduckpdf.com/', 'https://iduckimg.com/', 'https://iduckconvert.com/'],
   };
 }
 

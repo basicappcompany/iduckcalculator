@@ -243,6 +243,46 @@ export const GUIDES_SAVINGS: readonly Guide[] = [
     updated: '2026-11-13',
   },
   {
+    slug: 'how-to-calculate-simple-interest',
+    title: 'How to calculate simple interest, with examples',
+    description: 'Calculate simple interest with P × R × T ÷ 100, work out the total, the rate or the time, and see how it differs from compound interest.',
+    intro: 'Simple interest = P × R × T ÷ 100, with the principal P, the yearly rate R in per cent and the time T in years. ₹1,00,000 at 8% for 3 years earns ₹24,000, so the total is ₹1,24,000, and the interest is ₹8,000 every year.',
+    steps: [
+      'Write down the principal, the yearly rate and the time in years. Here: ₹1,00,000, 8% and 3 years.',
+      'Multiply them: 1,00,000 × 8 × 3 = 24,00,000.',
+      'Divide by 100: 24,00,000 ÷ 100 = ₹24,000. That is the simple interest.',
+      'Add it to the principal for the total amount: 1,00,000 + 24,000 = ₹1,24,000.',
+      'Or enter the three numbers in the simple interest calculator, which also shows the interest for each year.',
+    ],
+    sections: [
+      {
+        h: 'Finding the rate, the time or the principal',
+        p: [
+          'The formula can be turned round. The rate is R = interest × 100 ÷ (P × T): ₹24,000 earned on ₹1,00,000 over 3 years gives 24,000 × 100 ÷ (1,00,000 × 3) = 8%. The time is T = interest × 100 ÷ (P × R), which is 24,000 × 100 ÷ (1,00,000 × 8) = 3 years.',
+          'For a part of a year, turn the months into years first. 9 months is 0.75 years, so ₹1,00,000 at 8% for 9 months earns 1,00,000 × 8 × 0.75 ÷ 100 = ₹6,000.',
+        ],
+      },
+      {
+        h: 'Simple interest compared with compound interest',
+        p: ['Simple interest is charged on the original principal only, so it adds the same amount every year. Compound interest is charged on the principal plus the interest already added. At 8% for 3 years on ₹1,00,000, simple interest gives ₹24,000 while yearly compounding gives ₹25,971. The gap grows with time: over 20 years at 10%, simple interest is ₹2,00,000 while compounding earns ₹5,72,750.'],
+      },
+      {
+        h: 'Where simple interest is used',
+        p: ['Some short-term loans, personal lending between people, a few bonds and many school-level exercises use simple interest. Bank deposits and most loans compound, and an EMI loan is a reducing-balance loan, not a simple-interest one. Check the terms to see which kind applies before relying on the answer.'],
+      },
+    ],
+    faqs: [
+      { q: 'What is the simple interest formula?', a: 'Simple interest = principal × rate × time ÷ 100, with the rate in per cent a year and the time in years.' },
+      { q: 'How do I calculate simple interest for months?', a: 'Divide the months by 12 to get years, then use the formula. 9 months is 0.75 years.' },
+      { q: 'How do I find the rate from the interest?', a: 'Rate = interest × 100 ÷ (principal × time).' },
+      { q: 'Is simple interest the same as an EMI loan?', a: 'No. An EMI loan charges interest on the balance that is left each month, so the interest falls as you repay.' },
+    ],
+    calcs: ['simple-interest-calculator', 'compound-interest-calculator', 'fd-calculator'],
+    related: ['how-compound-interest-works', 'how-to-calculate-fd-maturity'],
+    published: '2026-11-13',
+    updated: '2026-11-13',
+  },
+  {
     slug: 'how-compound-interest-works',
     title: 'How compound interest works, simple vs compound',
     description: 'Understand simple and compound interest with worked numbers: how ₹1,00,000 grows at 10%, and how often interest is added changes the final amount.',

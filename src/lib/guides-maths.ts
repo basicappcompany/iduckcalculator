@@ -243,9 +243,49 @@ export const GUIDES_MATHS: readonly Guide[] = [
     updated: '2026-11-13',
   },
   {
+    slug: 'how-to-use-the-basic-calculator',
+    title: 'How to use the basic calculator: sums, remainders, percent',
+    description: 'Add, subtract, multiply, divide, raise to a power, find a remainder or a percent of a number with the basic calculator, with worked examples.',
+    intro: 'Enter two numbers, choose the operation and read the answer. For example 1,250 × 12 = 15,000, 17 mod 5 = 2 because 17 = 3 × 5 + 2, and 15% of 2,400 is 360. It will not divide by zero, and it says so.',
+    steps: [
+      'Type the first number. Decimals and negative numbers work.',
+      'Choose the operation: add, subtract, multiply, divide, power, remainder (mod) or percent of.',
+      'Type the second number. The answer appears as you type.',
+      'Read the answer and the working shown above it, such as 1250 × 12.',
+      'Change either number or the operation to try another sum. Nothing you type leaves your device.',
+    ],
+    sections: [
+      {
+        h: 'What each operation does',
+        p: [
+          'Add, subtract, multiply and divide work as usual: 125 + 75 = 200, 10 − 4 = 6, 1,250 × 12 = 15,000 and 1 ÷ 3 = 0.333333333333. Power raises the first number to the second: 2 to the power 10 is 1,024.',
+          'Remainder (mod) is what is left after dividing as many whole times as possible: 17 mod 5 = 2. Percent of finds a share of a number: 15% of 2,400 is 15 ÷ 100 × 2,400 = 360.',
+        ],
+      },
+      {
+        h: 'Rounding and decimals',
+        p: ['Computers store most decimals as close approximations, which is why a plain sum such as 0.1 + 0.2 can show 0.30000000000000004 elsewhere. This calculator rounds to 12 significant digits, so 0.1 + 0.2 shows 0.3, and a repeating answer such as 1 ÷ 3 is cut after 12 digits. Very large or very small answers are shown in scientific form, such as 1.2676506e+30.'],
+      },
+      {
+        h: 'When to use the scientific calculator instead',
+        p: ['The basic calculator does one operation on two numbers. For a longer sum with brackets, such as (2 + 3) × 4 + sqrt(16), or for roots, logs and trigonometry, use the scientific calculator, which reads a whole expression and follows the usual order of operations.'],
+      },
+    ],
+    faqs: [
+      { q: 'What does mod mean?', a: 'It is the remainder after division. 17 mod 5 is 2, because 5 goes into 17 three times with 2 left over.' },
+      { q: 'How do I find a percentage of a number?', a: 'Choose "percent of", enter the percentage first and the number second. 15% of 2,400 is 360.' },
+      { q: 'Why does it refuse to divide by zero?', a: 'Dividing by zero has no answer, so the calculator tells you instead of showing a wrong result.' },
+      { q: 'Can I use negative numbers?', a: 'Yes. Type a minus sign before the number, for example -3.5.' },
+    ],
+    calcs: ['basic-calculator', 'scientific-calculator', 'percentage-calculator'],
+    related: ['how-to-use-the-scientific-calculator', 'how-to-calculate-percentage'],
+    published: '2026-11-13',
+    updated: '2026-11-13',
+  },
+  {
     slug: 'how-to-use-the-scientific-calculator',
     title: 'How to use the scientific and basic calculators',
-    description: 'Type sums with brackets, powers, roots, logs, factorials and trigonometry into the scientific calculator, and use the basic calculator for two-number sums.',
+    description: 'Type sums with brackets, powers, roots, logs, factorials and trigonometry into the scientific calculator, and use the basic one for two-number sums.',
     intro: 'In the scientific calculator type the whole expression and read the answer: (2 + 3) × 4 + sqrt(16) gives 24. For a quick sum of two numbers use the basic calculator, for example 1,250 × 12 = 15,000.',
     steps: [
       'Open the scientific calculator and type an expression, such as (2 + 3) * 4 + sqrt(16).',

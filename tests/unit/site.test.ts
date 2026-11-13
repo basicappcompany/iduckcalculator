@@ -17,9 +17,9 @@ describe('guides', () => {
   it('meet the length and link rules', () => {
     expect(GUIDES.length).toBeGreaterThanOrEqual(3);
     for (const g of GUIDES) {
-      expect(g.title.length, g.slug).toBeLessThanOrEqual(60);
+      expect(g.title.length, g.slug).toBeLessThanOrEqual(59);
       expect(g.description.length, g.slug).toBeGreaterThanOrEqual(70);
-      expect(g.description.length, g.slug).toBeLessThanOrEqual(160);
+      expect(g.description.length, g.slug).toBeLessThanOrEqual(154);
       expect(words(g.intro), `${g.slug} intro`).toBeGreaterThanOrEqual(25);
       expect(words(g.intro), `${g.slug} intro`).toBeLessThanOrEqual(60);
       expect(wordCount(g), `${g.slug} words`).toBeGreaterThanOrEqual(300);

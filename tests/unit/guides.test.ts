@@ -45,6 +45,9 @@ const swp = L('how-to-plan-regular-withdrawals-swp', 'swp-calculator');
 const fd = L('how-to-calculate-fd-maturity', 'fd-calculator');
 const rd = L('how-to-calculate-rd-maturity', 'rd-calculator');
 const comp = L('how-compound-interest-works', 'compound-interest-calculator');
+const simp = L('how-to-calculate-simple-interest', 'simple-interest-calculator');
+const simpComp = L('how-to-calculate-simple-interest', 'compound-interest-calculator');
+const basicG = L('how-to-use-the-basic-calculator', 'basic-calculator');
 const cagr = L('how-to-calculate-cagr', 'cagr-calculator');
 const infl = L('how-inflation-reduces-your-money', 'inflation-calculator');
 const ret = L('how-to-plan-your-retirement-corpus', 'retirement-calculator');
@@ -120,6 +123,9 @@ const CLAIMS: Claim[] = [
   ret({ age: 25 }, 'Corpus needed at retirement', 'inr'), ret({ age: 25 }, 'Monthly SIP to reach it', 'inr'),
   ret({ expense: 30000 }, 'Corpus needed at retirement', 'inr'), ret({ expense: 30000 }, 'Monthly SIP to reach it', 'inr'),
   ret({ saved: 1000000 }, 'Monthly SIP to reach it', 'inr'),
+  simp({}, 'Simple interest', 'inr'), simp({}, 'Total amount', 'inr'), simp({}, 'Interest every year', 'inr'), simp({ years: 0.75 }, 'Simple interest', 'inr'),
+  simpComp({ rate: 8, years: 3 }, 'Compound interest earned', 'inr'),
+  simpComp({ years: 20 }, 'Simple interest', 'inr'), simpComp({ years: 20 }, 'Compound interest earned', 'inr'),
   // ---- everyday maths
   pchg({}, 'Percentage increase', 'num'), pchg({ from: 100, to: 80 }, 'Percentage decrease', 'num'), pchg({ from: 50, to: 75 }, 'Percentage increase', 'num'), pchg({ from: 200, to: 150 }, 'Percentage decrease', 'num'),
   disc({}, 'You pay', 'inr'), disc({}, 'You save', 'inr'), disc({}, 'Effective discount', 'num'),
@@ -132,6 +138,9 @@ const CLAIMS: Claim[] = [
   ratio({}, 'Simplest ratio', 'raw'), ratio({}, 'D,', 'raw'), ratio({ a: 3, b: 4, c: 15 }, 'D,', 'raw'), ratio({ a: 2.5, b: 10, c: 4 }, 'Simplest ratio', 'raw'), ratio({ a: 2.5, b: 10, c: 4 }, 'D,', 'raw'),
   frac({}, 'Answer', 'raw'), frac({ n1: 3, d1: 4, op: 'sub', n2: 1, d2: 6 }, 'Answer', 'raw'), frac({ n1: 2, d1: 3, op: 'mul', n2: 3, d2: 5 }, 'Answer', 'raw'),
   frac({ n1: 1, d1: 2, op: 'div', n2: 1, d2: 4 }, 'Answer', 'raw'), frac({ n1: 7, d1: 8, op: 'add', n2: 3, d2: 4 }, 'Answer', 'raw'), frac({ n1: 7, d1: 8, op: 'add', n2: 3, d2: 4 }, 'Mixed number', 'raw'),
+  basicG({}, '', 'raw'), basicG({ a: 125, b: 75, op: 'add' }, '', 'raw'), basicG({ a: 10, b: 4, op: 'sub' }, '', 'raw'), basicG({ a: 1, b: 3, op: 'div' }, '', 'raw'),
+  basicG({ a: 2, b: 10, op: 'pow' }, '', 'raw'), basicG({ a: 17, b: 5, op: 'mod' }, '', 'raw'), basicG({ a: 15, b: 2400, op: 'pct' }, '', 'raw'),
+  basicG({ a: 0.1, b: 0.2, op: 'add' }, '', 'raw'), basicG({ a: 2, b: 100, op: 'pow' }, '', 'raw'),
   // ---- dates
   age({ dob: '1995-06-15', asof: '2026-01-01' }, 'Your age', 'ymd'), age({ dob: '1990-01-31', asof: '2026-03-01' }, 'Your age', 'ymd'),
   age({ dob: '2000-02-29', asof: '2001-02-28' }, 'Your age', 'ymd'),
@@ -235,6 +244,10 @@ describe('guides quote the maths the calculators give', () => {
   });
 
   it('quotes the figures worked by hand in the text', () => {
+    // simple interest turned round: R = I x 100 / (P x T), T = I x 100 / (P x R)
+    expect((24000 * 100) / (100000 * 3)).toBe(8);
+    expect((24000 * 100) / (100000 * 8)).toBe(3);
+
     const t = (slug: string) => JSON.stringify(guideBySlug(slug));
     // home loan: first month of interest and principal
     const home = Number(metricOf('home-loan-emi-calculator', {}, 'Monthly EMI'));

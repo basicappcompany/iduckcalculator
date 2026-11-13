@@ -147,7 +147,7 @@ export const STUDENTS: CalcDef[] = [
     quick: 'Enter classes attended, total classes held and the required percentage. At 60 of 90 classes (66.7%) with 75% required, you must attend the next 30 classes in a row.',
     keywords: 'attendance percentage required 75 classes bunk skip shortage eligible exam',
     title: 'Attendance Calculator: classes needed or safe to miss',
-    description: 'Free attendance calculator. Enter classes attended, total classes and the required percentage to see how many classes you need to attend or can still miss.',
+    description: 'Free attendance calculator. Enter classes attended, classes held and the required percentage to see how many you must attend or can still miss.',
     fields: [
       num('att', 'Classes attended', 60, { min: 0, step: 1 }),
       num('held', 'Total classes held so far', 90, { min: 0, step: 1 }),

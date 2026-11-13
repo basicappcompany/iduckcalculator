@@ -60,7 +60,7 @@ export const LOANS: CalcDef[] = [
     quick: 'Enter the loan amount, the yearly interest rate and the tenure to see the monthly EMI. A ₹10,00,000 loan at 9% for 20 years has an EMI of about ₹8,997.',
     keywords: 'equated monthly instalment loan monthly payment repayment interest tenure bank',
     title: 'EMI Calculator: monthly loan instalment and interest',
-    description: 'Free EMI calculator. Enter the loan amount, interest rate and tenure to see your monthly EMI, total interest and a year-by-year table. Runs in your browser.',
+    description: 'Free EMI calculator. Enter the loan amount, interest rate and tenure to see your monthly EMI, total interest and a yearly table. Runs in your browser.',
     fields: loanFields(1000000, 9, 20),
     compute: emiResult,
     formula: EMI_FORMULA,

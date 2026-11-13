@@ -12,7 +12,7 @@ export default function ShareButton() {
   };
 
   const share = async () => {
-    const data = { title: 'iDuckImg', text: 'Free image tools that run in your browser.', url: SITE_URL };
+    const data = { title: 'iDuckCalculator', text: 'Free calculators that run in your browser.', url: SITE_URL };
     if (typeof navigator.share === 'function') {
       try {
         await navigator.share(data);
@@ -29,7 +29,7 @@ export default function ShareButton() {
   return (
     <div class="flex flex-wrap items-center gap-3">
       <button type="button" class="btn btn-primary btn-lg" onClick={share}>
-        <span aria-hidden="true">📣</span> Share iDuckImg
+        <span aria-hidden="true">📣</span> Share iDuckCalculator
       </button>
       <button type="button" class="btn btn-lg" onClick={copyLink}>
         Copy link

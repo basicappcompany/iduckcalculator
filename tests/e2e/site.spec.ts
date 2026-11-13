@@ -221,5 +221,6 @@ test('the footer carries the brand line and the sister sites', async ({ page }) 
   await expect(footer).toContainText('Free calculators that run in your browser.');
   await expect(footer).toContainText(/Last updated \d{4}-\d{2}-\d{2}\./);
   await expect(footer.getByRole('link', { name: 'iDuckPDF' })).toHaveAttribute('href', 'https://iduckpdf.com/');
-  await expect(footer.getByRole('link', { name: 'iDuckImg' })).toHaveAttribute('href', 'https://iduckimg.com/');
+  await expect(footer.getByRole('link', { name: 'iDuckIMG' })).toHaveAttribute('href', 'https://iduckimg.com/');
+  await expect(footer.getByRole('link', { name: 'iDuckConvert' })).toHaveAttribute('href', 'https://iduckconvert.com/');
 });

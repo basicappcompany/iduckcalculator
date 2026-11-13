@@ -14,6 +14,7 @@
     "format": "prettier --write .",
     "test": "vitest run",
     "test:e2e": "playwright test",
+    "seo:check": "node scripts/seo-audit.mjs",
     "verify": "pnpm check && pnpm lint && pnpm test"
   },
   "dependencies": {

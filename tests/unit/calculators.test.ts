@@ -19,9 +19,9 @@ describe('registry', () => {
     const slugs = CALCULATORS.map((c) => c.slug);
     expect(new Set(slugs).size).toBe(slugs.length);
     for (const c of CALCULATORS) {
-      expect(c.title.length, `${c.slug} title`).toBeLessThanOrEqual(65);
+      expect(c.title.length, `${c.slug} title`).toBeLessThanOrEqual(59);
       expect(c.description.length, `${c.slug} description`).toBeGreaterThanOrEqual(70);
-      expect(c.description.length, `${c.slug} description`).toBeLessThanOrEqual(175);
+      expect(c.description.length, `${c.slug} description`).toBeLessThanOrEqual(154);
       expect(c.faqs.length, `${c.slug} faqs`).toBeGreaterThanOrEqual(4);
       expect(c.faqs.length, `${c.slug} faqs`).toBeLessThanOrEqual(6);
       expect(c.how.length, `${c.slug} how`).toBeGreaterThanOrEqual(2);

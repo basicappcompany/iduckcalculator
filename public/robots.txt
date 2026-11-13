@@ -32,4 +32,10 @@ Allow: /
 User-agent: Applebot-Extended
 Allow: /
 
+User-agent: Bingbot
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
 Sitemap: https://iduckcalculator.com/sitemap-index.xml

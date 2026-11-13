@@ -1,13 +1,13 @@
 # iDuckCalculator build progress
 
 Tick items as they ship. A later session can pick up from the first unticked box.
-Template: iDuckImg (Astro 7.4.10 static + Preact islands + Tailwind 4, pnpm). Theme matches iduckpdf.com and iduckimg.com.
+Template: iDuckIMG (Astro 7.4.10 static + Preact islands + Tailwind 4, pnpm). Theme matches iduckpdf.com and iduckimg.com.
 Workflow: never push to main. Branch, PR, fix CI on the same PR, merge when green. Run `pnpm verify` before each commit.
 Last synced 2026-11-13. Live: https://iduckcalculator.com. Detail and owners: `docs/status.html`.
 
 ## Step 0 and 1: setup
 - [x] Account check: GitHub logged in as basicappcompany, primary email the company inbox (verified)
-- [x] Studied sister repos (iduckpdf = Expo, iDuckImg = Astro). Chose Astro (iDuckImg) as the template
+- [x] Studied sister repos (iduckpdf = Expo, iDuckIMG = Astro). Chose Astro (iDuckIMG) as the template
 - [x] Private repo created (same visibility as sisters)
 - [x] Scaffold: config, theme (global.css), shell (sidebar, top bar, Ctrl K, theme toggle, language switch, footer)
 - [x] Generic calculator engine: registry, live form, formula, worked example, table, SVG chart, FAQ schema
@@ -49,8 +49,8 @@ Measured at last sync: 317 unit tests in 5 files, 111 browser tests, 98 pages bu
 ## Open items and decisions
 - Email Routing is set up for hello@ and feedback@iduckcalculator.com (MX, SPF, DKIM live; both rules Active, forwarding to the company inbox; catch-all off). A real test message has not been sent: send one from another mailbox to each address and confirm it arrives.
 - Tax, salary, GST, TDS, PPF, Sukanya and NPS calculators are not built. The official sources must be read first (they were unreadable from this machine earlier), and each page needs a "rules as of" date.
-- DuckConvert: the Cloudflare account has an iduckconvert.com zone, but the footer and sidebar link iDuckPDF and iDuckImg only until it is live.
-- Ask the helper is now "Duck", styled like iDuckImg, and answers simple sums and "X% of Y" itself. The home page is always light (no dark mode there); other pages follow the system or the saved choice.
+- DuckConvert: the Cloudflare account has an iduckconvert.com zone, but the footer and sidebar link iDuckPDF and iDuckIMG only until it is live.
+- Ask the helper is now "Duck", styled like iDuckIMG, and answers simple sums and "X% of Y" itself. The home page is always light (no dark mode there); other pages follow the system or the saved choice.
 - Mobile Lighthouse (PageSpeed Insights, 13 Nov): home page and scientific calculator page score 100 on Performance, Accessibility, Best Practices and SEO. Only those two pages were measured.
 - Not yet done: Search Console property and sitemap submission, tips provider (Dodo Payments), native Turkish read-through.
 - Some office or VPN resolvers still cache the old GoDaddy parking page for iduckcalculator.com (up to 48 hours from the nameserver change); check the live site with `curl --resolve` or from a phone on mobile data.
