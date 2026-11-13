@@ -1,10 +1,49 @@
 import { expect, test, type Page } from '@playwright/test';
+import { existsSync, readFileSync } from 'node:fs';
 import { CALCULATORS, calcPath } from '../../src/lib/calc';
 import { GUIDES, guidePath } from '../../src/lib/guides';
 
 const STATIC = ['/', '/calculators/', '/guides/', '/chat/', '/roadmap/', '/request/', '/feedback/', '/support/', '/settings/', '/about/', '/privacy/', '/terms/'];
 const CALC_PATHS = CALCULATORS.map((c) => calcPath(c.slug));
 const GUIDE_PATHS = GUIDES.map((g) => guidePath(g.slug));
+
+/**
+ * Every test runs under the same Content-Security-Policy the live site sends (the one `pnpm build` wrote to dist/_headers), so a blocked
+ * script, style or request fails the test instead of only failing for visitors.
+ */
+const BUILT_HEADERS = existsSync('dist/_headers') ? readFileSync('dist/_headers', 'utf8') : '';
+const CSP = /^\s*Content-Security-Policy:\s*(.+)$/m.exec(BUILT_HEADERS)?.[1]?.trim();
+const violations = new WeakMap<Page, string[]>();
+test.beforeEach(async ({ page }) => {
+  const seen: string[] = [];
+  violations.set(page, seen);
+  page.on('console', (m) => /Content Security Policy|Refused to/i.test(m.text()) && seen.push(m.text()));
+  if (!CSP) return;
+  await page.route('**/*', async (route) => {
+    if (route.request().resourceType() !== 'document') return route.continue();
+    const response = await route.fetch();
+    await route.fulfill({ response, headers: { ...response.headers(), 'content-security-policy': CSP } });
+  });
+});
+test.afterEach(async ({ page }) => {
+  expect(violations.get(page) ?? [], 'Content-Security-Policy violations').toEqual([]);
+});
+test('the production Content-Security-Policy was built and is strict', () => {
+  expect(CSP, 'dist/_headers has a Content-Security-Policy (run pnpm build first)').toBeTruthy();
+  expect(CSP).not.toMatch(/unsafe-inline|unsafe-eval/);
+});
+
+test('the policy really blocks an injected script and an injected inline style', async ({ page }) => {
+  test.skip(!CSP, 'needs the built policy');
+  await page.goto('/about/');
+  await page.evaluate(() => {
+    document.body.insertAdjacentHTML('beforeend', '<script>window.injected = 1</script><p id="probe" style="color: rgb(255, 0, 0)">x</p>');
+  });
+  expect(await page.evaluate(() => (window as unknown as { injected?: number }).injected), 'inline script ran').toBeUndefined();
+  expect(await page.evaluate(() => getComputedStyle(document.getElementById('probe')!).color), 'inline style applied').not.toBe('rgb(255, 0, 0)');
+  expect(violations.get(page)!.length, 'the browser reported the violations').toBeGreaterThanOrEqual(1);
+  violations.set(page, []); // expected here, so do not fail the afterEach check
+});
 
 /** Collects console errors and failed requests so every test can assert there were none. */
 function watch(page: Page) {

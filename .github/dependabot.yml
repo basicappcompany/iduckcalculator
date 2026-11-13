@@ -1,0 +1,15 @@
+# Keeps dependencies and the GitHub Actions the CI uses up to date, with a pull request for each update (CI must pass before merging).
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      dev-tooling:
+        dependency-type: development
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly

@@ -48,6 +48,8 @@ function fmtCell(v: number | string, kind: string | undefined, cur: string): str
 }
 
 const SERIES_FILL = ['var(--d-duck)', 'var(--d-orange)', 'var(--d-ok)'];
+/** Legend swatches use classes (see global.css): the site's Content-Security-Policy does not allow inline style attributes. */
+const SWATCH = ['swatch-0', 'swatch-1', 'swatch-2'];
 
 function BarChart({ chart, cur }: { chart: Chart; cur: string }) {
   const W = 640;
@@ -104,7 +106,7 @@ function BarChart({ chart, cur }: { chart: Chart; cur: string }) {
       <ul class="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-sm">
         {chart.series.map((s, k) => (
           <li key={s.name} class="flex items-center gap-1.5">
-            <span aria-hidden="true" class="inline-block h-3 w-3 rounded-sm border border-line" style={`background:${SERIES_FILL[k % 3]}`} />
+            <span aria-hidden="true" class={`inline-block h-3 w-3 rounded-sm border border-line ${SWATCH[k % 3]}`} />
             {s.name}
           </li>
         ))}

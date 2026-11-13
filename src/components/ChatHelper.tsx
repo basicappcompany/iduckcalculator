@@ -57,8 +57,7 @@ export default function ChatHelper() {
           <div key={m.id} class={`flex items-end gap-2 ${m.from === 'me' ? 'justify-end' : 'justify-start'}`}>
             {m.from === 'bot' && <Duck />}
             <div
-              class={`max-w-[88%] rounded-2xl border-2 border-line p-3 ${m.from === 'me' ? 'rounded-br-sm bg-duck font-bold text-duckink' : 'rounded-bl-sm bg-card'}`}
-              style={{ boxShadow: '3px 3px 0 0 var(--d-shadow)' }}
+              class={`bubble max-w-[88%] rounded-2xl border-2 border-line p-3 ${m.from === 'me' ? 'rounded-br-sm bg-duck font-bold text-duckink' : 'rounded-bl-sm bg-card'}`}
             >
               <p class="break-words leading-relaxed">{m.text}</p>
               {m.reply?.tools.map((t) => (

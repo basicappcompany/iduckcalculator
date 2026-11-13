@@ -7,7 +7,7 @@
   "packageManager": "pnpm@12.14.0",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "astro build && node scripts/csp.mjs",
     "preview": "astro preview",
     "check": "astro check",
     "lint": "eslint .",

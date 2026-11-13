@@ -1,7 +1,19 @@
+# Security headers for every page. `pnpm build` runs scripts/csp.mjs, which replaces __CSP__ below with the policy for the pages it just built
+# (a hash for each inline script and style), and fails the build if a page has an inline style attribute or event handler.
+# tests/unit/headers.test.ts guards this file.
+/*
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), accelerometer=(), gyroscope=(), magnetometer=()
+  Cross-Origin-Opener-Policy: same-origin
+  Content-Security-Policy: __CSP__
+
 # Keep the free *.pages.dev addresses out of search results, so that only https://iduckcalculator.com is indexed.
 # These rules name the pages.dev host in the pattern, so they never apply to iduckcalculator.com.
-# DO NOT replace them with a bare /* rule: that would remove the whole site from search.
-# tests/unit/headers.test.ts guards this, and the live check is: curl -I https://iduckcalculator.pages.dev/
+# DO NOT put X-Robots-Tag on a bare /* rule: that would remove the whole site from search.
+# The live check is: curl -I https://iduckcalculator.pages.dev/
 
 # The production deployment: https://iduckcalculator.pages.dev
 https://:project.pages.dev/*

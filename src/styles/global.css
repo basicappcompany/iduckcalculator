@@ -729,3 +729,17 @@ body {
 :root[data-force-light] #theme-toggle {
   display: none;
 }
+
+/* Classes instead of inline style attributes, so the Content-Security-Policy can forbid them. */
+.swatch-0 {
+  background: var(--d-duck);
+}
+.swatch-1 {
+  background: var(--d-orange);
+}
+.swatch-2 {
+  background: var(--d-ok);
+}
+.bubble {
+  box-shadow: 3px 3px 0 0 var(--d-shadow);
+}

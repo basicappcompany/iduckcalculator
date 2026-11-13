@@ -19,6 +19,8 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      # Fails on a known high or critical vulnerability in anything that ships to visitors. Dev-only tooling is reported but not blocked.
+      - run: pnpm audit --prod --audit-level=high
       - run: pnpm check
       - run: pnpm lint
       - run: pnpm test
