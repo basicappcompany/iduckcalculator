@@ -50,6 +50,32 @@ export function gratuity(o: { basicAndDa: number; totalPay: number; years: numbe
   return { wages, countedYears, perYear, uncapped, amount: Math.min(uncapped, GRATUITY_CAP), capped: uncapped > GRATUITY_CAP };
 }
 
+export const HRA_RULES: RulesInfo = {
+  year: 'Tax year 2026-27 (Income-tax Rules, 2026)',
+  asOf: TAX_RULES_READ_ON,
+  sources: [
+    { name: 'Income-tax Rules, 2026, rule 279 (the three limits and the metro cities)', url: 'https://wm.incometaxindia.gov.in/w/rule-279-1' },
+    { name: 'Income Tax Department FAQ: old vs new regime (HRA is not exempt in the new regime)', url: 'https://www.incometax.gov.in/iec/foportal/help/new-tax-vs-old-tax-regime-faqs' },
+  ],
+};
+
+/** Rule 279: the 50% cities. Everywhere else the percentage is 40%. */
+export const HRA_METRO_CITIES = ['Mumbai', 'Kolkata', 'Delhi', 'Chennai', 'Hyderabad', 'Pune', 'Ahmedabad', 'Bengaluru'] as const;
+
+/**
+ * HRA exemption under rule 279 of the Income-tax Rules, 2026: the least of (a) the HRA actually received, (b) the rent paid minus one-tenth of salary,
+ * and (c) 50% of salary in the eight cities above or 40% anywhere else. Salary is basic pay plus dearness allowance (where the terms of employment
+ * provide for it), for the months the accommodation was occupied. Amounts here are for that period.
+ */
+export function hraExemption(o: { salary: number; hra: number; rent: number; metro: boolean }) {
+  const a = o.hra;
+  const b = Math.max(0, o.rent - o.salary / 10);
+  const c = o.salary * (o.metro ? 0.5 : 0.4);
+  const exempt = Math.max(0, Math.min(a, b, c));
+  const binding = exempt === a ? 'the HRA you receive' : exempt === b ? 'the rent you pay minus 10% of salary' : 'the percentage of salary';
+  return { a, b, c, exempt, taxable: o.hra - exempt, binding };
+}
+
 export const INCOME_TAX_RULES: RulesInfo = {
   year: TAX_YEAR,
   asOf: TAX_RULES_READ_ON,
@@ -345,6 +371,67 @@ export const TAX: CalcDef[] = [
     ],
     related: ['percentage-calculator', 'retirement-calculator', 'income-tax-calculator'],
     rules: GRATUITY_RULES,
+  },
+  {
+    slug: 'hra-calculator',
+    name: 'HRA exemption calculator',
+    group: 'tax',
+    emoji: '🏘️',
+    summary: 'Find the tax-free part of your house rent allowance, using the three limits.',
+    quick: 'Enter your monthly basic pay plus dearness allowance, the HRA you get, the rent you pay and your city. With basic ₹50,000, HRA ₹20,000 and rent ₹22,000 a month in a metro city, ₹2,04,000 a year is exempt.',
+    keywords: 'hra exemption house rent allowance rent paid basic salary metro city 50% 40% tax free 10(13A) rule 279',
+    title: 'HRA Exemption Calculator: the three-limits rule',
+    description: 'Free HRA exemption calculator. Find the tax-free part of your house rent allowance as the least of three limits, with the eight 50% metro cities.',
+    fields: [
+      num('basic', 'Monthly basic pay plus dearness allowance', 50000, { unit: 'money', min: 0, step: 1000, hint: 'Dearness allowance counts only if your terms of employment provide for it. Other allowances do not.' }),
+      num('hra', 'House rent allowance you get each month', 20000, { unit: 'money', min: 0, step: 500 }),
+      num('rent', 'Rent you pay each month', 22000, { unit: 'money', min: 0, step: 500 }),
+      sel('city', 'Where is the rented home?', 'metro', [['metro', 'Mumbai, Kolkata, Delhi, Chennai, Hyderabad, Pune, Ahmedabad or Bengaluru'], ['other', 'Any other place']], 'The first group gets the 50% limit, everywhere else 40%.'),
+      num('months', 'Months you lived there this tax year', 12, { min: 1, max: 12, step: 1 }),
+    ],
+    compute: (v) => {
+      const basic = n(v, 'basic');
+      const hra = n(v, 'hra');
+      const rent = n(v, 'rent');
+      const months = Math.round(n(v, 'months'));
+      if (basic < 0 || hra < 0 || rent < 0) return fail('Enter amounts of 0 or more.');
+      if (months < 1 || months > 12) return fail('Enter 1 to 12 months.');
+      if (basic === 0) return fail('Enter your monthly basic pay.');
+      const r = hraExemption({ salary: basic * months, hra: hra * months, rent: rent * months, metro: s(v, 'city') !== 'other' });
+      const note = r.exempt === 0 ? 'No exemption: the rent you pay is not more than one-tenth of your salary, or you receive no HRA.' : `The smallest of the three limits is ${r.binding}.`;
+      return {
+        metrics: [
+          { label: 'HRA exempt from tax', value: r.exempt, kind: 'money', big: true },
+          { label: 'HRA that is taxable', value: r.taxable, kind: 'money' },
+          { label: 'Limit 1: HRA received', value: r.a, kind: 'money' },
+          { label: 'Limit 2: rent minus 10% of salary', value: r.b, kind: 'money' },
+          { label: `Limit 3: ${s(v, 'city') === 'other' ? '40%' : '50%'} of salary`, value: r.c, kind: 'money' },
+        ],
+        note: `${note} Amounts are for the ${months} month${months === 1 ? '' : 's'} you lived there. HRA is exempt only if you choose the old tax regime; the new regime does not allow it.`,
+      };
+    },
+    formula: [
+      'Exempt HRA = the least of the three limits below, and not less than 0',
+      'Limit 1: the HRA you actually receive',
+      'Limit 2: the rent you pay minus one-tenth (10%) of your salary',
+      'Limit 3: 50% of salary in Mumbai, Kolkata, Delhi, Chennai, Hyderabad, Pune, Ahmedabad and Bengaluru, 40% of salary anywhere else',
+      'Salary here is basic pay plus dearness allowance (if your terms provide for it), for the months you lived there',
+    ],
+    example: 'Basic ₹50,000, HRA ₹20,000 and rent ₹22,000 a month for 12 months in a metro city. Salary = ₹6,00,000, HRA received = ₹2,40,000, rent paid = ₹2,64,000. The limits are ₹2,40,000; ₹2,64,000 − ₹60,000 = ₹2,04,000; and 50% of ₹6,00,000 = ₹3,00,000. The least is ₹2,04,000, so ₹2,04,000 is exempt and ₹36,000 of the HRA is taxable.',
+    how: [
+      'HRA is part of your salary, but part of it can be tax-free if you pay rent. The tax-free part is the smallest of three amounts: the HRA you actually get, the rent you pay beyond a tenth of your salary, and a share of your salary (half in eight big cities, two-fifths elsewhere).',
+      'Salary for this rule is only your basic pay and dearness allowance (when your terms of employment include it). Other allowances, bonuses and perks are not counted. The figures are for the months you actually lived in the rented home during the tax year.',
+      'If the rent you pay is not more than a tenth of your salary, there is no exemption. HRA exemption is available only in the old tax regime; the new regime does not allow it, so compare both in the income tax calculator.',
+    ],
+    faqs: [
+      { q: 'How is HRA exemption calculated?', a: 'It is the least of three amounts: the HRA you receive, the rent you pay minus 10% of your salary, and 50% (metro) or 40% of your salary.' },
+      { q: 'Which cities get the 50% limit?', a: 'Mumbai, Kolkata, Delhi, Chennai, Hyderabad, Pune, Ahmedabad and Bengaluru, under rule 279 of the Income-tax Rules, 2026. Any other place gets 40%.' },
+      { q: 'What counts as salary for HRA?', a: 'Basic pay plus dearness allowance, if your terms of employment provide for it. Other allowances and perquisites are left out.' },
+      { q: 'Can I claim HRA in the new tax regime?', a: 'No. The Income Tax Department’s FAQ says the exemption is not available in the new regime.' },
+      { q: 'What if I pay no rent, or very little?', a: 'If the rent is not more than one-tenth of your salary, the second limit is nil and nothing is exempt.' },
+    ],
+    related: ['income-tax-calculator', 'percentage-calculator', 'gratuity-calculator'],
+    rules: HRA_RULES,
   },
 ];
 

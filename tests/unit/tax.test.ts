@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { calcBySlug, defaultValues } from '../../src/lib/calc';
-import { GRATUITY_CAP, GRATUITY_RULES, INCOME_TAX_RULES, gratuity, NEW_REGIME_SLABS, OLD_REGIME_SLABS, incomeTax, slabTax } from '../../src/lib/calc/defs/tax';
+import { GRATUITY_CAP, GRATUITY_RULES, HRA_METRO_CITIES, HRA_RULES, hraExemption, INCOME_TAX_RULES, gratuity, NEW_REGIME_SLABS, OLD_REGIME_SLABS, incomeTax, slabTax } from '../../src/lib/calc/defs/tax';
 import type { Values } from '../../src/lib/calc/types';
 
 /**
@@ -258,6 +258,57 @@ describe('gratuity calculator', () => {
       'https://www.labour.gov.in/static/uploads/2025/07/b0620548445580767b5c0d18c95c26f7.pdf',
       'https://www.labour.gov.in/static/uploads/2026/01/de4758d5bfeffc456d7de97a801891b0.pdf',
       'https://www.labour.gov.in/static/uploads/2026/03/a4ccf4c6d97c4f1f36a6d83f8c64213d.pdf',
+    ]);
+  });
+});
+
+describe('HRA exemption calculator', () => {
+  const def = calcBySlug('hra-calculator')!;
+  const run = (over: Values = {}) => def.compute({ ...defaultValues(def), ...over });
+  const val = (label: string, over: Values = {}) => run(over).metrics.find((m) => m.label.startsWith(label))!.value as number;
+
+  it('basic 50,000, HRA 20,000, rent 22,000 in a metro for 12 months: limits 2,40,000 / 2,04,000 / 3,00,000, so 2,04,000 is exempt', () => {
+    expect(val('Limit 1')).toBe(240_000);
+    expect(val('Limit 2')).toBe(204_000); // 2,64,000 rent - 10% of 6,00,000
+    expect(val('Limit 3')).toBe(300_000); // 50% of 6,00,000
+    expect(val('HRA exempt')).toBe(204_000);
+    expect(val('HRA that is taxable')).toBe(36_000);
+  });
+  it('the HRA received is the smallest: HRA 15,000 a month, all 1,80,000 is exempt', () => {
+    expect(val('HRA exempt', { hra: 15_000 })).toBe(180_000);
+    expect(val('HRA that is taxable', { hra: 15_000 })).toBe(0);
+  });
+  it('the percentage of salary is the smallest: basic 20,000, HRA 12,000, rent 15,000: 1,20,000 in a metro, 96,000 elsewhere', () => {
+    const over = { basic: 20_000, hra: 12_000, rent: 15_000 };
+    expect(val('HRA exempt', { ...over, city: 'metro' })).toBe(120_000); // 50% of 2,40,000 (limits: 1,44,000 / 1,56,000 / 1,20,000)
+    expect(val('HRA exempt', { ...over, city: 'other' })).toBe(96_000); // 40% of 2,40,000
+    expect(val('HRA that is taxable', { ...over, city: 'metro' })).toBe(24_000);
+  });
+  it('no exemption when the rent is not more than a tenth of salary', () => {
+    expect(val('HRA exempt', { rent: 5_000 })).toBe(0); // 60,000 rent vs 60,000 (10% of 6,00,000)
+    expect(val('HRA exempt', { rent: 4_000 })).toBe(0);
+    expect(run({ rent: 5_000 }).note).toMatch(/No exemption/);
+  });
+  it('works for part of a year: 6 months halves every limit', () => {
+    expect(val('HRA exempt', { months: 6 })).toBe(102_000);
+    expect(val('Limit 3', { months: 6 })).toBe(150_000);
+  });
+  it('lists the eight cities of rule 279', () => {
+    expect([...HRA_METRO_CITIES]).toEqual(['Mumbai', 'Kolkata', 'Delhi', 'Chennai', 'Hyderabad', 'Pune', 'Ahmedabad', 'Bengaluru']);
+    expect(hraExemption({ salary: 100, hra: 1000, rent: 1000, metro: true }).c).toBe(50);
+    expect(hraExemption({ salary: 100, hra: 1000, rent: 1000, metro: false }).c).toBe(40);
+  });
+  it('refuses invalid input', () => {
+    expect(run({ basic: 0 }).error).toBeTruthy();
+    expect(run({ months: 13 }).error).toBeTruthy();
+    expect(run({ rent: -1 }).error).toBeTruthy();
+  });
+  it('cites both official sources and the date they were read', () => {
+    expect(def.rules).toBe(HRA_RULES);
+    expect(HRA_RULES.asOf).toBe('2026-11-14');
+    expect(HRA_RULES.sources.map((x) => x.url)).toEqual([
+      'https://wm.incometaxindia.gov.in/w/rule-279-1',
+      'https://www.incometax.gov.in/iec/foportal/help/new-tax-vs-old-tax-regime-faqs',
     ]);
   });
 });

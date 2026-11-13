@@ -17,14 +17,14 @@ Last synced 2026-11-13. Live: https://iduckcalculator.com. Detail and owners: `d
 - [x] Turkish (TR) chrome translation (not reviewed by a native speaker)
 - [x] CI (verify + build + e2e) green on main
 
-## Step 3: calculators (46 live of 52 planned)
+## Step 3: calculators (47 live of 52 planned)
 ### Loans & EMI
 - [x] EMI  - [x] Home loan EMI  - [x] Car loan EMI  - [x] Personal loan EMI  - [x] Loan prepayment savings  - [x] Loan eligibility
 ### Savings & investing
 - [x] SIP  - [x] Lumpsum  - [x] Step-up SIP  - [x] SWP  - [x] FD  - [x] RD  - [ ] PPF  - [ ] Sukanya Samriddhi  - [ ] NPS
 - [x] Compound interest  - [x] Simple interest  - [x] CAGR  - [x] Inflation  - [x] Retirement corpus
 ### Tax & salary (India) - rules MUST be looked up on official sources first
-- [x] Income tax old vs new (tax year 2026-27, read from official sources on 2026-11-14)  - [ ] In-hand salary from CTC  - [ ] HRA exemption  - [x] Gratuity (Code on Social Security, read on 2026-11-14)  - [x] GST add/remove (rates read from PIB and CBIC on 2026-11-14)  - [ ] TDS basics
+- [x] Income tax old vs new (tax year 2026-27, read from official sources on 2026-11-14)  - [ ] In-hand salary from CTC  - [x] HRA exemption (Income-tax Rules 2026, rule 279, read on 2026-11-14)  - [x] Gratuity (Code on Social Security, read on 2026-11-14)  - [x] GST add/remove (rates read from PIB and CBIC on 2026-11-14)  - [ ] TDS basics
 ### Everyday maths
 - [x] Percentage (all forms)  - [x] Percentage change  - [x] Discount  - [x] Profit and loss  - [x] Average  - [x] Ratio  - [x] Fraction
 - [x] Scientific  - [x] Basic
@@ -44,7 +44,7 @@ Last synced 2026-11-13. Live: https://iduckcalculator.com. Detail and owners: `d
 - [x] Dark/light, Ctrl+K, language switch, no console errors, no sideways scroll on every page (Playwright, 117 passing; the sideways-scroll check was not re-confirmed at a phone-width viewport by hand)
 - [ ] Broken links check (no link checker has been run)
 
-Measured at last sync: 405 unit tests in 10 files, 123 browser tests, 107 pages built, 102 sitemap URLs. Security headers A+ on securityheaders.com and Mozilla Observatory; mobile PageSpeed 100/100/100/100 on the home page, the EMI page and a guide. See AUDIT.md for the security and SEO audit.
+Measured at last sync: 423 unit tests in 10 files, 125 browser tests, 109 pages built, 104 sitemap URLs. Security headers A+ on securityheaders.com and Mozilla Observatory; mobile PageSpeed 100/100/100/100 on the home page, the EMI page and a guide. See AUDIT.md for the security and SEO audit.
 
 ## Open items and decisions
 - Email Routing is set up for hello@ and feedback@iduckcalculator.com (MX, SPF, DKIM live; both rules Active, forwarding to the company inbox; catch-all off). A real test message has not been sent: send one from another mailbox to each address and confirm it arrives.

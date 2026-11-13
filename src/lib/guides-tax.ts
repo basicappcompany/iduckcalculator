@@ -133,4 +133,44 @@ export const GUIDES_TAX: readonly Guide[] = [
     published: '2026-11-14',
     updated: '2026-11-14',
   },
+  {
+    slug: 'how-to-calculate-hra-exemption',
+    title: 'How to calculate HRA exemption, with the three limits',
+    description: 'Work out the tax-free part of your house rent allowance as the least of three limits, with the eight 50% metro cities and worked examples.',
+    intro: 'HRA exemption is the least of three amounts: the HRA you receive, the rent you pay minus 10% of salary, and 50% of salary in eight metro cities (40% elsewhere). With basic ₹50,000, HRA ₹20,000 and rent ₹22,000 a month in a metro, ₹2,04,000 a year is exempt.',
+    steps: [
+      'Write down your monthly basic pay plus dearness allowance, the HRA you get and the rent you pay. Here: ₹50,000, ₹20,000 and ₹22,000, for 12 months.',
+      'Multiply by the months you lived there: salary ₹6,00,000, HRA received ₹2,40,000, rent paid ₹2,64,000.',
+      'Limit 1 is the HRA received: ₹2,40,000. Limit 2 is the rent minus a tenth of salary: 2,64,000 − 60,000 = ₹2,04,000.',
+      'Limit 3 is 50% of salary in a metro city (40% elsewhere): ₹3,00,000.',
+      'The least of the three, ₹2,04,000, is exempt, and the remaining ₹36,000 of HRA is taxable. Or use the HRA calculator.',
+    ],
+    sections: [
+      {
+        h: 'Which limit applies',
+        p: [
+          'Any of the three can be the smallest. If your HRA is ₹15,000 a month, the HRA you receive, ₹1,80,000, is the smallest, so all of it is exempt. If basic pay is ₹20,000, HRA ₹12,000 and rent ₹15,000 in a metro city, the 50% limit of ₹1,20,000 is the smallest, so ₹1,20,000 is exempt and ₹24,000 is taxable. In a city outside the list the limit is 40%, ₹96,000, so the exemption falls to ₹96,000.',
+          'If the rent you pay is not more than a tenth of your salary, the second limit is nil and nothing is exempt.',
+        ],
+      },
+      {
+        h: 'The eight cities and what counts as salary',
+        p: ['Under rule 279 of the Income-tax Rules, 2026, the 50% limit applies in Mumbai, Kolkata, Delhi, Chennai, Hyderabad, Pune, Ahmedabad and Bengaluru, and the 40% limit applies in any other place. Salary means basic pay plus dearness allowance, if your terms of employment provide for it. Other allowances and perquisites are left out. The figures are for the months you actually lived in the rented home during the tax year.'],
+      },
+      {
+        h: 'Old regime only',
+        p: ['The Income Tax Department’s FAQ says HRA is exempt in the old tax regime and that the exemption is not available in the new regime. So the exemption only helps if you choose the old regime, and it must be weighed against the lower rates of the new one. Enter your total deductions, including the HRA exemption, in the income tax calculator to compare both regimes. Keep your rent receipts and your landlord’s details, because your employer or the tax department may ask for them.'],
+      },
+    ],
+    faqs: [
+      { q: 'How is HRA exemption calculated?', a: 'It is the least of three amounts: the HRA you receive, the rent you pay minus 10% of salary, and 50% (metro) or 40% of salary.' },
+      { q: 'Which cities count as metro for HRA?', a: 'Mumbai, Kolkata, Delhi, Chennai, Hyderabad, Pune, Ahmedabad and Bengaluru. Everywhere else the limit is 40%.' },
+      { q: 'Is HRA exempt in the new tax regime?', a: 'No. The Income Tax Department says the exemption is not available in the new regime.' },
+      { q: 'What counts as salary for HRA?', a: 'Basic pay plus dearness allowance if your terms of employment provide for it. Other allowances do not count.' },
+    ],
+    calcs: ['hra-calculator', 'income-tax-calculator', 'percentage-calculator'],
+    related: ['how-to-choose-old-or-new-tax-regime', 'how-to-calculate-percentage'],
+    published: '2026-11-14',
+    updated: '2026-11-14',
+  },
 ];

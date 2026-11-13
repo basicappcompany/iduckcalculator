@@ -49,6 +49,7 @@ const comp = L('how-compound-interest-works', 'compound-interest-calculator');
 const taxg = L('how-to-choose-old-or-new-tax-regime', 'income-tax-calculator');
 const gstg = L('how-to-add-and-remove-gst', 'gst-calculator');
 const gratg = L('how-to-calculate-gratuity', 'gratuity-calculator');
+const hrag = L('how-to-calculate-hra-exemption', 'hra-calculator');
 const simp = L('how-to-calculate-simple-interest', 'simple-interest-calculator');
 const simpComp = L('how-to-calculate-simple-interest', 'compound-interest-calculator');
 const basicG = L('how-to-use-the-basic-calculator', 'basic-calculator');
@@ -144,6 +145,10 @@ const CLAIMS: Claim[] = [
   gratg({ basic: 30000, total: 100000 }, 'Gratuity', 'inr'), gratg({ basic: 30000, total: 100000 }, 'Fifteen days', 'inr'),
   gratg({ years: 7, months: 7 }, 'Gratuity', 'inr'), gratg({ years: 7, months: 6 }, 'Gratuity', 'inr'),
   gratg({ basic: 500000, total: 500000, years: 30 }, 'Gratuity', 'inr'),
+  hrag({}, 'HRA exempt', 'inr'), hrag({}, 'HRA that is taxable', 'inr'), hrag({}, 'Limit 1', 'inr'), hrag({}, 'Limit 2', 'inr'), hrag({}, 'Limit 3', 'inr'),
+  hrag({ hra: 15000 }, 'HRA exempt', 'inr'),
+  hrag({ basic: 20000, hra: 12000, rent: 15000 }, 'HRA exempt', 'inr'), hrag({ basic: 20000, hra: 12000, rent: 15000 }, 'HRA that is taxable', 'inr'),
+  hrag({ basic: 20000, hra: 12000, rent: 15000, city: 'other' }, 'HRA exempt', 'inr'),
   // ---- everyday maths
   pchg({}, 'Percentage increase', 'num'), pchg({ from: 100, to: 80 }, 'Percentage decrease', 'num'), pchg({ from: 50, to: 75 }, 'Percentage increase', 'num'), pchg({ from: 200, to: 150 }, 'Percentage decrease', 'num'),
   disc({}, 'You pay', 'inr'), disc({}, 'You save', 'inr'), disc({}, 'Effective discount', 'num'),
@@ -259,6 +264,12 @@ describe('guides quote the maths the calculators give', () => {
     expect(text).toContain('15,000');
     expect(text).toContain('15% of 2,400 is 360');
     expect(text).toContain('17 mod 5 is 2');
+  });
+
+  it('quotes the HRA figures worked by hand', () => {
+    const t = JSON.stringify(guideBySlug('how-to-calculate-hra-exemption'));
+    for (const s of ['₹6,00,000', '₹2,64,000', '₹2,40,000', '2,64,000 − 60,000', '₹1,80,000', '₹3,00,000', '₹2,04,000', '₹36,000', '₹1,20,000', '₹24,000', '₹96,000']) expect(t, s).toContain(s);
+    for (const city of ['Mumbai', 'Kolkata', 'Delhi', 'Chennai', 'Hyderabad', 'Pune', 'Ahmedabad', 'Bengaluru']) expect(t, city).toContain(city);
   });
 
   it('quotes the gratuity figures worked by hand, including the uncapped amount', () => {
