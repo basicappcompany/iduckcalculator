@@ -43,12 +43,13 @@ Last synced 2026-11-13. Live: https://iduckcalculator.com. Detail and owners: `d
 - [x] Dark/light, Ctrl+K, language switch, no console errors, no sideways scroll on every page (Playwright, 69 passing; the sideways-scroll check was not re-confirmed at a phone-width viewport by hand)
 - [ ] Broken links check (no link checker has been run)
 
-Measured at last sync: 59 unit tests in 4 files, 69 browser tests, 59 pages built, 54 sitemap URLs.
+Measured at last sync: 62 unit tests in 4 files, 72 browser tests, 59 pages built, 54 sitemap URLs.
 
 ## Open items and decisions
 - Email Routing is set up for hello@ and feedback@iduckcalculator.com (MX, SPF, DKIM live; both rules Active, forwarding to the company inbox; catch-all off). A real test message has not been sent: send one from another mailbox to each address and confirm it arrives.
 - Tax, salary, GST, TDS, PPF, Sukanya and NPS calculators are not built. The official sources must be read first (they were unreadable from this machine earlier), and each page needs a "rules as of" date.
 - DuckConvert: the Cloudflare account has an iduckconvert.com zone, but the footer and sidebar link iDuckPDF and iDuckImg only until it is live.
+- Ask the helper is now "Duck", styled like iDuckImg, and answers simple sums and "X% of Y" itself. The home page is always light (no dark mode there); other pages follow the system or the saved choice.
 - Mobile Lighthouse (PageSpeed Insights, 13 Nov): home page and scientific calculator page score 100 on Performance, Accessibility, Best Practices and SEO. Only those two pages were measured.
 - Not yet done: Search Console property and sitemap submission, tips provider (Dodo Payments), native Turkish read-through.
 - Some office or VPN resolvers still cache the old GoDaddy parking page for iduckcalculator.com (up to 48 hours from the nameserver change); check the live site with `curl --resolve` or from a phone on mobile data.

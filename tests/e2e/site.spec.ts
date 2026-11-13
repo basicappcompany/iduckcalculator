@@ -94,7 +94,7 @@ test('Ctrl K opens search, finds a calculator and opens it', async ({ page }) =>
 });
 
 test('the theme toggle switches and is remembered', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/emi-calculator/');
   await page.locator('#theme-toggle').click();
   const first = await page.locator('html').getAttribute('data-theme');
   expect(['light', 'dark']).toContain(first);
@@ -107,8 +107,21 @@ test('the theme toggle switches and is remembered', async ({ page }) => {
 test('dark mode follows the system and uses #121212', async ({ browser }) => {
   const ctx = await browser.newContext({ colorScheme: 'dark' });
   const page = await ctx.newPage();
-  await page.goto('/');
+  await page.goto('/emi-calculator/');
   expect(await page.evaluate(() => getComputedStyle(document.body).backgroundColor)).toBe('rgb(18, 18, 18)');
+  await ctx.close();
+});
+
+test('the start page is always light, even with a dark system and a saved dark choice', async ({ browser }) => {
+  const ctx = await browser.newContext({ colorScheme: 'dark' });
+  const page = await ctx.newPage();
+  await page.addInitScript(() => localStorage.setItem('duck.theme', 'dark'));
+  await page.goto('/');
+  const bg = () => page.evaluate(() => getComputedStyle(document.body).backgroundColor);
+  expect(await bg()).toBe('rgb(255, 253, 245)');
+  await expect(page.locator('#theme-toggle')).toBeHidden();
+  await page.goto('/emi-calculator/'); // every other page still honours the choice
+  expect(await bg()).toBe('rgb(18, 18, 18)');
   await ctx.close();
 });
 
@@ -147,6 +160,19 @@ test('the helper finds a calculator from plain words', async ({ page }) => {
   await page.getByLabel('Describe what you want to calculate').fill('how old am I');
   await page.getByRole('button', { name: 'Ask' }).click();
   await expect(page.getByRole('log').getByRole('link', { name: /Age calculator/ })).toBeVisible();
+});
+
+test('the helper greets, shows typing, answers a sum itself and offers starters', async ({ page }) => {
+  await page.goto('/chat/');
+  const log = page.getByRole('log');
+  await expect(log).toContainText('Hi, I am Duck');
+  await expect(log.getByRole('button', { name: 'Is my data safe?' })).toBeVisible();
+  await log.getByRole('button', { name: 'Is my data safe?' }).click();
+  await expect(log).toContainText('Every calculation runs in your browser');
+  await page.getByLabel('Describe what you want to calculate').fill('15% of 2,400');
+  await page.getByRole('button', { name: 'Ask' }).click();
+  await expect(log).toContainText('15% of 2,400 is 360.');
+  await expect(log.getByRole('link', { name: /Percentage calculator/ })).toBeVisible();
 });
 
 test('the footer carries the brand line and the sister sites', async ({ page }) => {

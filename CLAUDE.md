@@ -38,5 +38,7 @@ Contact mail: Cloudflare Email Routing forwards hello@ and feedback@iduckcalcula
 - A built calculator counts as done only with its page on `main`, a known-answer test, FAQs and 3 related links.
 - Do not trust this machine's DNS for iduckcalculator.com: an office or VPN resolver cached the old GoDaddy parking page, which answers 200 for every path. Check the live site with `curl --resolve iduckcalculator.com:443:104.21.85.203 https://iduckcalculator.com/...` (use `MSYS_NO_PATHCONV=1` in Git Bash) or from a phone on mobile data.
 - The e2e test "typing into the EMI calculator updates the result live" failed once when the machine was heavily loaded and passed alone and on repeat. If it fails, re-run it before suspecting the code.
+- The home page (`/`) is always light: `AppShell.astro` sets `data-theme="light"` and `data-force-light` there and CSS hides `#theme-toggle`. Tests of the dark theme must use another page, such as `/emi-calculator/`.
+- The helper (`src/lib/helper.ts`, `src/components/ChatHelper.tsx`) is a plain matcher, not an AI: it handles greetings, simple sums via `expr.ts`, "X% of Y", topic answers and calculator matches. Keep it free of network calls.
 - Turkish covers the page chrome only; calculator copy stays English. Never mark it reviewed before a native speaker reads it.
 - Not built yet: income tax, salary, HRA, gratuity, GST, TDS, PPF, Sukanya, NPS (official sources not read), and the "old vs new tax regime" guide.

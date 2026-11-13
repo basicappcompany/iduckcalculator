@@ -347,6 +347,8 @@ const DECISIONS = [
   ["Language", "EN-US and TR. Turkish starts with the page chrome; calculator copy follows. Never published as reviewed before a person reads it.", "13 Nov"],
   ["Promises", "No sign-up, no ads, everything runs in the browser, tips-only support. There is no ad slot component in this project.", "13 Nov"],
   ["Workflow", "Never push to `main`: branch, pull request, fix CI on the same PR, merge when green. Small commits. `pnpm verify` before each one. Docs-only changes are batched into one pull request at the end of the day.", "13 Nov"],
+  ["Start page theme", "The home page is always light, whatever the system setting or a saved choice says, and the theme button is hidden there. Every other page follows the system or the saved choice.", "13 Nov"],
+  ["Ask the helper", "Duck: a plain matcher, not an AI, styled like iDuckImg (duck avatar, speech bubbles, typing pause, tool cards). It answers simple sums and \"X% of Y\" itself, greets, and says what it can do. It runs in the browser and sends nothing anywhere.", "13 Nov"],
   ["Contact mail", "hello@ and feedback@iduckcalculator.com forward to `the company inbox` through Cloudflare Email Routing. Receive only; the catch-all stays off.", "13 Nov"],
 ];
 
@@ -358,13 +360,14 @@ const TIMELINE = [
   ["13 Nov 2026", "Site live", "Cloudflare Pages deploys `main`; iduckcalculator.com answers through Cloudflare with a valid certificate."],
   ["13 Nov 2026", "Basic and scientific calculators", "Both built, with known-answer tests, plus a countdown-timer test: 43 of 52 calculators live."],
   ["13 Nov 2026", "Mobile Lighthouse measured", "Home page and scientific calculator page score 100 on all four categories after a contrast fix on the result card (PR #4)."],
+  ["13 Nov 2026", "Helper redesigned, start page always light", "Duck chat in the iDuckImg style that answers sums and percentages itself; the home page no longer follows a dark system setting."],
   ["13 Nov 2026", "Email Routing configured", "MX, SPF and DKIM live; hello@ and feedback@ forward to the company inbox. Delivery not yet tested."],
 ];
 
 const SCORECARD = [
   { k: "Calculators", v: READY.length + " built of " + TOOLS_DATA.length + " planned", d: "Measured from the registry in `src/lib/calc`. Not built: income tax, salary, HRA, gratuity, GST, TDS, PPF, Sukanya and NPS (the official rules have to be read first)." },
-  { k: "Unit tests", v: "59 passing", d: "Vitest, 4 files (`pnpm test`). They check every calculator's page fields and a known answer for each of the 43." },
-  { k: "Browser tests", v: "69 passing", d: "Playwright (`pnpm test:e2e`): every page loads with no errors and no sideways scroll, live results, currency, Ctrl K, theme, Turkish, home sections, 404, helper, footer." },
+  { k: "Unit tests", v: "62 passing", d: "Vitest, 4 files (`pnpm test`). They check every calculator's page fields and a known answer for each of the 43." },
+  { k: "Browser tests", v: "72 passing", d: "Playwright (`pnpm test:e2e`): every page loads with no errors and no sideways scroll, live results, currency, Ctrl K, theme, Turkish, home sections, 404, helper, footer." },
   { k: "CI", v: "Green", d: "The run on `main` after PR #1 succeeded in 1m47s: check, lint, test, build and e2e." },
   { k: "Pages", v: "59 built", d: "From `pnpm build`. The sitemap lists 54 URLs." },
   { k: "Lighthouse, mobile", v: "100 / 100 / 100 / 100", d: "Performance, Accessibility, Best Practices, SEO, from PageSpeed Insights on 13 Nov 2026: home page (FCP 0.9 s, LCP 0.9 s, TBT 0 ms, CLS 0) and the scientific calculator page. Other pages were not measured." },

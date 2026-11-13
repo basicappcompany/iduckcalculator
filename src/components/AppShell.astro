@@ -28,13 +28,13 @@ const t = EN;
 ---
 
 <!doctype html>
-<html lang="en-US">
+<html lang="en-US" data-theme={isHome ? 'light' : undefined} data-force-light={isHome ? '' : undefined}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="light dark" />
-    <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)" />
-    <meta name="theme-color" content="#fffdf5" media="(prefers-color-scheme: light)" />
+    {isHome ? <meta name="theme-color" content="#fffdf5" /> : <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)" />}
+    {!isHome && <meta name="theme-color" content="#fffdf5" media="(prefers-color-scheme: light)" />}
     <title>{title}</title>
     <meta name="description" content={description} />
     {noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={canonical} />}
@@ -55,9 +55,10 @@ const t = EN;
     <meta name="twitter:image" content={OG_IMAGE} />
     {jsonLd.map((item) => <script type="application/ld+json" set:html={serialize(item)} />)}
     <!-- Runs before first paint, so a visitor who chose dark mode never sees a flash of light. -->
-    <script is:inline define:vars={{ key: THEME_STORAGE_KEY }}>
+    <script is:inline define:vars={{ key: THEME_STORAGE_KEY, forceLight: isHome }}>
       try {
-        const saved = localStorage.getItem(key);
+        // The start page is always light, whatever the system setting or a saved choice says.
+        const saved = forceLight ? 'light' : localStorage.getItem(key);
         if (saved === 'dark' || saved === 'light') document.documentElement.setAttribute('data-theme', saved);
       } catch {
         // Storage can be blocked (private mode); the system setting then applies.

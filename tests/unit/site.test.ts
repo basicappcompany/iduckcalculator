@@ -67,13 +67,34 @@ describe('site structure', () => {
 });
 
 describe('helper', () => {
+  const tool = (m: string) => respond(m).tools[0]?.href;
   it('points plain words at the right calculator', () => {
-    expect(respond('monthly loan payment').links[0]?.href).toBe('/emi-calculator/');
-    expect(respond('how old am I').links[0]?.href).toBe('/age-calculator/');
+    expect(tool('monthly loan payment')).toBe('/emi-calculator/');
+    expect(tool('how old am I')).toBe('/age-calculator/');
+    expect(tool('what is my bmi')).toBe('/bmi-calculator/');
     expect(respond('is my data safe').links[0]?.href).toBe('/privacy/');
-    expect(respond('what is my bmi').links[0]?.href).toBe('/bmi-calculator/');
     expect(respond('zzzz qqqq').links[0]?.href).toBe('/calculators/');
     expect(respond('').links).toHaveLength(0);
+    expect(respond('').tools).toHaveLength(0);
+  });
+  it('answers simple sums and percentages itself, and offers the matching calculator', () => {
+    expect(respond('15% of 2,400').text).toBe('15% of 2,400 is 360.');
+    expect(respond('what is 15 percent of 200').text).toBe('15% of 200 is 30.');
+    expect(respond('(2 + 3) * 4').text).toBe('(2 + 3) * 4 = 20');
+    expect(respond('what is 1,250 * 12').text).toBe('1250 * 12 = 15,000');
+    expect(respond('sqrt(16) + 2^3').text).toBe('sqrt(16) + 2^3 = 12');
+    expect(respond('2+2').tools[0]?.href).toBe('/scientific-calculator/');
+    expect(respond('5 / 0').text).toMatch(/zero/);
+  });
+  it('does not mistake a date or a plain question for a sum', () => {
+    expect(respond('20-06-2000').text).not.toMatch(/=/);
+    expect(respond('how many days until 25-12-2026').tools.length).toBeGreaterThan(0);
+  });
+  it('chats: greets, thanks and says what it can do', () => {
+    expect(respond('hello').text).toMatch(/Hello/);
+    expect(respond('thanks!').text).toMatch(/welcome/i);
+    expect(respond('what can you do').text).toMatch(/calculators/);
+    expect(respond('what can you do').links[0]?.href).toBe('/calculators/');
   });
 });
 

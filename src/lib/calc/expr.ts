@@ -209,3 +209,12 @@ export function evaluate(src: string, mode: AngleMode = 'deg'): number {
   if (!Number.isFinite(result)) throw new ExprError('That number is too large to show.');
   return result;
 }
+
+/** A readable number for the keypad-style calculators: 12 significant digits, no 0.30000000000000004, grouped in thousands. */
+export function showNumber(x: number): string {
+  if (x === 0) return '0';
+  const p = parseFloat(x.toPrecision(12));
+  const abs = Math.abs(p);
+  if (abs >= 1e15 || abs < 1e-9) return p.toExponential(8).replace(/\.?0+e/, 'e');
+  return p.toLocaleString('en-US', { maximumFractionDigits: 12 });
+}
