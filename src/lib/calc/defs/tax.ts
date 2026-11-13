@@ -13,6 +13,16 @@ const CRORE = 100 * LAKH;
 export const TAX_YEAR = 'Tax year 2026-27 (income earned 1 April 2026 to 31 March 2027)';
 export const TAX_RULES_READ_ON = '2026-11-14';
 
+export const GST_RULES: RulesInfo = {
+  year: 'GST rates in force from 22 September 2025 (still the structure after the Council meeting of October 2026)',
+  asOf: TAX_RULES_READ_ON,
+  sources: [
+    { name: 'PIB: decisions of the 56th GST Council (rate structure, 22 September 2025)', url: 'https://www.pib.gov.in/PressReleasePage.aspx?PRID=2163555&reg=48&lang=2' },
+    { name: 'PIB, October 2026: Next-Gen GST reforms (57th Council meeting, rates unchanged)', url: 'https://static.pib.gov.in/WriteReadData/specificdocs/documents/2026/oct/doc_10142_20261009_21430401.pdf' },
+    { name: 'CBIC FAQ on GST (CGST, SGST and IGST)', url: 'https://cbic-gst.gov.in/aces/Documents/faq-on-gst.pdf' },
+  ],
+};
+
 export const INCOME_TAX_RULES: RulesInfo = {
   year: TAX_YEAR,
   asOf: TAX_RULES_READ_ON,
@@ -193,6 +203,60 @@ export const TAX: CalcDef[] = [
     ],
     related: ['percentage-calculator', 'sip-calculator', 'retirement-calculator'],
     rules: INCOME_TAX_RULES,
+  },
+  {
+    slug: 'gst-calculator',
+    name: 'GST calculator: add and remove GST',
+    group: 'tax',
+    emoji: '🧾',
+    summary: 'Add GST to a price, or take it out of a price that already includes it.',
+    quick: 'Enter the price, the GST rate, and choose add or remove. ₹10,000 plus 18% GST is ₹11,800, and removing 18% GST from ₹11,800 leaves ₹10,000.',
+    keywords: 'gst add remove inclusive exclusive tax 5% 18% 40% price cgst sgst igst invoice',
+    title: 'GST Calculator: add or remove GST at 5%, 18% or 40%',
+    description: 'Free GST calculator. Add GST to a price or remove it from a GST-inclusive price at any rate, with the main rates of 5%, 18% and 40% explained.',
+    fields: [
+      sel('mode', 'What do you want to do?', 'add', [['add', 'Add GST to a price'], ['remove', 'Remove GST from a price that includes it']]),
+      num('amount', 'Amount', 10000, { unit: 'money', min: 0, step: 100 }),
+      num('rate', 'GST rate', 18, { unit: 'percent', min: 0, max: 100, step: 0.5, hint: 'The main rates are 5% and 18%, and 40% for a few goods and services. Some items are 0% and a few have special rates, so check the rate for your item.' }),
+    ],
+    compute: (v) => {
+      const amount = n(v, 'amount');
+      const rate = n(v, 'rate');
+      if (amount < 0) return fail('Enter an amount of 0 or more.');
+      if (rate < 0 || rate > 100) return fail('Enter a GST rate between 0 and 100.');
+      const adding = s(v, 'mode') !== 'remove';
+      const without = adding ? amount : amount / (1 + rate / 100);
+      const gst = adding ? (amount * rate) / 100 : amount - without;
+      const total = adding ? amount + gst : amount;
+      return {
+        metrics: [
+          adding ? { label: 'Total with GST', value: total, kind: 'money', decimals: 2, big: true } : { label: 'Price without GST', value: without, kind: 'money', decimals: 2, big: true },
+          { label: 'GST amount', value: gst, kind: 'money', decimals: 2 },
+          adding ? { label: 'Price without GST', value: without, kind: 'money', decimals: 2 } : { label: 'Price with GST', value: total, kind: 'money', decimals: 2 },
+        ],
+        note: 'For a sale within one state GST is charged as CGST plus SGST (or UTGST); for a sale between states it is charged as IGST, whose rate is the two added together.',
+      };
+    },
+    formula: [
+      'Add GST: price with GST = price × (1 + rate ÷ 100), so GST = price × rate ÷ 100',
+      'Remove GST: price without GST = price with GST ÷ (1 + rate ÷ 100), so GST = price with GST − price without GST',
+      'Main rates: 5% merit rate, 18% standard rate, 40% special rate for a select few goods and services',
+    ],
+    example: '₹10,000 plus 18% GST: GST = 10,000 × 18 ÷ 100 = ₹1,800, so the total is ₹11,800. Going back, ₹11,800 ÷ 1.18 = ₹10,000, so ₹1,800 of the ₹11,800 is GST. At 5%, ₹1,000 becomes ₹1,050, and at 40%, ₹10,000 becomes ₹14,000.',
+    how: [
+      'To add GST, multiply the price by the rate and add the result. To take GST out of a price that already includes it, divide by one plus the rate. Subtracting the rate from the total gives the wrong answer, because the rate applies to the price before GST, not to the total.',
+      'Since the GST reform that took effect on 22 September 2025 there are two main rates, 5% and 18%, and a special 40% rate for a select few goods and services. Some items are exempt or at 0%, and a few, such as certain precious metals, have special rates, so use the rate shown for your item on the invoice or in the official rate schedule.',
+      'On an invoice GST appears as CGST and SGST for a sale within a state, or as IGST for a sale between states. The total tax is the same.',
+    ],
+    faqs: [
+      { q: 'How do I add 18% GST to a price?', a: 'Multiply the price by 1.18. ₹10,000 becomes ₹11,800, of which ₹1,800 is GST.' },
+      { q: 'How do I remove GST from a price that includes it?', a: 'Divide by 1 plus the rate as a decimal. ₹11,800 divided by 1.18 is ₹10,000.' },
+      { q: 'Why is removing 18% of ₹11,800 wrong?', a: 'Because 18% of ₹11,800 is ₹2,124, and ₹11,800 minus ₹2,124 is ₹9,676, not ₹10,000. The 18% was charged on the price before GST.' },
+      { q: 'What are the GST rates?', a: 'The main rates are 5% and 18%, with a special 40% rate for a select few goods and services. The rate for your item is on the invoice or in the official rate schedule.' },
+      { q: 'What is the difference between CGST, SGST and IGST?', a: 'A sale within a state is charged CGST and SGST, and a sale between states is charged IGST. IGST is the CGST and SGST rates added together.' },
+    ],
+    related: ['percentage-calculator', 'discount-calculator', 'profit-loss-calculator'],
+    rules: GST_RULES,
   },
 ];
 

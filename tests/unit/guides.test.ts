@@ -47,6 +47,7 @@ const fd = L('how-to-calculate-fd-maturity', 'fd-calculator');
 const rd = L('how-to-calculate-rd-maturity', 'rd-calculator');
 const comp = L('how-compound-interest-works', 'compound-interest-calculator');
 const taxg = L('how-to-choose-old-or-new-tax-regime', 'income-tax-calculator');
+const gstg = L('how-to-add-and-remove-gst', 'gst-calculator');
 const simp = L('how-to-calculate-simple-interest', 'simple-interest-calculator');
 const simpComp = L('how-to-calculate-simple-interest', 'compound-interest-calculator');
 const basicG = L('how-to-use-the-basic-calculator', 'basic-calculator');
@@ -133,6 +134,11 @@ const CLAIMS: Claim[] = [
   taxg({ ded: 700000 }, 'Tax in the old regime', 'inr'),
   taxg({ salary: 1000000 }, 'Tax in the new regime', 'inr'), taxg({ salary: 1000000 }, 'Tax in the old regime', 'inr'),
   taxg({ salary: 1300000 }, 'Tax in the new regime', 'inr'),
+  gstg({}, 'Total with GST', 'inr'), gstg({}, 'GST amount', 'inr'),
+  gstg({ mode: 'remove', amount: 11800 }, 'Price without GST', 'inr'),
+  gstg({ amount: 1000, rate: 5 }, 'Total with GST', 'inr'), gstg({ amount: 10000, rate: 40 }, 'Total with GST', 'inr'),
+  gstg({ mode: 'remove', amount: 14000, rate: 40 }, 'Price without GST', 'inr'),
+  gstg({ mode: 'remove', amount: 2100, rate: 5 }, 'Price without GST', 'inr'), gstg({ mode: 'remove', amount: 2100, rate: 5 }, 'GST amount', 'inr'),
   // ---- everyday maths
   pchg({}, 'Percentage increase', 'num'), pchg({ from: 100, to: 80 }, 'Percentage decrease', 'num'), pchg({ from: 50, to: 75 }, 'Percentage increase', 'num'), pchg({ from: 200, to: 150 }, 'Percentage decrease', 'num'),
   disc({}, 'You pay', 'inr'), disc({}, 'You save', 'inr'), disc({}, 'Effective discount', 'num'),
@@ -248,6 +254,14 @@ describe('guides quote the maths the calculators give', () => {
     expect(text).toContain('15,000');
     expect(text).toContain('15% of 2,400 is 360');
     expect(text).toContain('17 mod 5 is 2');
+  });
+
+  it('quotes the GST figures worked by hand, including the common mistake', () => {
+    const t = JSON.stringify(guideBySlug('how-to-add-and-remove-gst'));
+    expect(Math.round((11_800 * 18) / 100)).toBe(2_124);
+    expect(11_800 - 2_124).toBe(9_676);
+    for (const s of ['₹2,124', '₹9,676', '₹11,800', '₹10,000', '₹1,800', '₹1,050', '₹14,000', '₹2,100', '₹2,000']) expect(t, s).toContain(s);
+    for (const s of ['5%', '18%', '40%', '22 September 2025']) expect(t, s).toContain(s);
   });
 
   it('quotes the tax figures worked by hand, and the break-even for deductions', () => {

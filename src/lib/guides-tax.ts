@@ -1,7 +1,7 @@
 import type { Guide } from './guides';
 
 /**
- * How-to guides for the tax and salary calculators. They quote rules for tax year 2026-27 that were read from official sources on 2026-11-14 (see
+ * How-to guides for the tax and salary calculators. They quote rules that were read from official sources on 2026-11-14 (see
  * src/lib/calc/defs/tax.ts). Every figure is checked against the calculators in tests/unit/guides.test.ts. When the rules change, update both.
  */
 export const GUIDES_TAX: readonly Guide[] = [
@@ -47,6 +47,49 @@ export const GUIDES_TAX: readonly Guide[] = [
     ],
     calcs: ['income-tax-calculator', 'percentage-calculator', 'sip-calculator'],
     related: ['how-to-calculate-percentage', 'how-to-calculate-sip-returns'],
+    published: '2026-11-14',
+    updated: '2026-11-14',
+  },
+  {
+    slug: 'how-to-add-and-remove-gst',
+    title: 'How to add and remove GST from a price, with examples',
+    description: 'Add GST to a price or take it out of a GST-inclusive price, avoid the common mistake, and see the 5%, 18% and 40% rates with worked examples.',
+    intro: 'To add GST multiply the price by 1 plus the rate; to remove it, divide by the same number. ₹10,000 plus 18% GST is ₹11,800, and removing 18% from ₹11,800 gives back ₹10,000. Do not just subtract 18% of the total.',
+    steps: [
+      'Write down the price and the GST rate for your item. The rate is on the invoice or in the official rate schedule.',
+      'To add GST, turn the rate into a decimal and multiply the price by 1 plus it: 10,000 × 1.18 = ₹11,800.',
+      'To find the GST alone, multiply the price by the rate: 10,000 × 18 ÷ 100 = ₹1,800.',
+      'To remove GST from a price that includes it, divide by 1 plus the rate: 11,800 ÷ 1.18 = ₹10,000.',
+      'Or enter the amount and the rate in the GST calculator and choose add or remove.',
+    ],
+    sections: [
+      {
+        h: 'The mistake to avoid when removing GST',
+        p: [
+          'It is tempting to take 18% off ₹11,800. That gives ₹2,124 of GST and a price of ₹9,676, which is wrong. The 18% was charged on the price before GST, which was ₹10,000, so the GST is ₹1,800. Always divide by 1.18 instead.',
+          'The same applies at other rates. A ₹2,100 price that includes 5% GST is ₹2,000 before GST, because 2,100 ÷ 1.05 = 2,000, so ₹100 of it is GST.',
+        ],
+      },
+      {
+        h: 'The rates',
+        p: [
+          'After the GST reform that took effect on 22 September 2025 there are two main rates: a standard rate of 18% and a merit rate of 5%, plus a special rate of 40% for a select few goods and services. Some items are exempt or at 0%, and a few have special rates, so check the rate for your item. The Council’s October 2026 meeting changed processes such as registration, returns and refunds, not the rates.',
+          'At 5%, ₹1,000 becomes ₹1,050. At 18%, ₹10,000 becomes ₹11,800. At 40%, ₹10,000 becomes ₹14,000, and removing 40% from ₹14,000 gives ₹10,000 again.',
+        ],
+      },
+      {
+        h: 'CGST, SGST and IGST',
+        p: ['On an invoice the tax appears as CGST and SGST (or UTGST) when the sale is within one state, and as IGST when it is between states. The total tax is the same either way, because the IGST rate is the CGST and SGST rates added together. For a business, the GST you pay on purchases may be claimed back as input tax credit, which this calculator does not cover.'],
+      },
+    ],
+    faqs: [
+      { q: 'How do I add 18% GST?', a: 'Multiply the price by 1.18. ₹10,000 becomes ₹11,800.' },
+      { q: 'How do I remove GST from a total?', a: 'Divide the total by 1 plus the rate as a decimal. ₹11,800 divided by 1.18 is ₹10,000.' },
+      { q: 'What are the GST rates now?', a: 'The main rates are 5% and 18%, with a special 40% rate for a select few goods and services, in force from 22 September 2025. Some items are at 0% or have special rates.' },
+      { q: 'Why does the invoice show CGST and SGST?', a: 'Because the sale is within one state. A sale between states shows IGST instead, at the same total rate.' },
+    ],
+    calcs: ['gst-calculator', 'percentage-calculator', 'discount-calculator'],
+    related: ['how-to-calculate-percentage', 'how-to-calculate-discount-and-final-price'],
     published: '2026-11-14',
     updated: '2026-11-14',
   },

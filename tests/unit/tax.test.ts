@@ -159,3 +159,48 @@ describe('the calculator', () => {
     ]);
   });
 });
+
+describe('GST calculator', () => {
+  const def = calcBySlug('gst-calculator')!;
+  const run = (over: Values) => def.compute({ ...defaultValues(def), ...over });
+  const val = (over: Values, label: string) => Number(run(over).metrics.find((m) => m.label === label)!.value);
+
+  it('adds GST: ₹10,000 at 18% is ₹1,800 of GST and ₹11,800 in all', () => {
+    expect(val({}, 'GST amount')).toBeCloseTo(1_800, 9); // 10,000 x 18 / 100
+    expect(val({}, 'Total with GST')).toBeCloseTo(11_800, 9);
+    expect(val({}, 'Price without GST')).toBe(10_000);
+  });
+  it('removes GST: ₹11,800 at 18% is ₹10,000 plus ₹1,800 of GST', () => {
+    const over = { mode: 'remove', amount: 11_800 };
+    expect(val(over, 'Price without GST')).toBeCloseTo(10_000, 9); // 11,800 / 1.18
+    expect(val(over, 'GST amount')).toBeCloseTo(1_800, 9);
+    expect(val(over, 'Price with GST')).toBe(11_800);
+  });
+  it('the other main rates: 5% and 40%', () => {
+    expect(val({ amount: 1_000, rate: 5 }, 'Total with GST')).toBeCloseTo(1_050, 9);
+    expect(val({ amount: 1_000, rate: 5 }, 'GST amount')).toBeCloseTo(50, 9);
+    expect(val({ amount: 10_000, rate: 40 }, 'Total with GST')).toBeCloseTo(14_000, 9);
+    expect(val({ mode: 'remove', amount: 14_000, rate: 40 }, 'Price without GST')).toBeCloseTo(10_000, 9);
+    expect(val({ mode: 'remove', amount: 2_100, rate: 5 }, 'Price without GST')).toBeCloseTo(2_000, 9);
+    expect(val({ mode: 'remove', amount: 2_100, rate: 5 }, 'GST amount')).toBeCloseTo(100, 9);
+  });
+  it('subtracting the rate from the total is the common mistake: 18% of ₹11,800 is ₹2,124, which leaves ₹9,676, not ₹10,000', () => {
+    expect((11_800 * 18) / 100).toBeCloseTo(2_124, 9);
+    expect(11_800 - 2_124).toBe(9_676);
+    expect(val({ mode: 'remove', amount: 11_800 }, 'Price without GST')).not.toBe(9_676);
+  });
+  it('a 0% rate changes nothing, and invalid input is refused', () => {
+    expect(val({ rate: 0 }, 'Total with GST')).toBe(10_000);
+    expect(run({ rate: -1 }).error).toBeTruthy();
+    expect(run({ rate: 101 }).error).toBeTruthy();
+    expect(run({ amount: -5 }).error).toBeTruthy();
+  });
+  it('cites the three official sources and the date they were read', () => {
+    expect(def.rules?.asOf).toBe('2026-11-14');
+    expect(def.rules?.sources.map((x) => x.url)).toEqual([
+      'https://www.pib.gov.in/PressReleasePage.aspx?PRID=2163555&reg=48&lang=2',
+      'https://static.pib.gov.in/WriteReadData/specificdocs/documents/2026/oct/doc_10142_20261009_21430401.pdf',
+      'https://cbic-gst.gov.in/aces/Documents/faq-on-gst.pdf',
+    ]);
+  });
+});

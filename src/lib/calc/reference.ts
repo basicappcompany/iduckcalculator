@@ -116,6 +116,7 @@ const TABLES: Record<string, () => Reference> = {
     columns: ['Salary per year', 'New regime', 'Old regime'],
     rows: [500000, 750000, 1000000, 1275000, 1500000, 2000000, 3000000].map((salary) => [rs(salary), rs(n('income-tax-calculator', { salary }, 'Tax in the new')), rs(n('income-tax-calculator', { salary }, 'Tax in the old'))]),
   }),
+  'gst-calculator': () => grid({ question: 'How much GST is charged on common prices?', note: 'The GST added to a price before GST, at the main rates: 5% merit, 18% standard and 40% special.', corner: 'Price before GST', rows: [100, 500, 1000, 5000, 10000, 50000], cols: [5, 18, 40], rowLabel: rs, colLabel: (r) => `${r}%`, cell: (a, r) => rs(n('gst-calculator', { mode: 'add', amount: a, rate: r }, 'GST amount')) }),
   // ---- everyday maths
   'percentage-calculator': () => ({
     question: 'What are common percentages of 1,200 and 5,000?',

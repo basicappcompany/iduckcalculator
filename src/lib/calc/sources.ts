@@ -1,5 +1,5 @@
 import type { CalcDef } from './types';
-import { INCOME_TAX_RULES } from './defs/tax';
+import { GST_RULES, INCOME_TAX_RULES } from './defs/tax';
 
 /**
  * Where each finance and health formula comes from, shown on the calculator and guide pages next to a "Last reviewed" date and an
@@ -49,6 +49,7 @@ export const TRUST: Record<string, Trust> = {
   'inflation-calculator': { kind: 'finance', basis: 'Compounding at a steady inflation rate. Real inflation changes from year to year and differs between goods.', sources: [{ name: 'Inflation (reference)', url: 'https://en.wikipedia.org/wiki/Inflation' }] },
   'retirement-calculator': { kind: 'finance', basis: 'Inflation-adjusted expenses funded by a corpus that earns a steady return. It leaves out tax, pensions and changes in lifestyle.', sources: [ANNUITY] },
   'income-tax-calculator': { kind: 'finance', basis: 'The slabs, rebate, standard deduction, surcharge and cess for tax year 2026-27, read from the official sources below on 14 November 2026. The Income-tax Act, 2025 applies from 1 April 2026.', sources: INCOME_TAX_RULES.sources },
+  'gst-calculator': { kind: 'finance', basis: 'Plain percentage arithmetic. The rates (5%, 18% and a special 40%, from 22 September 2025) were read from the official sources below on 14 November 2026. The rate for your item is on the invoice or in the official schedule.', sources: GST_RULES.sources },
   'bmi-calculator': { kind: 'health', basis: 'Weight in kg divided by height in metres squared, with the WHO categories.', sources: [{ name: 'WHO: obesity and overweight', url: 'https://www.who.int/news-room/fact-sheets/detail/obesity-and-overweight' }] },
   'bmr-calculator': { kind: 'health', basis: 'The Mifflin-St Jeor equation.', sources: [MIFFLIN, BMR_REF] },
   'tdee-calculator': { kind: 'health', basis: 'The Mifflin-St Jeor BMR times a standard activity factor. The factors are conventions, not exact measurements.', sources: [MIFFLIN, BMR_REF] },
