@@ -55,6 +55,23 @@ test('typing into the EMI calculator updates the result live', async ({ page }) 
   await expect(page.getByTestId('big-result')).toHaveText('₹8,997');
 });
 
+test('the scientific calculator reads a typed expression and explains a bad one', async ({ page }) => {
+  await page.goto('/scientific-calculator/');
+  await expect(page.getByTestId('big-result')).toHaveText('24');
+  await page.getByLabel('Expression').fill('sin(30) + 2^3');
+  await expect(page.getByTestId('big-result')).toHaveText('8.5');
+  await page.getByLabel('Expression').fill('1/0');
+  await expect(page.getByRole('alert')).toContainText('divide by zero');
+});
+
+test('the basic calculator multiplies and refuses to divide by zero', async ({ page }) => {
+  await page.goto('/basic-calculator/');
+  await expect(page.getByTestId('big-result')).toHaveText('15,000');
+  await page.getByLabel('Operation').selectOption('div');
+  await page.getByLabel('Second number').fill('0');
+  await expect(page.getByRole('alert')).toContainText('divide by zero');
+});
+
 test('the currency chosen in Settings applies to calculators', async ({ page }) => {
   await page.goto('/settings/');
   await page.getByRole('radio', { name: 'US dollar ($)' }).click();

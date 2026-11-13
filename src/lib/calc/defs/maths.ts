@@ -1,4 +1,5 @@
 import { fail, n, num, s, sel, type CalcDef } from '../types';
+import { evaluate, ExprError, FUNCTION_NAMES, type AngleMode } from '../expr';
 
 const gcd = (a: number, b: number): number => (b === 0 ? Math.abs(a) : gcd(b, a % b));
 /** Round to 10 decimals so 0.1 + 0.2 shows as 0.3. */
@@ -351,4 +352,114 @@ export const MATHS: CalcDef[] = [
     ],
     related: ['ratio-calculator', 'percentage-calculator', 'average-calculator'],
   },
+  {
+    slug: 'basic-calculator',
+    name: 'Basic calculator',
+    group: 'maths',
+    emoji: '🔢',
+    summary: 'Add, subtract, multiply, divide, power, remainder and percent of, for two numbers.',
+    quick: 'Enter two numbers and choose an operation. For example, 1,250 × 12 = 15,000.',
+    keywords: 'simple calculator add subtract multiply divide plus minus times sum remainder power online',
+    title: 'Basic Calculator: add, subtract, multiply, divide',
+    description: 'Free online basic calculator. Add, subtract, multiply and divide two numbers, or find a power, a remainder or a percent of, with the working shown.',
+    fields: [
+      num('a', 'First number', 1250),
+      sel('op', 'Operation', 'mul', [
+        ['add', '+ add'],
+        ['sub', '− subtract'],
+        ['mul', '× multiply'],
+        ['div', '÷ divide'],
+        ['pow', '^ power (first number to the power of the second)'],
+        ['mod', 'mod remainder after dividing'],
+        ['pct', '% first number percent of the second'],
+      ]),
+      num('b', 'Second number', 12),
+    ],
+    compute: (v) => {
+      const a = n(v, 'a');
+      const b = n(v, 'b');
+      const op = s(v, 'op');
+      let answer: number;
+      let working: string;
+      if (op === 'add') [answer, working] = [a + b, `${a} + ${b}`];
+      else if (op === 'sub') [answer, working] = [a - b, `${a} − ${b}`];
+      else if (op === 'mul') [answer, working] = [a * b, `${a} × ${b}`];
+      else if (op === 'div') {
+        if (b === 0) return fail('You cannot divide by zero.');
+        [answer, working] = [a / b, `${a} ÷ ${b}`];
+      } else if (op === 'mod') {
+        if (b === 0) return fail('You cannot take a remainder by zero.');
+        [answer, working] = [a % b, `${a} mod ${b}`];
+      } else if (op === 'pow') [answer, working] = [Math.pow(a, b), `${a} ^ ${b}`];
+      else [answer, working] = [(a / 100) * b, `${a}% of ${b}`];
+      if (!Number.isFinite(answer)) return fail('That result is not a real number or is too large to show.');
+      return { metrics: [{ label: working, value: showNumber(answer), kind: 'text', big: true }] };
+    },
+    formula: ['Add, subtract, multiply, divide: the usual operations on the two numbers', 'Power: a ^ b means a multiplied by itself b times', 'Remainder: what is left after dividing a by b as many whole times as possible', 'Percent of: a% of b = a ÷ 100 × b'],
+    example: '1,250 × 12 = 15,000. And 15% of 2,400 = 15 ÷ 100 × 2,400 = 360; 17 mod 5 = 2, because 17 = 3 × 5 + 2.',
+    how: [
+      'Type the two numbers, pick the operation and the answer updates straight away.',
+      'Decimals and negative numbers work. Division by zero is not allowed, and the calculator tells you so instead of showing a wrong answer.',
+      'For longer sums with brackets, use the scientific calculator, which takes a whole expression such as (2 + 3) × 4.',
+    ],
+    faqs: [
+      { q: 'How do I add two numbers?', a: 'Enter them, choose + add, and read the answer. 125 + 75 = 200.' },
+      { q: 'What does mod mean?', a: 'It is the remainder after dividing. 17 mod 5 = 2, because 5 goes into 17 three times with 2 left over.' },
+      { q: 'Can I use negative numbers or decimals?', a: 'Yes. Type a minus sign for a negative number and a point for a decimal, for example -3.5.' },
+      { q: 'How do I work out a longer sum like 2 + 3 × 4?', a: 'Use the scientific calculator. It follows the usual order of operations, so 2 + 3 × 4 = 14.' },
+    ],
+    related: ['scientific-calculator', 'percentage-calculator', 'fraction-calculator'],
+  },
+  {
+    slug: 'scientific-calculator',
+    name: 'Scientific calculator',
+    group: 'maths',
+    emoji: '🔬',
+    summary: 'Type a whole expression with brackets, powers, roots, logs and trigonometry.',
+    quick: 'Type an expression and read the answer. For example, (2 + 3) × 4 = 20, and sin(30) = 0.5 in degrees.',
+    keywords: 'scientific calculator sin cos tan log ln sqrt square root power factorial pi brackets trigonometry online',
+    title: 'Scientific Calculator: sin, cos, log, roots, powers',
+    description: 'Free online scientific calculator. Type an expression with brackets, powers, roots, logarithms, factorials and trigonometry, in degrees or radians.',
+    fields: [
+      { kind: 'text', id: 'expr', label: 'Expression', default: '(2 + 3) * 4 + sqrt(16)', hint: 'Use + - * / ^ ( ) ! mod, pi and e. Functions: ' + FUNCTION_NAMES.join(', ') + '.' },
+      sel('mode', 'Angles for sin, cos and tan', 'deg', [
+        ['deg', 'Degrees'],
+        ['rad', 'Radians'],
+      ]),
+    ],
+    compute: (v) => {
+      try {
+        const answer = evaluate(s(v, 'expr'), s(v, 'mode') === 'rad' ? 'rad' : ('deg' as AngleMode));
+        return { metrics: [{ label: 'Answer', value: showNumber(answer), kind: 'text', big: true }], note: 'Order of operations: brackets, powers, then multiply and divide, then add and subtract.' };
+      } catch (e) {
+        if (e instanceof ExprError) return fail(e.message);
+        throw e;
+      }
+    },
+    formula: ['Brackets first, then powers (^) and factorials (!), then × ÷ and mod, then + −', 'sin, cos and tan take degrees or radians, as chosen; log is base 10 and ln is the natural logarithm', 'pi = 3.14159265… and e = 2.71828182…'],
+    example: '(2 + 3) × 4 + sqrt(16) = 5 × 4 + 4 = 24. In degrees, sin(30) = 0.5, and 5! = 5 × 4 × 3 × 2 × 1 = 120.',
+    how: [
+      'Type or paste the whole expression and the answer updates as you type. Spaces do not matter, and × ÷ − are accepted as well as * / -.',
+      'Multiplication can be left out next to a bracket, a function or pi: 2pi and 3(4 + 5) both work.',
+      'Pick degrees or radians for the angle functions. In degrees, exact angles such as sin(180) give exactly 0.',
+      'Nothing you type is sent anywhere: the expression is read by a small parser in your browser, never run as code.',
+    ],
+    faqs: [
+      { q: 'How do I enter a power or a root?', a: 'Use ^ for powers, so 2^10 = 1,024. For roots use sqrt(x) or cbrt(x), or raise to a fraction: 27^(1/3) = 3.' },
+      { q: 'Is it degrees or radians?', a: 'Your choice. Degrees is the default; switch to radians with the list under the expression.' },
+      { q: 'What is the difference between log and ln?', a: 'log is the base-10 logarithm (log(1000) = 3) and ln is the natural logarithm, base e (ln(e) = 1).' },
+      { q: 'How do I find a factorial?', a: 'Put ! after a whole number: 5! = 120. Factorials up to 170! are supported.' },
+      { q: 'Does it follow the order of operations?', a: 'Yes: brackets, then powers, then multiplication and division, then addition and subtraction. So 2 + 3 × 4 = 14.' },
+    ],
+    related: ['basic-calculator', 'percentage-calculator', 'fraction-calculator'],
+  },
 ];
+
+/** A readable number for the keypad-style calculators: 12 significant digits, no 0.30000000000000004, grouped in thousands. */
+function showNumber(x: number): string {
+  if (x === 0) return '0';
+  const p = parseFloat(x.toPrecision(12));
+  const abs = Math.abs(p);
+  if (abs >= 1e15 || abs < 1e-9) return p.toExponential(8).replace(/\.?0+e/, 'e');
+  return p.toLocaleString('en-US', { maximumFractionDigits: 12 });
+}
