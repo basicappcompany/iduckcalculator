@@ -55,6 +55,8 @@ export interface Metric {
 }
 
 export interface Table {
+  /** The heading above the table; "Year-by-year table" when not given. */
+  title?: string;
   columns: string[];
   rows: (number | string)[][];
   /** How to format each column; text by default. */

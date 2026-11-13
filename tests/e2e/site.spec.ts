@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { existsSync, readFileSync } from 'node:fs';
-import { CALCULATORS, calcPath } from '../../src/lib/calc';
+import { CALCULATORS, calcPath, liveGroups } from '../../src/lib/calc';
 import { GUIDES, guidePath } from '../../src/lib/guides';
 
 const STATIC = ['/', '/calculators/', '/guides/', '/chat/', '/roadmap/', '/request/', '/feedback/', '/support/', '/settings/', '/about/', '/privacy/', '/terms/'];
@@ -228,7 +228,7 @@ test('home page has the promised sections and filters by group', async ({ page }
   await page.getByRole('switch', { name: /Health/ }).click();
   await expect(page.locator('[data-card-group]:not([hidden])')).toHaveCount(1);
   await page.getByRole('switch', { name: /Everything/ }).click();
-  await expect(page.locator('[data-card-group]:not([hidden])')).toHaveCount(6);
+  await expect(page.locator('[data-card-group]:not([hidden])')).toHaveCount(liveGroups().length);
 });
 
 test('unknown addresses show the 404 page', async ({ page }) => {

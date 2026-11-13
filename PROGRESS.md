@@ -13,18 +13,18 @@ Last synced 2026-11-13. Live: https://iduckcalculator.com. Detail and owners: `d
 - [x] Generic calculator engine: registry, live form, formula, worked example, table, SVG chart, FAQ schema
 - [x] Home, All calculators, settings (theme, currency, language), helper chat, roadmap, request, feedback, support, about, privacy, terms, 404
 - [x] SEO: sitemap (96 URLs, each with a lastmod), robots, canonical, OG/Twitter tags, og.png, favicon, llms.txt, _headers (canonical and social tags not re-read at last sync)
-- [x] How-to guides: 42, one or more for every live calculator, figures checked by tests. Still to write: old vs new tax regime (waits on the income tax calculator) and a guide for each tax and scheme calculator
+- [x] How-to guides: 45, one or more for every live calculator, figures checked by tests (tax guide included). Each new tax or scheme calculator needs its own guide.
 - [x] Turkish (TR) chrome translation (not reviewed by a native speaker)
 - [x] CI (verify + build + e2e) green on main
 
-## Step 3: calculators (43 live of 52 planned)
+## Step 3: calculators (44 live of 52 planned)
 ### Loans & EMI
 - [x] EMI  - [x] Home loan EMI  - [x] Car loan EMI  - [x] Personal loan EMI  - [x] Loan prepayment savings  - [x] Loan eligibility
 ### Savings & investing
 - [x] SIP  - [x] Lumpsum  - [x] Step-up SIP  - [x] SWP  - [x] FD  - [x] RD  - [ ] PPF  - [ ] Sukanya Samriddhi  - [ ] NPS
 - [x] Compound interest  - [x] Simple interest  - [x] CAGR  - [x] Inflation  - [x] Retirement corpus
 ### Tax & salary (India) - rules MUST be looked up on official sources first
-- [ ] Income tax old vs new  - [ ] In-hand salary from CTC  - [ ] HRA exemption  - [ ] Gratuity  - [ ] GST add/remove  - [ ] TDS basics
+- [x] Income tax old vs new (tax year 2026-27, read from official sources on 2026-11-14)  - [ ] In-hand salary from CTC  - [ ] HRA exemption  - [ ] Gratuity  - [ ] GST add/remove  - [ ] TDS basics
 ### Everyday maths
 - [x] Percentage (all forms)  - [x] Percentage change  - [x] Discount  - [x] Profit and loss  - [x] Average  - [x] Ratio  - [x] Fraction
 - [x] Scientific  - [x] Basic
@@ -36,7 +36,7 @@ Last synced 2026-11-13. Live: https://iduckcalculator.com. Detail and owners: `d
 - [x] CGPA to percentage  - [x] GPA  - [x] Marks percentage  - [x] Attendance needed
 
 ## Step 4: guides
-- [x] How EMI is calculated  - [ ] Old vs new tax regime  - [x] SIP vs lumpsum  - [x] How to calculate percentage
+- [x] How EMI is calculated  - [x] Old vs new tax regime  - [x] SIP vs lumpsum  - [x] How to calculate percentage
 - [x] 39 more how-to guides, covering all 43 calculators (loans, savings, maths, dates, health, students), grouped on the guides page
 
 ## Step 5: checks
@@ -44,7 +44,7 @@ Last synced 2026-11-13. Live: https://iduckcalculator.com. Detail and owners: `d
 - [x] Dark/light, Ctrl+K, language switch, no console errors, no sideways scroll on every page (Playwright, 117 passing; the sideways-scroll check was not re-confirmed at a phone-width viewport by hand)
 - [ ] Broken links check (no link checker has been run)
 
-Measured at last sync: 347 unit tests in 9 files, 117 browser tests, 101 pages built, 96 sitemap URLs. Security headers A+ on securityheaders.com and Mozilla Observatory; mobile PageSpeed 100/100/100/100 on the home page, the EMI page and a guide. See AUDIT.md for the security and SEO audit.
+Measured at last sync: 374 unit tests in 10 files, 119 browser tests, 103 pages built, 98 sitemap URLs. Security headers A+ on securityheaders.com and Mozilla Observatory; mobile PageSpeed 100/100/100/100 on the home page, the EMI page and a guide. See AUDIT.md for the security and SEO audit.
 
 ## Open items and decisions
 - Email Routing is set up for hello@ and feedback@iduckcalculator.com (MX, SPF, DKIM live; both rules Active, forwarding to the company inbox; catch-all off). A real test message has not been sent: send one from another mailbox to each address and confirm it arrives.

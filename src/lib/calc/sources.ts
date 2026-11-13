@@ -1,4 +1,5 @@
 import type { CalcDef } from './types';
+import { INCOME_TAX_RULES } from './defs/tax';
 
 /**
  * Where each finance and health formula comes from, shown on the calculator and guide pages next to a "Last reviewed" date and an
@@ -47,6 +48,7 @@ export const TRUST: Record<string, Trust> = {
   'cagr-calculator': { kind: 'finance', basis: 'The standard compound annual growth rate formula. It smooths out the ups and downs of a real investment.', sources: [{ name: 'Compound annual growth rate (reference)', url: 'https://en.wikipedia.org/wiki/Compound_annual_growth_rate' }] },
   'inflation-calculator': { kind: 'finance', basis: 'Compounding at a steady inflation rate. Real inflation changes from year to year and differs between goods.', sources: [{ name: 'Inflation (reference)', url: 'https://en.wikipedia.org/wiki/Inflation' }] },
   'retirement-calculator': { kind: 'finance', basis: 'Inflation-adjusted expenses funded by a corpus that earns a steady return. It leaves out tax, pensions and changes in lifestyle.', sources: [ANNUITY] },
+  'income-tax-calculator': { kind: 'finance', basis: 'The slabs, rebate, standard deduction, surcharge and cess for tax year 2026-27, read from the official sources below on 14 November 2026. The Income-tax Act, 2025 applies from 1 April 2026.', sources: INCOME_TAX_RULES.sources },
   'bmi-calculator': { kind: 'health', basis: 'Weight in kg divided by height in metres squared, with the WHO categories.', sources: [{ name: 'WHO: obesity and overweight', url: 'https://www.who.int/news-room/fact-sheets/detail/obesity-and-overweight' }] },
   'bmr-calculator': { kind: 'health', basis: 'The Mifflin-St Jeor equation.', sources: [MIFFLIN, BMR_REF] },
   'tdee-calculator': { kind: 'health', basis: 'The Mifflin-St Jeor BMR times a standard activity factor. The factors are conventions, not exact measurements.', sources: [MIFFLIN, BMR_REF] },
@@ -57,7 +59,7 @@ export const TRUST: Record<string, Trust> = {
 };
 
 export const DISCLAIMER = {
-  finance: 'An estimate only, not financial advice. Real products, charges and taxes differ, so check the terms with your lender, bank or adviser.',
+  finance: 'An estimate only, not financial or tax advice. Real products, charges and taxes differ, so check the terms with your lender, bank, adviser or the tax department.',
   health: 'An estimate only, not medical advice. Talk to a doctor or dietitian about your own health.',
 } as const;
 

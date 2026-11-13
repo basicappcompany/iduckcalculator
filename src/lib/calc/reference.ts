@@ -110,6 +110,12 @@ const TABLES: Record<string, () => Reference> = {
     columns: ['Monthly expenses today', 'Corpus needed at 60', 'Monthly SIP to build it'],
     rows: [30000, 50000, 75000, 100000].map((expense) => [rs(expense), rs(n('retirement-calculator', { expense }, 'Corpus needed')), rs(n('retirement-calculator', { expense }, 'Monthly SIP'))]),
   }),
+  'income-tax-calculator': () => ({
+    question: 'What tax do I pay at common salaries?',
+    note: 'Tax year 2026-27 for a resident individual below 60 with salary only. The old regime column assumes ₹1,50,000 of deductions. Tax includes the rebate and 4% cess.',
+    columns: ['Salary per year', 'New regime', 'Old regime'],
+    rows: [500000, 750000, 1000000, 1275000, 1500000, 2000000, 3000000].map((salary) => [rs(salary), rs(n('income-tax-calculator', { salary }, 'Tax in the new')), rs(n('income-tax-calculator', { salary }, 'Tax in the old'))]),
+  }),
   // ---- everyday maths
   'percentage-calculator': () => ({
     question: 'What are common percentages of 1,200 and 5,000?',

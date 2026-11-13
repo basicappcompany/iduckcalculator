@@ -118,9 +118,9 @@ function BarChart({ chart, cur }: { chart: Chart; cur: string }) {
 function DataTable({ table, cur }: { table: Table; cur: string }) {
   return (
     <details class="card p-4" open>
-      <summary class="cursor-pointer text-sm font-black">Year-by-year table</summary>
+      <summary class="cursor-pointer text-sm font-black">{table.title ?? 'Year-by-year table'}</summary>
       <div class="mt-3 max-h-96 overflow-auto">
-        <table class="w-full min-w-[28rem] text-sm">
+        <table class="w-full min-w-[20rem] text-sm">
           <thead>
             <tr>
               {table.columns.map((c, i) => (

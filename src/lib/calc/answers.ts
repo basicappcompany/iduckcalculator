@@ -31,6 +31,7 @@ export const ANSWER_META: Record<string, AnswerMeta> = {
   'cagr-calculator': { topic: 'CAGR', what: 'CAGR, the compound annual growth rate, is the steady yearly rate that takes a starting value to an ending value.' },
   'inflation-calculator': { topic: 'the effect of inflation', what: 'Inflation raises prices over time, so the same money buys less and the same goods cost more.' },
   'retirement-calculator': { topic: 'a retirement corpus', what: 'A retirement corpus is the sum needed at retirement to pay your expenses, raised by inflation, for the years you expect to live.' },
+  'income-tax-calculator': { topic: 'income tax', what: 'Income tax is charged in slabs, and you can choose the default new regime or the old one.' },
   'percentage-calculator': { topic: 'a percentage', what: 'A percentage is a number out of 100, and this tool answers the five questions people ask most, from percent of to increase and decrease.' },
   'percentage-change-calculator': { topic: 'percentage change', what: 'Percentage change measures how much a value rose or fell compared with where it started, and a negative result means a fall.' },
   'discount-calculator': { topic: 'a discount', what: 'A discount takes a percentage off a price, and a second discount applies to the price already reduced.' },

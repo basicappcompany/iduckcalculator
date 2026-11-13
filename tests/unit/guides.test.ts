@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { GUIDES, guideBySlug } from '../../src/lib/guides';
 import { CALCULATORS, calcBySlug, defaultValues } from '../../src/lib/calc';
 import { evaluate } from '../../src/lib/calc/expr';
+import { incomeTax } from '../../src/lib/calc/defs/tax';
 import { formatNumber } from '../../src/lib/format';
 import type { Values } from '../../src/lib/calc/types';
 
@@ -45,6 +46,7 @@ const swp = L('how-to-plan-regular-withdrawals-swp', 'swp-calculator');
 const fd = L('how-to-calculate-fd-maturity', 'fd-calculator');
 const rd = L('how-to-calculate-rd-maturity', 'rd-calculator');
 const comp = L('how-compound-interest-works', 'compound-interest-calculator');
+const taxg = L('how-to-choose-old-or-new-tax-regime', 'income-tax-calculator');
 const simp = L('how-to-calculate-simple-interest', 'simple-interest-calculator');
 const simpComp = L('how-to-calculate-simple-interest', 'compound-interest-calculator');
 const basicG = L('how-to-use-the-basic-calculator', 'basic-calculator');
@@ -126,6 +128,11 @@ const CLAIMS: Claim[] = [
   simp({}, 'Simple interest', 'inr'), simp({}, 'Total amount', 'inr'), simp({}, 'Interest every year', 'inr'), simp({ years: 0.75 }, 'Simple interest', 'inr'),
   simpComp({ rate: 8, years: 3 }, 'Compound interest earned', 'inr'),
   simpComp({ years: 20 }, 'Simple interest', 'inr'), simpComp({ years: 20 }, 'Compound interest earned', 'inr'),
+  // ---- tax (rules read from official sources on 2026-11-14)
+  taxg({}, 'Tax in the new regime', 'inr'), taxg({}, 'Tax in the old regime', 'inr'), taxg({}, 'The new regime costs less', 'inr'),
+  taxg({ ded: 700000 }, 'Tax in the old regime', 'inr'),
+  taxg({ salary: 1000000 }, 'Tax in the new regime', 'inr'), taxg({ salary: 1000000 }, 'Tax in the old regime', 'inr'),
+  taxg({ salary: 1300000 }, 'Tax in the new regime', 'inr'),
   // ---- everyday maths
   pchg({}, 'Percentage increase', 'num'), pchg({ from: 100, to: 80 }, 'Percentage decrease', 'num'), pchg({ from: 50, to: 75 }, 'Percentage increase', 'num'), pchg({ from: 200, to: 150 }, 'Percentage decrease', 'num'),
   disc({}, 'You pay', 'inr'), disc({}, 'You save', 'inr'), disc({}, 'Effective discount', 'num'),
@@ -241,6 +248,21 @@ describe('guides quote the maths the calculators give', () => {
     expect(text).toContain('15,000');
     expect(text).toContain('15% of 2,400 is 360');
     expect(text).toContain('17 mod 5 is 2');
+  });
+
+  it('quotes the tax figures worked by hand, and the break-even for deductions', () => {
+    const t = JSON.stringify(guideBySlug('how-to-choose-old-or-new-tax-regime'));
+    const nw = (salary: number) => incomeTax({ salary, other: 0, deductions: 0, age: 'u60', regime: 'new' });
+    const od = (salary: number, deductions: number) => incomeTax({ salary, other: 0, deductions, age: 'u60', regime: 'old' });
+    expect(nw(1_500_000).taxable).toBe(1_425_000);
+    expect(Math.round(nw(1_000_000).slabTax)).toBe(32_500); // the slab tax the rebate then cancels
+    expect(nw(1_000_000).total).toBe(0);
+    expect(od(1_500_000, 150_000).taxable).toBe(1_300_000);
+    // break-even: deductions at which the old regime costs the same as the new on a salary of 15 lakh
+    expect(Math.round(od(1_500_000, 543_750).total)).toBe(Math.round(nw(1_500_000).total));
+    expect(od(1_500_000, 540_000).total).toBeGreaterThan(nw(1_500_000).total);
+    expect(od(1_500_000, 550_000).total).toBeLessThan(nw(1_500_000).total);
+    for (const s of ['₹97,500', '₹2,10,600', '₹1,13,100', '₹65,000', '₹75,400', '₹26,000', '₹5,43,750', '₹32,500', '₹14,25,000', '₹13,00,000']) expect(t, s).toContain(s);
   });
 
   it('quotes the figures worked by hand in the text', () => {
