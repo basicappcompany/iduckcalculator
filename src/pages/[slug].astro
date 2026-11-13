@@ -1,6 +1,11 @@
 ---
 import AppShell from '../components/AppShell.astro';
 import CalculatorTool from '../components/CalculatorTool';
+import ReferenceTable from '../components/ReferenceTable.astro';
+import TrustNote from '../components/TrustNote.astro';
+import { answerFor, topicOf } from '../lib/calc/answers';
+import { referenceFor } from '../lib/calc/reference';
+import { trustOf } from '../lib/calc/sources';
 import { CALCULATORS, CALC_GROUPS, calcBySlug, calcPath, calcsInGroup, groupName } from '../lib/calc';
 import { GUIDES, guidePath } from '../lib/guides';
 import { breadcrumbLd, faqLd, webApplicationLd } from '../lib/seo';
@@ -15,8 +20,12 @@ const related = def.related.map((r) => calcBySlug(r)!);
 const mates = calcsInGroup(def.group).filter((c) => c.slug !== slug && !def.related.includes(c.slug)).slice(0, 4);
 const guide = GUIDES.find((g) => g.calcs.includes(slug));
 const group = CALC_GROUPS.find((g) => g.id === def.group)!;
+const answer = answerFor(def);
+const topic = topicOf(def);
+const reference = referenceFor(slug);
+const trust = trustOf(def);
 const jsonLd = [
-  webApplicationLd(def.name, path, def.description),
+  webApplicationLd(def.name, path, def.description, def.group),
   breadcrumbLd([
     { name: 'Home', path: '/' },
     { name: 'Calculators', path: '/calculators/' },
@@ -46,7 +55,7 @@ const jsonLd = [
 
   <section aria-label="Quick answer" class="card mt-5 p-4">
     <p class="eyebrow" data-i18n="quick">Quick answer</p>
-    <p class="mt-1 leading-relaxed">{def.quick}</p>
+    <p class="mt-1 leading-relaxed" data-answer>{answer}</p>
     {
       guide && (
         <p class="mt-2 text-sm">
@@ -76,17 +85,21 @@ const jsonLd = [
   }
 
   <div class="prose mt-12">
-    <h2 data-i18n="how">How it works</h2>
+    <h2>How is {topic} calculated?</h2>
     {def.how.map((p) => <p>{p}</p>)}
 
-    <h2 data-i18n="formula">The formula</h2>
+    <h2>What is the formula for {topic}?</h2>
     <ul class="formula">
       {def.formula.map((line) => <li>{line}</li>)}
     </ul>
 
-    <h2 data-i18n="example">A worked example</h2>
+    <h2>Can you show a worked example of {topic}?</h2>
     <p>{def.example}</p>
   </div>
+
+  {reference && <ReferenceTable table={reference} />}
+
+  {trust && <TrustNote trust={trust} />}
 
   <section class="mt-12" aria-label="Common questions">
     <h2 class="text-3xl font-black tracking-tight" data-i18n="faq">Common questions</h2>

@@ -18,6 +18,7 @@ export function organizationLd(): Json {
     url: SITE_URL,
     logo: absolute('/favicon.svg'),
     sameAs: ['https://iduckpdf.com/', 'https://iduckimg.com/', 'https://iduckconvert.com/'],
+    contactPoint: { '@type': 'ContactPoint', contactType: 'customer support', email: 'hello@iduckcalculator.com', url: absolute('/feedback/') },
   };
 }
 
@@ -32,7 +33,9 @@ export function websiteLd(): Json {
   };
 }
 
-export function webApplicationLd(name: string, path: string, description: string): Json {
+const APP_CATEGORY: Record<string, string> = { loans: 'FinanceApplication', savings: 'FinanceApplication', tax: 'FinanceApplication', health: 'HealthApplication', students: 'EducationApplication' };
+
+export function webApplicationLd(name: string, path: string, description: string, group = ''): Json {
   return {
     '@context': 'https://schema.org',
     '@type': 'WebApplication',
@@ -40,8 +43,8 @@ export function webApplicationLd(name: string, path: string, description: string
     url: absolute(path),
     description,
     inLanguage: 'en',
-    applicationCategory: 'UtilitiesApplication',
-    operatingSystem: 'Any (web browser)',
+    applicationCategory: APP_CATEGORY[group] ?? 'UtilitiesApplication',
+    operatingSystem: 'Any',
     browserRequirements: 'Requires a modern browser with JavaScript',
     isAccessibleForFree: true,
     offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },

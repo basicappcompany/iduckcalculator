@@ -73,6 +73,46 @@ else {
   for (const e of entries) if (!known.has(e.loc)) add(e.loc ?? '?', 'sitemap lists a page that was not built');
 }
 
+// Structured data (JSON-LD): every block must parse, and each kind of page needs its types with the required fields.
+const defSource = ['loans', 'savings', 'maths', 'dates', 'health', 'students'].map((f) => readFileSync(`src/lib/calc/defs/${f}.ts`, 'utf8')).join(' ');
+const calcSlugs = new Set([...defSource.matchAll(/slug: '([a-z0-9-]+)'/g)].map((m) => `/${m[1]}/`));
+for (const p of pages) {
+  const blocks = [...p.html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map((m) => {
+    try {
+      return JSON.parse(m[1]);
+    } catch (e) {
+      add(p.rel, `JSON-LD does not parse: ${e.message}`);
+      return null;
+    }
+  });
+  const get = (type) => blocks.find((b) => b && b['@type'] === type);
+  const need = (type) => {
+    const b = get(type);
+    if (!b) add(p.rel, `missing JSON-LD ${type}`);
+    return b;
+  };
+  if (calcSlugs.has(p.rel)) {
+    const app = need('WebApplication');
+    if (app) {
+      if (app.operatingSystem !== 'Any') add(p.rel, 'WebApplication operatingSystem is not "Any"');
+      if (!app.applicationCategory) add(p.rel, 'WebApplication has no applicationCategory');
+      if (app.offers?.price !== '0') add(p.rel, 'WebApplication offers.price is not 0');
+    }
+    const faq = need('FAQPage');
+    if (faq && !(faq.mainEntity?.length >= 4)) add(p.rel, 'FAQPage has fewer than 4 questions');
+    need('BreadcrumbList');
+  } else if (p.rel.startsWith('/guides/') && p.rel !== '/guides/') {
+    const art = need('Article');
+    if (art && !(art.datePublished && art.dateModified)) add(p.rel, 'Article needs datePublished and dateModified');
+    need('FAQPage');
+    need('BreadcrumbList');
+  } else if (p.rel === '/') {
+    const org = need('Organization');
+    if (org && !(org.name === 'Basic App Company' && org.sameAs?.length >= 3)) add(p.rel, 'Organization needs the name and 3 sameAs links');
+    need('WebSite');
+  }
+}
+
 const robotsTxt = existsSync('public/robots.txt') ? readFileSync('public/robots.txt', 'utf8') : '';
 if (!/^Sitemap: https:\/\/iduckcalculator\.com\/sitemap-index\.xml$/m.test(robotsTxt)) add('robots.txt', 'does not name the sitemap');
 for (const bot of ['GPTBot', 'OAI-SearchBot', 'ChatGPT-User', 'ClaudeBot', 'Claude-SearchBot', 'Claude-User', 'PerplexityBot', 'Google-Extended', 'Applebot-Extended', 'Bingbot'])

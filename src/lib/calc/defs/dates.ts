@@ -315,7 +315,7 @@ export const DATES: CalcDef[] = [
     group: 'dates',
     emoji: '⏳',
     summary: 'Days, hours and minutes left until a date you choose.',
-    quick: 'Pick a date to see how many days, weeks and hours are left until the start of that day.',
+    quick: 'Pick a date to see how many days, weeks and hours are left until the start of that day. At noon on 1 December 2026, a countdown to 1 January 2027 shows 30 days 12 hours.',
     keywords: 'days until countdown how many days left event deadline birthday exam',
     title: 'Countdown Calculator: days left until a date',
     description: 'Free countdown calculator. Choose a date and see how many days, weeks, hours and minutes are left until then.',

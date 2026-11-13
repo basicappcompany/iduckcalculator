@@ -1,0 +1,32 @@
+---
+import type { Reference } from '../lib/calc/reference';
+
+interface Props {
+  table: Reference;
+}
+const { table } = Astro.props;
+---
+
+<section class="mt-12" aria-labelledby="ref-heading">
+  <h2 id="ref-heading" class="text-3xl font-black tracking-tight">{table.question}</h2>
+  <p class="mt-1 text-muted">{table.note}</p>
+  <div class="ref-wrap mt-3">
+    <table class="ref-table">
+      <caption class="sr-only">{table.question}</caption>
+      <thead>
+        <tr>
+          {table.columns.map((c) => <th scope="col">{c}</th>)}
+        </tr>
+      </thead>
+      <tbody>
+        {
+          table.rows.map((row) => (
+            <tr>
+              {row.map((v, i) => (i === 0 ? <th scope="row">{v}</th> : <td>{v}</td>))}
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+</section>

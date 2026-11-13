@@ -45,6 +45,12 @@ test('the policy really blocks an injected script and an injected inline style',
   violations.set(page, []); // expected here, so do not fail the afterEach check
 });
 
+/** Opens a page and waits until its interactive parts (the Preact islands) have loaded, so a test never types before they can listen. */
+async function openReady(page: Page, path: string) {
+  await page.goto(path);
+  await expect(page.locator('astro-island[ssr]')).toHaveCount(0);
+}
+
 /** Collects console errors and failed requests so every test can assert there were none. */
 function watch(page: Page) {
   const problems: string[] = [];
@@ -83,7 +89,7 @@ test.describe('every calculator page', () => {
 });
 
 test('typing into the EMI calculator updates the result live', async ({ page }) => {
-  await page.goto('/emi-calculator/');
+  await openReady(page, '/emi-calculator/');
   await expect(page.getByTestId('big-result')).toHaveText('₹8,997');
   await page.getByLabel('Loan amount').fill('5000000');
   await page.getByLabel('Interest rate per year').fill('8.5');
@@ -95,7 +101,7 @@ test('typing into the EMI calculator updates the result live', async ({ page }) 
 });
 
 test('the scientific calculator reads a typed expression and explains a bad one', async ({ page }) => {
-  await page.goto('/scientific-calculator/');
+  await openReady(page, '/scientific-calculator/');
   await expect(page.getByTestId('big-result')).toHaveText('24');
   await page.getByLabel('Expression').fill('sin(30) + 2^3');
   await expect(page.getByTestId('big-result')).toHaveText('8.5');
@@ -104,9 +110,9 @@ test('the scientific calculator reads a typed expression and explains a bad one'
 });
 
 test('the basic calculator multiplies and refuses to divide by zero', async ({ page }) => {
-  await page.goto('/basic-calculator/');
+  await openReady(page, '/basic-calculator/');
   await expect(page.getByTestId('big-result')).toHaveText('15,000');
-  await page.getByLabel('Operation').selectOption('div');
+  await page.getByLabel('Operation', { exact: true }).selectOption('div');
   await page.getByLabel('Second number').fill('0');
   await expect(page.getByRole('alert')).toContainText('divide by zero');
 });
@@ -115,7 +121,7 @@ test('the currency chosen in Settings applies to calculators', async ({ page }) 
   await page.goto('/settings/');
   await page.getByRole('radio', { name: 'US dollar ($)' }).click();
   await expect(page.getByTestId('currency-preview')).toContainText('$1,234,567.50');
-  await page.goto('/emi-calculator/');
+  await openReady(page, '/emi-calculator/');
   await expect(page.getByTestId('big-result')).toHaveText('$8,997');
 });
 
@@ -133,7 +139,7 @@ test('Ctrl K opens search, finds a calculator and opens it', async ({ page }) =>
 });
 
 test('the theme toggle switches and is remembered', async ({ page }) => {
-  await page.goto('/emi-calculator/');
+  await openReady(page, '/emi-calculator/');
   await page.locator('#theme-toggle').click();
   const first = await page.locator('html').getAttribute('data-theme');
   expect(['light', 'dark']).toContain(first);
@@ -146,7 +152,7 @@ test('the theme toggle switches and is remembered', async ({ page }) => {
 test('dark mode follows the system and uses #121212', async ({ browser }) => {
   const ctx = await browser.newContext({ colorScheme: 'dark' });
   const page = await ctx.newPage();
-  await page.goto('/emi-calculator/');
+  await openReady(page, '/emi-calculator/');
   expect(await page.evaluate(() => getComputedStyle(document.body).backgroundColor)).toBe('rgb(18, 18, 18)');
   await ctx.close();
 });
@@ -159,13 +165,13 @@ test('the start page is always light, even with a dark system and a saved dark c
   const bg = () => page.evaluate(() => getComputedStyle(document.body).backgroundColor);
   expect(await bg()).toBe('rgb(255, 253, 245)');
   await expect(page.locator('#theme-toggle')).toBeHidden();
-  await page.goto('/emi-calculator/'); // every other page still honours the choice
+  await openReady(page, '/emi-calculator/'); // every other page still honours the choice
   expect(await bg()).toBe('rgb(18, 18, 18)');
   await ctx.close();
 });
 
 test('the language switch changes the page chrome to Turkish and back', async ({ page }) => {
-  await page.goto('/emi-calculator/');
+  await openReady(page, '/emi-calculator/');
   await page.locator('[data-lang-menu] summary').click();
   await page.locator('[data-lang="tr"]').click();
   await expect(page.locator('[data-i18n="home"]').first()).toHaveText('Ana sayfa');
@@ -195,14 +201,14 @@ test('unknown addresses show the 404 page', async ({ page }) => {
 });
 
 test('the helper finds a calculator from plain words', async ({ page }) => {
-  await page.goto('/chat/');
+  await openReady(page, '/chat/');
   await page.getByLabel('Describe what you want to calculate').fill('how old am I');
   await page.getByRole('button', { name: 'Ask' }).click();
   await expect(page.getByRole('log').getByRole('link', { name: /Age calculator/ })).toBeVisible();
 });
 
 test('the helper greets, shows typing, answers a sum itself and offers starters', async ({ page }) => {
-  await page.goto('/chat/');
+  await openReady(page, '/chat/');
   const log = page.getByRole('log');
   await expect(log).toContainText('Hi, I am Duck');
   await expect(log.getByRole('button', { name: 'Is my data safe?' })).toBeVisible();

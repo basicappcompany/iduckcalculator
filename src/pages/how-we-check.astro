@@ -1,0 +1,75 @@
+---
+import CommunityLayout from '../components/CommunityLayout.astro';
+import { CALC_GROUPS, CALCULATORS } from '../lib/calc';
+import { LAST_REVIEWED, TRUST, allSources } from '../lib/calc/sources';
+import { GUIDES } from '../lib/guides';
+import { CONTACT_EMAIL } from '../lib/contact';
+import { articleLd, breadcrumbLd } from '../lib/seo';
+
+const date = new Date(`${LAST_REVIEWED}T00:00:00Z`).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+const sources = allSources();
+const financeCount = Object.values(TRUST).filter((t) => t.kind === 'finance').length;
+const healthCount = Object.values(TRUST).filter((t) => t.kind === 'health').length;
+const taxGroup = CALC_GROUPS.find((g) => g.id === 'tax');
+---
+
+<CommunityLayout
+  title="How we check our calculators: tests and sources"
+  description="How each iDuckCalculator result is tested against known answers, where the finance and health formulas come from, and what they cannot tell you."
+  before="How we"
+  mark="check"
+  after=" our calculators"
+  intro="Every result comes from a plain formula, and every formula is tested against an answer worked out separately."
+  jsonLd={[
+    articleLd({ headline: 'How we check our calculators', description: 'How each result is tested and where the formulas come from.', path: '/how-we-check/', datePublished: '2026-11-13', dateModified: LAST_REVIEWED }),
+    breadcrumbLd([{ name: 'Home', path: '/' }, { name: 'How we check our calculators', path: '/how-we-check/' }]),
+  ]}
+>
+  <section class="card p-5">
+    <h2 class="text-2xl font-black tracking-tight">How is each result tested?</h2>
+    <p class="mt-2">
+      Each of the {CALCULATORS.length} calculators has automatic tests that compare its result with a known answer. For example, a ₹10,00,000 loan at 9% over 20 years must give an EMI of ₹8,997, and 70 kg at 175 cm must give a BMI of 22.9. The tests also check that every calculator page has its formula, a worked example, a set of questions and answers, and links to related tools, and that no page shows an empty or invalid number.
+    </p>
+    <p class="mt-2">
+      A second set of tests opens every page in a real browser, types into the calculators, and checks the answers and that nothing breaks. The tests run again on every change, and a change cannot go live unless they pass.
+    </p>
+  </section>
+
+  <section class="card p-5">
+    <h2 class="text-2xl font-black tracking-tight">How are the guides and tables checked?</h2>
+    <p class="mt-2">
+      The {GUIDES.length} how-to guides quote many figures. A test recalculates each of them with the calculators themselves and fails if a guide says something the calculator does not. The reference tables under each calculator, such as the EMI on ₹1 lakh or CGPA to percentage, are not typed in: every cell is worked out by the calculator when the site is built.
+    </p>
+  </section>
+
+  <section class="card p-5">
+    <h2 class="text-2xl font-black tracking-tight">Where do the formulas come from?</h2>
+    <p class="mt-2">
+      The {financeCount} finance calculators use standard textbook formulas: the reducing-balance EMI formula, compound interest, the future value of regular investments, CAGR and simple interest. The {healthCount} health calculators use published equations: BMI with the WHO categories, Mifflin-St Jeor for BMR, the U.S. Navy method for body fat, the Devine and Robinson formulas for ideal weight and Naegele’s rule for due dates. Each page shows its basis and links to a reference. The water intake calculator uses a rule of thumb that is not an official guideline, and says so.
+    </p>
+    <ul class="mt-3 grid gap-1 text-sm">
+      {sources.map((s) => <li><a class="link" href={s.url} rel="noopener">{s.name}</a></li>)}
+    </ul>
+    <p class="mt-3 text-sm text-muted">Several of these are general references, not a lender’s or a regulator’s rulebook. A bank’s own schedule can differ by a few rupees because of rounding and dates.</p>
+  </section>
+
+  <section class="card p-5">
+    <h2 class="text-2xl font-black tracking-tight">What can the calculators not tell you?</h2>
+    <p class="mt-2">
+      They are estimates. Investment calculators assume a steady return that real markets do not give. Loan calculators leave out processing fees, insurance and taxes. Health calculators use averages and are not medical advice. None of this is financial or medical advice, so check the terms of any loan, deposit or plan with your lender, bank or adviser, and talk to a doctor or dietitian about your own health.
+    </p>
+    <p class="mt-2">
+      {taxGroup && `The ${taxGroup.name} group is not built yet.`} Tax and savings-scheme rules change with each Budget and notification, so those calculators will be added only once the current slabs, rates and limits have been read from the official source, and each page will show the financial year and the date the rules were read. Until then there is no tax calculator, and nothing here states a tax rule.
+    </p>
+  </section>
+
+  <section class="card p-5">
+    <h2 class="text-2xl font-black tracking-tight">When was this last reviewed?</h2>
+    <p class="mt-2">The formulas, sources and wording of the finance and health pages were last reviewed on <time datetime={LAST_REVIEWED}>{date}</time>. That date is shown on each of those pages.</p>
+  </section>
+
+  <section class="card p-5">
+    <h2 class="text-2xl font-black tracking-tight">Found a mistake?</h2>
+    <p class="mt-2">Please <a class="link" href="/feedback/">tell us</a>, with what you typed and what you expected, or write to <a class="link" href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>. iDuckCalculator is run by Basic App Company; see <a class="link" href="/about/">About</a>.</p>
+  </section>
+</CommunityLayout>

@@ -2,6 +2,8 @@
 import AppShell from '../../components/AppShell.astro';
 import { GUIDES, guideBySlug, guidePath } from '../../lib/guides';
 import { calcBySlug, calcPath } from '../../lib/calc';
+import TrustNote from '../../components/TrustNote.astro';
+import { TRUST } from '../../lib/calc/sources';
 import { articleLd, breadcrumbLd, faqLd, howToLd } from '../../lib/seo';
 
 export function getStaticPaths() {
@@ -11,6 +13,8 @@ const guide = guideBySlug(Astro.props.slug)!;
 const path = guidePath(guide.slug);
 const calcs = guide.calcs.map((s) => calcBySlug(s)!);
 const others = guide.related.map((s) => guideBySlug(s)!);
+// Finance and health guides carry the same review date, sources and estimate-only line as their calculators.
+const trust = guide.calcs.map((s) => TRUST[s]).find(Boolean);
 ---
 
 <AppShell
@@ -46,6 +50,8 @@ const others = guide.related.map((s) => guideBySlug(s)!);
       ))
     }
   </div>
+
+  {trust && <TrustNote trust={trust} reviewed={guide.updated} />}
 
   <section class="mt-10" aria-label="Try the calculators">
     <h2 class="text-2xl font-black tracking-tight">Try it yourself</h2>

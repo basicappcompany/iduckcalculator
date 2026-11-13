@@ -34,6 +34,13 @@ Contact mail: Cloudflare Email Routing forwards hello@ and feedback@iduckcalcula
 - Every number a guide quotes must be recomputed in `tests/unit/guides.test.ts` from the calculators. Add a claim there when you add a guide, and write the figure the way the test formats it (Indian grouping, a real minus sign).
 - Every live calculator must be linked from at least one guide; the test enforces it. Health guides keep the not-medical-advice line.
 
+## Page content that search and AI answers quote
+- `src/lib/calc/answers.ts`: the 40 to 60 word answer under each heading is composed from a "what it is" sentence, `formula[0]` and the example sentence in `quick`. Adding a calculator means adding its entry there (a test fails otherwise).
+- `src/lib/calc/reference.ts`: one reference table per calculator, every cell computed by the calculator. Add one for each new calculator.
+- `src/lib/calc/sources.ts`: finance and health calculators need a `TRUST` entry (basis and reference links) and `LAST_REVIEWED` is the date shown as "Last reviewed". Re-check the formulas and links, then bump the date.
+- `pnpm seo:check` (CI) enforces titles under 60 and descriptions under 155 characters, unique titles, one h1, robots meta, canonical, sitemap with lastmod, JSON-LD fields and the AI-crawler groups in robots.txt.
+- Security headers: `public/_headers` plus `scripts/csp.mjs` (hashes of inline scripts into the CSP). No inline `style=` attributes or event handlers: use classes. Browser tests run under the production CSP.
+
 ## Adding a calculator
 1. Add an entry to the right file in `src/lib/calc/defs/`: slug, name, group, summary, quick answer, title (<= 65 chars), description (70 to 175), fields, `compute`, formula, worked example, `how`, 4 to 6 FAQs, exactly 3 `related` slugs that exist.
 2. Add a known-answer unit test (the worked example's numbers). The registry test already enforces the page fields.

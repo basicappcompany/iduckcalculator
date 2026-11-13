@@ -16,6 +16,7 @@ export const COMMUNITY: readonly CommunityPage[] = [
   { slug: 'feedback', name: 'Send feedback', emoji: '📮', summary: 'Something broke, could be better, or worked great.', indexable: false },
   { slug: 'support', name: 'Support iDuckCalculator', emoji: '💛', summary: 'Ways to help keep it free.', indexable: true },
   { slug: 'settings', name: 'Settings', emoji: '⚙️', summary: 'Theme, currency, language and keyboard shortcuts.', indexable: false },
+  { slug: 'how-we-check', name: 'How we check', emoji: '✅', summary: 'How each result is tested and where the formulas come from.', indexable: true },
   { slug: 'about', name: 'About', emoji: '🦆', summary: 'Who runs iDuckCalculator, what it costs and how it is built.', indexable: true },
 ];
 

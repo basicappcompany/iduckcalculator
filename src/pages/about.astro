@@ -1,6 +1,7 @@
 ---
 import CommunityLayout from '../components/CommunityLayout.astro';
 import { CALCULATORS } from '../lib/calc';
+import { CONTACT_EMAIL } from '../lib/contact';
 import { organizationLd } from '../lib/seo';
 ---
 
@@ -35,5 +36,11 @@ import { organizationLd } from '../lib/seo';
   <section class="card p-5">
     <h2 class="text-2xl font-black tracking-tight">Found a mistake?</h2>
     <p class="mt-2">Please <a class="link" href="/feedback/">tell us</a>, with what you typed and what you expected.</p>
+  </section>
+  <section class="card p-5">
+    <h2 class="text-2xl font-black tracking-tight">How to contact us</h2>
+    <p class="mt-2">
+      iDuckCalculator is a product of Basic App Company. For questions write to <a class="link" href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>, or use the <a class="link" href="/feedback/">feedback form</a> for a mistake or an idea. To see how results are tested and where the formulas come from, read <a class="link" href="/how-we-check/">how we check our calculators</a>.
+    </p>
   </section>
 </CommunityLayout>

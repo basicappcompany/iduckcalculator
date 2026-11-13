@@ -743,3 +743,35 @@ body {
 .bubble {
   box-shadow: 3px 3px 0 0 var(--d-shadow);
 }
+
+/* Reference tables under each calculator: plain text, readable without JavaScript. */
+.ref-wrap {
+  overflow-x: auto;
+  border: 2px solid var(--d-line);
+  border-radius: 14px;
+  background: var(--d-card);
+}
+.ref-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+  font-variant-numeric: tabular-nums;
+}
+.ref-table th,
+.ref-table td {
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--d-soft);
+}
+.ref-table thead th {
+  background: var(--d-soft);
+  font-weight: 900;
+}
+.ref-table tbody th {
+  font-weight: 800;
+}
+.ref-table tbody tr:last-child th,
+.ref-table tbody tr:last-child td {
+  border-bottom: 0;
+}
