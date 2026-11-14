@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'preact/hooks';
 import { calcBySlug, defaultValues } from '../lib/calc';
 import { todayISO } from '../lib/calc/defs/dates';
 import type { Chart, Field, Metric, Result, Table, Values } from '../lib/calc/types';
+import { makeTr, type Tr } from '../lib/i18n/catalog';
 import { CURRENCY_STORAGE_KEY, DEFAULT_CURRENCY, currencyByCode, formatCompact, formatMoney, formatNumber, formatPercent } from '../lib/format';
 
 export const CURRENCY_EVENT = 'duck-currency';
@@ -23,10 +24,11 @@ function useCurrency(): string {
   return code;
 }
 
-const UNIT_LABEL: Record<string, string> = { percent: '%', years: 'years', months: 'months', days: 'days', kg: 'kg', cm: 'cm' };
+/** Units that are words go through the translator; symbols and abbreviations stay as they are. */
+const unitLabel = (unit: string, tr: Tr): string | undefined => ({ percent: '%', years: tr('years'), months: tr('months'), days: tr('days'), kg: 'kg', cm: 'cm' } as Record<string, string>)[unit];
 
-function fmtMetric(m: Metric, cur: string): string {
-  if (typeof m.value === 'string') return m.value;
+function fmtMetric(m: Metric, cur: string, tr: Tr): string {
+  if (typeof m.value === 'string') return tr(m.value);
   switch (m.kind) {
     case 'money':
       return formatMoney(m.value, cur, m.decimals ?? 0);
@@ -39,8 +41,8 @@ function fmtMetric(m: Metric, cur: string): string {
   }
 }
 
-function fmtCell(v: number | string, kind: string | undefined, cur: string): string {
-  if (typeof v === 'string') return v;
+function fmtCell(v: number | string, kind: string | undefined, cur: string, tr: Tr): string {
+  if (typeof v === 'string') return tr(v);
   if (kind === 'money') return formatMoney(v, cur, 0);
   if (kind === 'percent') return formatPercent(v, 2);
   if (kind === 'number') return formatNumber(v, 0, 'en-US');
@@ -51,7 +53,7 @@ const SERIES_FILL = ['var(--d-duck)', 'var(--d-orange)', 'var(--d-ok)'];
 /** Legend swatches use classes (see global.css): the site's Content-Security-Policy does not allow inline style attributes. */
 const SWATCH = ['swatch-0', 'swatch-1', 'swatch-2'];
 
-function BarChart({ chart, cur }: { chart: Chart; cur: string }) {
+function BarChart({ chart, cur, tr }: { chart: Chart; cur: string; tr: Tr }) {
   const W = 640;
   const H = 260;
   const L = 56;
@@ -68,8 +70,8 @@ function BarChart({ chart, cur }: { chart: Chart; cur: string }) {
   const fmt = (val: number) => (money ? formatCompact(val, cur) : formatNumber(val, 0));
   return (
     <figure class="card p-4">
-      <figcaption class="text-sm font-black">{chart.title}</figcaption>
-      <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={chart.title} class="mt-2 h-auto w-full">
+      <figcaption class="text-sm font-black">{tr(chart.title)}</figcaption>
+      <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={tr(chart.title)} class="mt-2 h-auto w-full">
         {[0, 0.5, 1].map((t) => (
           <g key={t}>
             <line x1={L} x2={W - 4} y1={y(max * t)} y2={y(max * t)} stroke="var(--d-muted)" stroke-opacity="0.35" stroke-dasharray="3 4" />
@@ -90,7 +92,7 @@ function BarChart({ chart, cur }: { chart: Chart; cur: string }) {
                 acc += v;
                 return (
                   <rect key={s.name} x={x} y={top} width={barW} height={Math.max(0, h)} fill={SERIES_FILL[k % 3]} stroke="var(--d-line)" stroke-width={h > 1.5 ? 1 : 0}>
-                    <title>{`Year ${label}, ${s.name}: ${fmt(v)}`}</title>
+                    <title>{`${tr('Year')} ${label}, ${tr(s.name)}: ${fmt(v)}`}</title>
                   </rect>
                 );
               })}
@@ -107,7 +109,7 @@ function BarChart({ chart, cur }: { chart: Chart; cur: string }) {
         {chart.series.map((s, k) => (
           <li key={s.name} class="flex items-center gap-1.5">
             <span aria-hidden="true" class={`inline-block h-3 w-3 rounded-sm border border-line ${SWATCH[k % 3]}`} />
-            {s.name}
+            {tr(s.name)}
           </li>
         ))}
       </ul>
@@ -115,17 +117,17 @@ function BarChart({ chart, cur }: { chart: Chart; cur: string }) {
   );
 }
 
-function DataTable({ table, cur }: { table: Table; cur: string }) {
+function DataTable({ table, cur, tr }: { table: Table; cur: string; tr: Tr }) {
   return (
     <details class="card p-4" open>
-      <summary class="cursor-pointer text-sm font-black">{table.title ?? 'Year-by-year table'}</summary>
+      <summary class="cursor-pointer text-sm font-black">{tr(table.title ?? 'Year-by-year table')}</summary>
       <div class="mt-3 max-h-96 overflow-auto">
         <table class="w-full min-w-[20rem] text-sm">
           <thead>
             <tr>
               {table.columns.map((c, i) => (
                 <th key={c} scope="col" class={`sticky top-0 border-b-2 border-line bg-card px-2 py-1.5 ${i === 0 ? 'text-left' : 'text-right'}`}>
-                  {c}
+                  {tr(c)}
                 </th>
               ))}
             </tr>
@@ -135,7 +137,7 @@ function DataTable({ table, cur }: { table: Table; cur: string }) {
               <tr key={r} class="border-b border-line/30">
                 {row.map((cell, i) => (
                   <td key={i} class={`px-2 py-1.5 tabular-nums ${i === 0 ? 'text-left font-bold' : 'text-right'}`}>
-                    {fmtCell(cell, table.kinds?.[i], cur)}
+                    {fmtCell(cell, table.kinds?.[i], cur, tr)}
                   </td>
                 ))}
               </tr>
@@ -147,22 +149,22 @@ function DataTable({ table, cur }: { table: Table; cur: string }) {
   );
 }
 
-function FieldInput({ f, value, onChange, cur }: { f: Field; value: number | string; onChange: (v: string) => void; cur: string }) {
+function FieldInput({ f, value, onChange, cur, tr }: { f: Field; value: number | string; onChange: (v: string) => void; cur: string; tr: Tr }) {
   const id = `f-${f.id}`;
   if (f.kind === 'select') {
     return (
       <div class="grid gap-1">
         <label for={id} class="text-sm font-bold">
-          {f.label}
+          {tr(f.label)}
         </label>
         <select id={id} class="input" value={String(value)} onChange={(e) => onChange(e.currentTarget.value)}>
           {f.options.map((o) => (
             <option key={o.value} value={o.value}>
-              {o.label}
+              {tr(o.label)}
             </option>
           ))}
         </select>
-        {f.hint && <p class="text-xs text-muted">{f.hint}</p>}
+        {f.hint && <p class="text-xs text-muted">{tr(f.hint)}</p>}
       </div>
     );
   }
@@ -170,10 +172,10 @@ function FieldInput({ f, value, onChange, cur }: { f: Field; value: number | str
     return (
       <div class="grid gap-1">
         <label for={id} class="text-sm font-bold">
-          {f.label}
+          {tr(f.label)}
         </label>
         <input id={id} type="date" class="input" value={value === 'today' ? todayISO() : String(value)} onInput={(e) => onChange(e.currentTarget.value)} />
-        {f.hint && <p class="text-xs text-muted">{f.hint}</p>}
+        {f.hint && <p class="text-xs text-muted">{tr(f.hint)}</p>}
       </div>
     );
   }
@@ -181,19 +183,19 @@ function FieldInput({ f, value, onChange, cur }: { f: Field; value: number | str
     return (
       <div class="grid gap-1">
         <label for={id} class="text-sm font-bold">
-          {f.label}
+          {tr(f.label)}
         </label>
         <textarea id={id} class="input min-h-20" value={String(value)} onInput={(e) => onChange(e.currentTarget.value)} />
-        {f.hint && <p class="text-xs text-muted">{f.hint}</p>}
+        {f.hint && <p class="text-xs text-muted">{tr(f.hint)}</p>}
       </div>
     );
   }
   const num = parseFloat(String(value));
-  const suffix = f.unit ? UNIT_LABEL[f.unit] : undefined;
+  const suffix = f.unit ? unitLabel(f.unit, tr) : undefined;
   return (
     <div class="grid gap-1">
       <label for={id} class="text-sm font-bold">
-        {f.label}
+        {tr(f.label)}
       </label>
       <div class="flex items-center gap-2">
         {f.unit === 'money' && (
@@ -219,13 +221,14 @@ function FieldInput({ f, value, onChange, cur }: { f: Field; value: number | str
         )}
       </div>
       {f.unit === 'money' && Number.isFinite(num) && num >= 1e5 && <p class="text-xs text-muted">{formatCompact(num, cur)}</p>}
-      {f.hint && <p class="text-xs text-muted">{f.hint}</p>}
+      {f.hint && <p class="text-xs text-muted">{tr(f.hint)}</p>}
     </div>
   );
 }
 
-export default function CalculatorTool({ slug }: { slug: string }) {
+export default function CalculatorTool({ slug, strings }: { slug: string; /** The translations this calculator needs, English text to the page's language. Absent on English pages. */ strings?: Record<string, string> }) {
   const def = calcBySlug(slug);
+  const tr: Tr = useMemo(() => (strings ? makeTr(strings) : (s: string) => s), [strings]);
   const cur = useCurrency();
   const [values, setValues] = useState<Values>(() => (def ? defaultValues(def) : {}));
   // "today" defaults become the real date on the visitor's device; the build has a different "today".
@@ -246,28 +249,28 @@ export default function CalculatorTool({ slug }: { slug: string }) {
   const rest = result.metrics.filter((m) => m !== big);
   return (
     <div class="grid gap-5 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
-      <form class="card grid content-start gap-4 p-5" onSubmit={(e) => e.preventDefault()} aria-label={`${def.name} inputs`} noValidate>
+      <form class="card grid content-start gap-4 p-5" onSubmit={(e) => e.preventDefault()} aria-label={tr('Inputs')} noValidate>
         {def.fields.map((f) => (
-          <FieldInput key={f.id} f={f} cur={cur} value={values[f.id] ?? ''} onChange={(v) => setValues((old) => ({ ...old, [f.id]: v }))} />
+          <FieldInput key={f.id} f={f} cur={cur} tr={tr} value={values[f.id] ?? ''} onChange={(v) => setValues((old) => ({ ...old, [f.id]: v }))} />
         ))}
         <button type="button" class="btn btn-sm justify-self-start" onClick={() => setValues(defaultValues(def))}>
-          Reset to the example
+          {tr('Reset to the example')}
         </button>
       </form>
 
       <div class="grid content-start gap-4" aria-live="polite">
         {result.error ? (
           <p class="card p-5 font-bold text-danger" role="alert">
-            {result.error}
+            {tr(result.error)}
           </p>
         ) : (
           <>
-            <section class="card bg-duck p-5 text-duckink" aria-label="Result">
+            <section class="card bg-duck p-5 text-duckink" aria-label={tr('Result')}>
               {big && (
                 <>
-                  <p class="eyebrow">{big.label}</p>
+                  <p class="eyebrow">{tr(big.label)}</p>
                   <p class="mt-1 break-words text-3xl font-black tracking-tight min-[420px]:text-4xl" data-testid="big-result">
-                    {fmtMetric(big, cur)}
+                    {fmtMetric(big, cur, tr)}
                   </p>
                 </>
               )}
@@ -275,17 +278,17 @@ export default function CalculatorTool({ slug }: { slug: string }) {
                 <dl class="mt-4 grid gap-x-6 gap-y-2 sm:grid-cols-2">
                   {rest.map((m) => (
                     <div key={m.label}>
-                      <dt class="text-xs font-bold uppercase tracking-wide opacity-80">{m.label}</dt>
-                      <dd class="break-words font-black">{fmtMetric(m, cur)}</dd>
+                      <dt class="text-xs font-bold uppercase tracking-wide opacity-80">{tr(m.label)}</dt>
+                      <dd class="break-words font-black">{fmtMetric(m, cur, tr)}</dd>
                     </div>
                   ))}
                 </dl>
               )}
-              {!big && rest.length === 0 && <p>Nothing to show yet.</p>}
+              {!big && rest.length === 0 && <p>{tr('Nothing to show yet.')}</p>}
             </section>
-            {result.note && <p class="text-sm text-muted">{result.note}</p>}
-            {result.chart && <BarChart chart={result.chart} cur={cur} />}
-            {result.table && <DataTable table={result.table} cur={cur} />}
+            {result.note && <p class="text-sm text-muted">{tr(result.note)}</p>}
+            {result.chart && <BarChart chart={result.chart} cur={cur} tr={tr} />}
+            {result.table && <DataTable table={result.table} cur={cur} tr={tr} />}
           </>
         )}
       </div>

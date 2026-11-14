@@ -5,6 +5,7 @@ import { CALCULATORS, calcPath, calcsInGroup, liveGroups, popularCalcs } from '.
 import { GUIDES, guideBySlug, guidePath } from '../lib/guides';
 import { faqLd, organizationLd, websiteLd } from '../lib/seo';
 import { fill, languageOf, localeOf, pageHref, type LangCode } from '../lib/i18n';
+import { trFor } from '../lib/i18n/loader';
 
 /** The home page, in one language. src/pages/index.astro renders it in English and src/pages/[lang]/index.astro in the others. */
 interface Props {
@@ -13,6 +14,7 @@ interface Props {
 const { lang } = Astro.props;
 const language = languageOf(lang);
 const { chrome: c, groups: groupNames, home: h } = localeOf(lang);
+const tt = trFor(lang);
 
 const total = CALCULATORS.length;
 const groups = liveGroups();
@@ -69,12 +71,12 @@ const nextLinks = fill(h.nextLinks, { roadmap: link('/roadmap/', h.nextRoadmap),
       {
         popularCalcs().map((calc) => (
           <li>
-            <a href={calcPath(calc.slug)} class="card card-link h-full p-4">
+            <a href={pageHref(lang, calcPath(calc.slug))} class="card card-link h-full p-4">
               <span class="flex items-center gap-2.5 text-[17px] font-black">
                 <span aria-hidden="true" class="text-[28px] leading-none">{calc.emoji}</span>
-                {calc.name}
+                {tt(calc.name)}
               </span>
-              <span class="mt-1 block text-sm leading-[19px] text-muted">{calc.summary}</span>
+              <span class="mt-1 block text-sm leading-[19px] text-muted">{tt(calc.summary)}</span>
             </a>
           </li>
         ))
@@ -103,12 +105,12 @@ const nextLinks = fill(h.nextLinks, { roadmap: link('/roadmap/', h.nextRoadmap),
             <ul class="card-grid mt-3">
               {calcsInGroup(g.id).map((calc) => (
                 <li data-card data-slug={calc.slug}>
-                  <a href={calcPath(calc.slug)} class="card card-link h-full p-4">
+                  <a href={pageHref(lang, calcPath(calc.slug))} class="card card-link h-full p-4">
                     <span class="flex items-center gap-2.5 text-[17px] font-black">
                       <span aria-hidden="true" class="text-[28px] leading-none">{calc.emoji}</span>
-                      {calc.name}
+                      {tt(calc.name)}
                     </span>
-                    <span class="mt-1 block text-sm leading-[19px] text-muted">{calc.summary}</span>
+                    <span class="mt-1 block text-sm leading-[19px] text-muted">{tt(calc.summary)}</span>
                   </a>
                 </li>
               ))}
@@ -159,9 +161,9 @@ const nextLinks = fill(h.nextLinks, { roadmap: link('/roadmap/', h.nextRoadmap),
       {
         FEATURED_GUIDES.map((g) => (
           <li>
-            <a href={guidePath(g.slug)} class="card card-link h-full p-4">
-              <span class="block text-[17px] font-black">{g.title}</span>
-              <span class="mt-1 block text-sm leading-[19px] text-muted">{g.description}</span>
+            <a href={pageHref(lang, guidePath(g.slug))} class="card card-link h-full p-4">
+              <span class="block text-[17px] font-black">{tt(g.title)}</span>
+              <span class="mt-1 block text-sm leading-[19px] text-muted">{tt(g.description)}</span>
             </a>
           </li>
         ))

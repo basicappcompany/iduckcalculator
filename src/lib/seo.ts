@@ -35,14 +35,14 @@ export function websiteLd(inLanguage = 'en', description = 'Free calculators tha
 
 const APP_CATEGORY: Record<string, string> = { loans: 'FinanceApplication', savings: 'FinanceApplication', tax: 'FinanceApplication', health: 'HealthApplication', students: 'EducationApplication' };
 
-export function webApplicationLd(name: string, path: string, description: string, group = ''): Json {
+export function webApplicationLd(name: string, path: string, description: string, group = '', inLanguage = 'en'): Json {
   return {
     '@context': 'https://schema.org',
     '@type': 'WebApplication',
     name,
     url: absolute(path),
     description,
-    inLanguage: 'en',
+    inLanguage,
     applicationCategory: APP_CATEGORY[group] ?? 'UtilitiesApplication',
     operatingSystem: 'Any',
     browserRequirements: 'Requires a modern browser with JavaScript',
@@ -78,7 +78,7 @@ export function faqLd(faqs: readonly { q: string; a: string }[]): Json {
 }
 
 /** A how-to article. Dates are ISO (YYYY-MM-DD). The author and publisher are the company, not a person. */
-export function articleLd(a: { headline: string; description: string; path: string; datePublished: string; dateModified: string }): Json {
+export function articleLd(a: { headline: string; description: string; path: string; datePublished: string; dateModified: string; inLanguage?: string }): Json {
   return {
     '@context': 'https://schema.org',
     '@type': 'Article',
@@ -88,7 +88,7 @@ export function articleLd(a: { headline: string; description: string; path: stri
     mainEntityOfPage: absolute(a.path),
     datePublished: a.datePublished,
     dateModified: a.dateModified,
-    inLanguage: 'en',
+    inLanguage: a.inLanguage ?? 'en',
     image: OG_IMAGE,
     author: { '@type': 'Organization', name: 'Basic App Company', url: SITE_URL },
     publisher: { '@type': 'Organization', name: 'Basic App Company', url: SITE_URL, logo: { '@type': 'ImageObject', url: absolute('/favicon.svg') } },

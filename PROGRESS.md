@@ -15,9 +15,7 @@ Last synced 2026-11-13. Live: https://iduckcalculator.com. Detail and owners: `d
 - [x] SEO: sitemap (96 URLs, each with a lastmod), robots, canonical, OG/Twitter tags, og.png, favicon, llms.txt, _headers (canonical and social tags not re-read at last sync)
 - [x] How-to guides: 45, one or more for every live calculator, figures checked by tests (tax guide included). Each new tax or scheme calculator needs its own guide.
 - [x] Localization stage 1: 11 languages (en-US, en-GB, hi, bn, pt-BR, id, ru, de, es, fr, tr) with real URLs (`/de/`), hreflang, sitemap alternates, translated menus, footer and home page. None of the 9 machine-translated languages has been read by a native speaker
-- [ ] Localization stage 2: calculators, by group, most-used first
-- [ ] Localization stage 3: how-to guides
-- [ ] Localization stage 4: static pages, then the India tax and scheme pages (labelled unreviewed)
+- [x] Localization stages 2 to 4: every calculator (text, form labels, results, notes and errors), every guide, the calculators and guides lists, About, Roadmap, Support, How we check and the search window, in all 11 languages. Privacy, Terms, the helper chat, Feedback, Request and Settings stay English
 - [x] CI (verify + build + e2e) green on main
 
 ## Step 3: calculators (49 live of 52 planned)
@@ -47,7 +45,7 @@ Last synced 2026-11-13. Live: https://iduckcalculator.com. Detail and owners: `d
 - [x] Dark/light, Ctrl+K, language switch, no console errors, no sideways scroll on every page (Playwright, 117 passing; the sideways-scroll check was not re-confirmed at a phone-width viewport by hand)
 - [ ] Broken links check (no link checker has been run)
 
-Measured at last sync: 461 unit tests in 11 files, 140 browser tests, 123 pages built, 118 sitemap URLs. Security headers A+ on securityheaders.com and Mozilla Observatory; mobile PageSpeed 100/100/100/100 on the home page, the EMI page and a guide. See AUDIT.md for the security and SEO audit.
+Measured at last sync: 507 unit tests in 13 files, 143 browser tests, 1173 pages built, 1168 sitemap URLs. Security headers A+ on securityheaders.com and Mozilla Observatory; mobile PageSpeed 100/100/100/100 on the home page, the EMI page and a guide. See AUDIT.md for the security and SEO audit.
 
 ## Open items and decisions
 - Email Routing is set up for hello@ and feedback@iduckcalculator.com (MX, SPF, DKIM live; both rules Active, forwarding to the company inbox; catch-all off). A real test message has not been sent: send one from another mailbox to each address and confirm it arrives.

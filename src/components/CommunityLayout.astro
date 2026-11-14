@@ -6,13 +6,19 @@ interface Props {
   description: string;
   /** The heading is `before` + a highlighted `mark` + `after`, like the home page. */
   before?: string;
-  mark: string;
+  mark?: string;
   after?: string;
+  /** A whole heading (other languages): its last word is highlighted. */
+  heading?: string;
   intro: string;
   noindex?: boolean;
   jsonLd?: unknown[];
 }
-const { title, description, before = '', mark, after = '', intro, noindex = false, jsonLd = [] } = Astro.props;
+const { title, description, heading, noindex = false, intro, jsonLd = [] } = Astro.props;
+const words = heading?.trim().split(/\s+/) ?? [];
+const before = heading ? words.slice(0, -1).join(' ') : (Astro.props.before ?? '');
+const mark = heading ? (words[words.length - 1] ?? '') : (Astro.props.mark ?? '');
+const after = heading ? '' : (Astro.props.after ?? '');
 ---
 
 <AppShell title={title} description={description} noindex={noindex} jsonLd={jsonLd}>

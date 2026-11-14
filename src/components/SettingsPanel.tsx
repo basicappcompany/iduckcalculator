@@ -3,7 +3,7 @@ import Chips from './Chips';
 import { CURRENCY_EVENT } from './CalculatorTool';
 import { THEME_EVENT, browserTheme, type ThemeChoice } from '../lib/theme-client';
 import { CURRENCIES, CURRENCY_STORAGE_KEY, DEFAULT_CURRENCY, currencyByCode, formatMoney } from '../lib/format';
-import { LANGUAGES, localePath } from '../lib/i18n';
+import { LANGUAGES, localePath } from '../lib/i18n/languages';
 
 const THEME_OPTIONS: { id: ThemeChoice; emoji: string; label: string }[] = [
   { id: 'system', emoji: '🖥️', label: 'Match my device' },

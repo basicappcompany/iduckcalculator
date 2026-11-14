@@ -34,7 +34,11 @@ jobs:
       - run: pnpm check
       - run: pnpm lint
       - run: pnpm test
+      # I18N_LOG makes the build record any English text a translated page shows, and i18n:audit fails if there is any.
       - run: pnpm build
+        env:
+          I18N_LOG: '1'
       - run: pnpm seo:check
+      - run: pnpm i18n:audit
       - run: pnpm test:e2e
         if: github.event_name == 'pull_request'

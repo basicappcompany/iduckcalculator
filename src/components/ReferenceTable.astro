@@ -1,10 +1,15 @@
 ---
 import type { Reference } from '../lib/calc/reference';
+import { trFor } from '../lib/i18n/loader';
+import type { LangCode } from '../lib/i18n';
 
 interface Props {
   table: Reference;
+  lang?: LangCode;
 }
-const { table } = Astro.props;
+const { table: source, lang = 'en' } = Astro.props;
+const tt = trFor(lang);
+const table = { question: tt(source.question), note: tt(source.note), columns: source.columns.map((c) => tt(c)), rows: source.rows.map((r) => r.map((c) => tt(c))) };
 ---
 
 <section class="mt-12" aria-labelledby="ref-heading">

@@ -6,15 +6,21 @@
  * typing, and from the Search button. Arrow keys move, Enter opens, Esc closes.
  */
 interface Props {
-  placeholder?: string;
-  label?: string;
+  placeholder: string;
+  label: string;
+  title: string;
+  /** Where the list of calculators, guides and pages comes from: /palette/<lang>.json, fetched the first time the window opens. */
+  src: string;
+  /** The words under the list: arrow keys move, Enter opens, Esc closes. */
+  hints: { move: string; open: string; close: string };
+  results: string;
 }
-const { placeholder = 'Search calculators, pages and actions…', label = 'Search calculators, pages and actions' } = Astro.props;
+const { placeholder, label, title, src, hints, results } = Astro.props;
 ---
 
-<div id="palette" class="palette" hidden>
+<div id="palette" class="palette" hidden data-src={src}>
   <div class="palette-backdrop" data-palette-close></div>
-  <div class="palette-card" role="dialog" aria-modal="true" aria-label="Search">
+  <div class="palette-card" role="dialog" aria-modal="true" aria-label={title}>
     <div class="palette-top">
       <span aria-hidden="true" class="text-lg">🔍</span>
       <input
@@ -32,9 +38,9 @@ const { placeholder = 'Search calculators, pages and actions…', label = 'Searc
       />
       <kbd class="palette-kbd" aria-hidden="true">Esc</kbd>
     </div>
-    <div id="palette-list" class="palette-list" role="listbox" aria-label="Results"></div>
+    <div id="palette-list" class="palette-list" role="listbox" aria-label={results}></div>
     <div class="palette-hints" aria-hidden="true">
-      <span>↑ ↓ move</span><span>Enter open</span><span>Esc close</span>
+      <span>↑ ↓ {hints.move}</span><span>Enter {hints.open}</span><span>Esc {hints.close}</span>
     </div>
   </div>
 </div>
@@ -159,18 +165,19 @@ const { placeholder = 'Search calculators, pages and actions…', label = 'Searc
 </style>
 
 <script>
-  import { CALCULATORS, calcPath, searchCalcs } from '../lib/calc';
-  import { COMMUNITY, communityPath } from '../lib/community';
-  import { GUIDES, guidePath } from '../lib/guides';
   import { browserTheme } from '../lib/theme-client';
 
-  type Group = 'Calculators' | 'Pages' | 'Actions';
+  interface Data {
+    calcs: { s: string; n: string; e: string; k: string; h: string }[];
+    pages: { to: string; label: string; icon: string; kw: string; hint: string }[];
+    ui: { calculators: string; pages: string; actions: string; calculator: string; page: string; guide: string; guides: string; action: string; theme: string; empty: string; results: string };
+  }
   interface Item {
     id: string;
     label: string;
     icon: string;
     hint: string;
-    group: Group;
+    group: string;
     run: () => void;
   }
 
@@ -183,23 +190,23 @@ const { placeholder = 'Search calculators, pages and actions…', label = 'Searc
     location.href = href;
   };
 
-  const PAGES: { to: string; label: string; icon: string; kw: string; hint?: string }[] = [
-    { to: '/', label: 'Home', icon: '🏠', kw: 'start main' },
-    { to: '/chat/', label: 'Ask the helper', icon: '💬', kw: 'chat assistant help which calculator' },
-    { to: '/calculators/', label: 'All calculators', icon: '🧮', kw: 'browse list everything' },
-    { to: '/guides/', label: 'How-to guides', icon: '📖', kw: 'learn tutorial help steps how to', hint: 'Guides' },
-    ...GUIDES.map((g) => ({ to: guidePath(g.slug), label: g.title, icon: '📖', kw: g.description, hint: 'Guide' })),
-    ...COMMUNITY.map((p) => ({
-      to: communityPath(p.slug),
-      label: p.name,
-      icon: p.emoji,
-      kw: p.summary + (p.slug === 'support' ? ' donate tip help share' : '') + (p.slug === 'settings' ? ' theme dark light currency language turkish' : ''),
-    })),
-    { to: '/privacy/', label: 'Privacy policy', icon: '🔒', kw: 'data cookies legal' },
-    { to: '/terms/', label: 'Terms of use', icon: '📜', kw: 'legal rules conditions' },
-  ];
+  // The list is a small JSON file for the page's language, fetched the first time the window opens.
+  let data: Data | null = null;
+  let loading: Promise<void> | null = null;
+  function load(): Promise<void> {
+    loading ??= fetch(root.dataset['src'] ?? '/palette/en.json')
+      .then((r) => r.json() as Promise<Data>)
+      .then((d) => {
+        data = d;
+      })
+      .catch(() => {
+        loading = null;
+      });
+    return loading;
+  }
 
-  const words = (s: string) => s.toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
+  // Words of any script: letters and digits, so "kredi", "ब्याज" and "кредит" all work.
+  const words = (s: string) => s.toLowerCase().split(/[^\p{L}\p{N}]+/u).filter(Boolean);
   const matches = (query: string, text: string) => {
     const q = words(query);
     if (q.length === 0) return true;
@@ -210,25 +217,25 @@ const { placeholder = 'Search calculators, pages and actions…', label = 'Searc
   const theme = browserTheme();
 
   function build(query: string): Item[] {
+    const d = data;
+    if (!d) return [];
     const q = query.trim();
-    const calcs: Item[] = (q ? searchCalcs(q) : CALCULATORS.slice(0, 8)).map((c) => ({
-      id: 'c-' + c.slug,
-      label: c.name,
-      icon: c.emoji,
-      hint: 'Calculator',
-      group: 'Calculators',
-      run: go(calcPath(c.slug)),
-    }));
-    const pages: Item[] = PAGES.filter((p) => matches(q, p.label + ' ' + p.kw)).map((p) => ({
-      id: 'p-' + p.to,
-      label: p.label,
-      icon: p.icon,
-      hint: p.hint ?? 'Page',
-      group: 'Pages',
-      run: go(p.to),
-    }));
-    const actions: Item[] = matches(q, 'switch light dark theme mode night')
-      ? [{ id: 'a-theme', label: 'Switch light / dark', icon: '🌗', hint: 'Action', group: 'Actions', run: () => theme.toggle() }]
+    const qw = words(q);
+    const found = q
+      ? d.calcs
+          .map((c) => {
+            if (!matches(q, c.n + ' ' + c.k)) return null;
+            const name = c.n.toLowerCase();
+            return { c, score: qw.reduce((t, w) => t + (name.startsWith(w) ? 3 : name.includes(w) ? 2 : 1), 0) };
+          })
+          .filter((x): x is { c: Data['calcs'][number]; score: number } => !!x)
+          .sort((a, b) => b.score - a.score)
+          .map((x) => x.c)
+      : d.calcs.slice(0, 8);
+    const calcs: Item[] = found.map((c) => ({ id: 'c-' + c.s, label: c.n, icon: c.e, hint: d.ui.calculator, group: d.ui.calculators, run: go(c.h) }));
+    const pages: Item[] = d.pages.filter((p) => matches(q, p.label + ' ' + p.kw)).map((p) => ({ id: 'p-' + p.to, label: p.label, icon: p.icon, hint: p.hint, group: d.ui.pages, run: go(p.to) }));
+    const actions: Item[] = matches(q, d.ui.theme + ' switch light dark theme mode night')
+      ? [{ id: 'a-theme', label: d.ui.theme, icon: '🌗', hint: d.ui.action, group: d.ui.actions, run: () => theme.toggle() }]
       : [];
     return [...calcs.slice(0, 10), ...pages, ...actions].slice(0, MAX);
   }
@@ -244,7 +251,7 @@ const { placeholder = 'Search calculators, pages and actions…', label = 'Searc
     if (items.length === 0) {
       const p = document.createElement('p');
       p.className = 'palette-empty';
-      p.textContent = `Nothing matches "${input.value.trim()}". Try "emi", "sip" or "age".`;
+      p.textContent = (data?.ui.empty ?? '').replace('{0}', input.value.trim());
       list.append(p);
       input.removeAttribute('aria-activedescendant');
       return;
@@ -312,6 +319,7 @@ const { placeholder = 'Search calculators, pages and actions…', label = 'Searc
     input.value = '';
     refresh();
     input.focus();
+    void load().then(refresh);
   }
 
   function close() {

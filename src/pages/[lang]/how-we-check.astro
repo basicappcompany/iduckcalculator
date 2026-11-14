@@ -1,0 +1,12 @@
+---
+import HowWeCheckPage from '../../components/HowWeCheckPage.astro';
+import { DEFAULT_LANG, LANGUAGES, isLang } from '../../lib/i18n';
+
+export function getStaticPaths() {
+  return LANGUAGES.filter((l) => l.code !== DEFAULT_LANG).map((l) => ({ params: { lang: l.code } }));
+}
+const { lang } = Astro.params;
+if (!isLang(lang)) throw new Error(`Unknown language: ${lang}`);
+---
+
+<HowWeCheckPage lang={lang} />

@@ -10,6 +10,7 @@ const SITE = 'https://iduckcalculator.com';
 const ROBOTS = 'index,follow,max-image-preview:large,max-snippet:-1';
 const NOINDEX_PAGES = new Set(['/404.html']); // pages that must be noindex whatever else is true
 
+const decode = (s) => s.replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(Number(n))).replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
 const pages = [];
 (function walk(dir) {
   for (const e of readdirSync(dir, { withFileTypes: true })) {
@@ -22,8 +23,9 @@ const pages = [];
       pages.push({
         rel,
         html,
-        title: /<title>([\s\S]*?)<\/title>/.exec(html)?.[1] ?? '',
-        description: /<meta name="description" content="([^"]*)"/.exec(html)?.[1] ?? '',
+        // Measured as a visitor sees it in a search result: &#39; is one character, not five.
+        title: decode(/<title>([\s\S]*?)<\/title>/.exec(html)?.[1] ?? ''),
+        description: decode(/<meta name="description" content="([^"]*)"/.exec(html)?.[1] ?? ''),
         robots: /<meta name="robots" content="([^"]*)"/.exec(html)?.[1] ?? '',
         canonical: /<link rel="canonical" href="([^"]*)"/.exec(html)?.[1] ?? '',
         h1: (html.match(/<h1\b/g) ?? []).length,

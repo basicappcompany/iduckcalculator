@@ -1,0 +1,76 @@
+---
+import CommunityLayout from './CommunityLayout.astro';
+import { CALCULATORS } from '../lib/calc';
+import { LAST_REVIEWED, TRUST, allSources } from '../lib/calc/sources';
+import { GUIDES } from '../lib/guides';
+import { CONTACT_EMAIL } from '../lib/contact';
+import { articleLd, breadcrumbLd } from '../lib/seo';
+import { fill, languageOf, localeOf, localePath, pageHref, type LangCode } from '../lib/i18n';
+import { trFor } from '../lib/i18n/loader';
+
+/** How we check our calculators, in one language. */
+interface Props {
+  lang: LangCode;
+}
+const { lang } = Astro.props;
+const tt = trFor(lang);
+const chrome = localeOf(lang).chrome;
+const english = lang === 'en' || lang === 'en-gb';
+// Western digits in every language, like the rest of the site.
+const locale = english ? 'en-GB' : `${languageOf(lang).hreflang}-u-nu-latn`;
+const date = new Date(`${LAST_REVIEWED}T00:00:00Z`).toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+const sources = allSources();
+const financeCount = Object.values(TRUST).filter((t) => t.kind === 'finance').length;
+const healthCount = Object.values(TRUST).filter((t) => t.kind === 'health').length;
+const link = (href: string, text: string) => `<a class="link" href="${href}">${text}</a>`;
+const title = tt('How we check our calculators');
+const reviewed = fill(tt('The formulas, sources and wording of the finance and health pages were last reviewed on {date}. That date is shown on each of those pages.'), { date: `<time datetime="${LAST_REVIEWED}">${date}</time>` });
+const mistake = fill(tt('Please {tell}, with what you typed and what you expected, or write to {email}. iDuckCalculator is run by Basic App Company; see {about}.'), { tell: link(pageHref(lang, '/feedback/'), tt('tell us')), email: link(`mailto:${CONTACT_EMAIL}`, CONTACT_EMAIL), about: link(pageHref(lang, '/about/'), chrome.about) });
+---
+
+<CommunityLayout
+  title={tt('How we check our calculators: tests and sources')}
+  description={tt('How each iDuckCalculator result is tested against known answers, where the finance and health formulas come from, and what they cannot tell you.')}
+  {...(english ? { before: 'How we', mark: 'check', after: ' our calculators' } : { heading: title })}
+  intro={tt('Every result comes from a plain formula, and every formula is tested against an answer worked out separately.')}
+  jsonLd={[
+    articleLd({ headline: title, description: tt('How each result is tested and where the formulas come from.'), path: localePath(lang, '/how-we-check/'), datePublished: '2026-11-13', dateModified: LAST_REVIEWED, inLanguage: languageOf(lang).hreflang }),
+    breadcrumbLd([{ name: chrome.home, path: localePath(lang, '/') }, { name: title, path: localePath(lang, '/how-we-check/') }]),
+  ]}
+>
+  <section class="card p-5">
+    <h2 class="text-2xl font-black tracking-tight">{tt('How is each result tested?')}</h2>
+    <p class="mt-2">{fill(tt('Each of the {n} calculators has automatic tests that compare its result with a known answer. For example, a ₹10,00,000 loan at 9% over 20 years must give an EMI of ₹8,997, and 70 kg at 175 cm must give a BMI of 22.9. The tests also check that every calculator page has its formula, a worked example, a set of questions and answers, and links to related tools, and that no page shows an empty or invalid number.'), { n: CALCULATORS.length })}</p>
+    <p class="mt-2">{tt('A second set of tests opens every page in a real browser, types into the calculators, and checks the answers and that nothing breaks. The tests run again on every change, and a change cannot go live unless they pass.')}</p>
+  </section>
+
+  <section class="card p-5">
+    <h2 class="text-2xl font-black tracking-tight">{tt('How are the guides and tables checked?')}</h2>
+    <p class="mt-2">{fill(tt('The {n} how-to guides quote many figures. A test recalculates each of them with the calculators themselves and fails if a guide says something the calculator does not. The reference tables under each calculator, such as the EMI on ₹1 lakh or CGPA to percentage, are not typed in: every cell is worked out by the calculator when the site is built.'), { n: GUIDES.length })}</p>
+  </section>
+
+  <section class="card p-5">
+    <h2 class="text-2xl font-black tracking-tight">{tt('Where do the formulas come from?')}</h2>
+    <p class="mt-2">{fill(tt('The {finance} finance calculators use standard textbook formulas: the reducing-balance EMI formula, compound interest, the future value of regular investments, CAGR and simple interest. The {health} health calculators use published equations: BMI with the WHO categories, Mifflin-St Jeor for BMR, the U.S. Navy method for body fat, the Devine and Robinson formulas for ideal weight and Naegele’s rule for due dates. Each page shows its basis and links to a reference. The water intake calculator uses a rule of thumb that is not an official guideline, and says so.'), { finance: financeCount, health: healthCount })}</p>
+    <ul class="mt-3 grid gap-1 text-sm">
+      {sources.map((s) => <li><a class="link" href={s.url} rel="noopener">{tt(s.name)}</a></li>)}
+    </ul>
+    <p class="mt-3 text-sm text-muted">{tt('Several of these are general references, not a lender’s or a regulator’s rulebook. A bank’s own schedule can differ by a few rupees because of rounding and dates.')}</p>
+  </section>
+
+  <section class="card p-5">
+    <h2 class="text-2xl font-black tracking-tight">{tt('What can the calculators not tell you?')}</h2>
+    <p class="mt-2">{tt('They are estimates. Investment calculators assume a steady return that real markets do not give. Loan calculators leave out processing fees, insurance and taxes. Health calculators use averages and are not medical advice. None of this is financial or medical advice, so check the terms of any loan, deposit or plan with your lender, bank or adviser, and talk to a doctor or dietitian about your own health.')}</p>
+    <p class="mt-2">{tt('Tax and savings-scheme rules change with each Budget and notification, so those calculators are built only from the current slabs, rates and limits read from the official source, and each page shows the financial year and the date the rules were read.')}</p>
+  </section>
+
+  <section class="card p-5">
+    <h2 class="text-2xl font-black tracking-tight">{tt('When was this last reviewed?')}</h2>
+    <p class="mt-2" set:html={reviewed} />
+  </section>
+
+  <section class="card p-5">
+    <h2 class="text-2xl font-black tracking-tight">{tt('Found a mistake?')}</h2>
+    <p class="mt-2" set:html={mistake} />
+  </section>
+</CommunityLayout>

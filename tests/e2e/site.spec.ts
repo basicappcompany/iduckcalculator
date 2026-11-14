@@ -221,21 +221,57 @@ const LANG_PAGES: [string, string, string][] = [
   ['/tr/', 'tr', 'vaklayarak'],
 ];
 
-test('the language menu opens the real page in another language and links back', async ({ page }) => {
+/** What a language's catalog says for an English string, so the test does not repeat the translation. */
+const said = (lang: string, english: string): string => (JSON.parse(readFileSync(`src/i18n/catalog/${lang}.json`, 'utf8')) as Record<string, string>)[english]!;
+
+test('the language menu opens the same page in another language and links back', async ({ page }) => {
   await openReady(page, '/emi-calculator/');
   await page.locator('[data-lang-menu] summary').click();
-  // This calculator page is not translated yet, so German goes to the German home page.
   await page.locator('[data-lang="de"]').click();
-  await expect(page).toHaveURL(/\/de\/$/);
+  await expect(page).toHaveURL(/\/de\/emi-calculator\/$/);
   await expect(page.locator('html')).toHaveAttribute('lang', 'de');
-  await expect(page.locator('h1')).toContainText('quakend');
+  await expect(page.locator('h1')).toContainText(said('de', 'EMI calculator'));
   await expect(page.locator('[data-machine-note]')).toBeVisible();
   await expect(page.getByRole('link', { name: 'Startseite' }).first()).toBeVisible();
   await page.locator('[data-lang-menu] summary').click();
   await page.locator('[data-lang="en"]').click();
-  await expect(page).toHaveURL(/\/$/);
+  await expect(page).toHaveURL(/\/emi-calculator\/$/);
   await expect(page.locator('html')).toHaveAttribute('lang', 'en-US');
   await expect(page.locator('[data-machine-note]')).toHaveCount(0);
+});
+
+test('a page that exists only in English sends the menu to the other language\'s home page', async ({ page }) => {
+  await page.goto('/privacy/');
+  await page.locator('[data-lang-menu] summary').click();
+  await page.locator('[data-lang="fr"]').click();
+  await expect(page).toHaveURL(/\/fr\/$/);
+});
+
+test('a calculator page in German is translated and still calculates', async ({ page }) => {
+  await openReady(page, '/de/emi-calculator/');
+  await expect(page.locator('html')).toHaveAttribute('lang', 'de');
+  // the form's words, the result's words and the page's questions all come from the German catalog
+  await expect(page.getByRole('button', { name: said('de', 'Reset to the example') })).toBeVisible();
+  await expect(page.getByText(said('de', 'Common questions'.replace('Common questions', 'How is EMI calculated?')), { exact: false }).first()).toBeVisible();
+  const big = page.getByTestId('big-result');
+  await expect(big).toContainText(/\d/);
+  const before = await big.textContent();
+  await page.getByLabel(said('de', 'Loan amount')).fill('2000000');
+  await expect(big).not.toHaveText(before ?? '');
+  // an unchanged English page carries its own words, and the canonical points at itself
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', 'https://iduckcalculator.com/de/emi-calculator/');
+});
+
+test('the search window works in Hindi, with letters of that script', async ({ page }) => {
+  await openReady(page, '/hi/');
+  await page.keyboard.press('Control+k');
+  const box = page.locator('#palette-input');
+  await expect(box).toBeVisible();
+  await expect(page.locator('.palette-row').first()).toBeVisible();
+  await box.fill(said('hi', 'EMI calculator').split(' ')[0]!);
+  await expect(page.locator('.palette-row').first()).toBeVisible();
+  await page.keyboard.press('Enter');
+  await expect(page).toHaveURL(/\/hi\/[a-z-]*emi[a-z-]*calculator\//);
 });
 
 for (const [path, lang, word] of LANG_PAGES) {

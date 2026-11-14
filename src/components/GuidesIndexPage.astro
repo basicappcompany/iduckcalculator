@@ -1,0 +1,51 @@
+---
+import CommunityLayout from './CommunityLayout.astro';
+import { GUIDES, guidePath } from '../lib/guides';
+import { CALC_GROUPS, calcBySlug } from '../lib/calc';
+import { breadcrumbLd, collectionLd } from '../lib/seo';
+import { fill, localeOf, localePath, pageHref, type LangCode } from '../lib/i18n';
+import { trFor } from '../lib/i18n/loader';
+
+/** The list of how-to guides, in one language. */
+interface Props {
+  lang: LangCode;
+}
+const { lang } = Astro.props;
+const tt = trFor(lang);
+const chrome = localeOf(lang).chrome;
+const groupNames = localeOf(lang).groups;
+const href = (key: string) => pageHref(lang, key);
+// A guide sits under the group of the first calculator it links to.
+const sections = CALC_GROUPS.map((g) => ({ ...g, guides: GUIDES.filter((x) => calcBySlug(x.calcs[0]!)?.group === g.id) })).filter((g) => g.guides.length > 0);
+const intro = tt('Short walkthroughs with worked examples. Each one gives the answer first, then shows the steps.');
+---
+
+<CommunityLayout
+  title={tt('How-to guides: loans, savings, dates, health and more | iDuckCalculator')}
+  description={fill(tt('{n} short how-to guides with worked examples: EMI and loans, SIP and savings, percentages, dates, health and school. Each gives the answer first.'), { n: GUIDES.length })}
+  mark={chrome.guides}
+  intro={intro}
+  jsonLd={[
+    collectionLd(chrome.guides, href('/guides/'), tt('Worked examples and step-by-step guides.'), GUIDES.map((g) => ({ name: tt(g.title), path: href(guidePath(g.slug)) }))),
+    breadcrumbLd([{ name: chrome.home, path: localePath(lang, '/') }, { name: chrome.guides, path: href('/guides/') }]),
+  ]}
+>
+  {
+    sections.map((s) => (
+      <section class="mt-8 first:mt-0" aria-labelledby={`g-${s.id}`}>
+        <h2 id={`g-${s.id}`} class="text-2xl font-black tracking-tight">{s.emoji} {groupNames[s.id]} <span class="text-base font-bold text-muted">({s.guides.length})</span></h2>
+        <ul class="card-grid mt-3">
+          {s.guides.map((g) => (
+            <li>
+              <a href={href(guidePath(g.slug))} class="card card-link h-full p-4">
+                <span class="block text-[17px] font-black">{tt(g.title)}</span>
+                <span class="mt-1 block text-sm leading-[19px] text-muted">{tt(g.description)}</span>
+                <span class="mt-2 block text-xs text-muted">{fill(tt('Updated {date}'), { date: g.updated })}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))
+  }
+</CommunityLayout>

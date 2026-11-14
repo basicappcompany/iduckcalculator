@@ -12,3 +12,6 @@ test-results/
 coverage/
 .DS_Store
 test-results/
+
+# translation work files (source strings, chunks and translator output); the catalogs in src/i18n/catalog are what is kept
+i18n-work/

@@ -1,11 +1,9 @@
 import { en } from './en';
+import { ukDeep } from './uk';
 import type { Locale } from './types';
 
 /**
- * English (UK). The wording is the same as English (US) today, because the site already uses British spelling for maths and dates.
- * It has its own URL so that readers in the UK, Ireland, Australia and elsewhere get the page for their region. Put any UK-only wording here.
+ * English (UK) is made from the English (US) text when the site is built (see uk.ts), so it can never fall behind and there is no
+ * second set of words to keep in step. Write the English source in US spelling.
  */
-export const enGb: Locale = {
-  ...en,
-  home: { ...en.home, description: 'Free EMI, SIP, percentage, age, BMI and more calculators. No sign-up, no ads, and everything runs in your browser, so your numbers stay on your device.' },
-};
+export const enGb: Locale = ukDeep(en);

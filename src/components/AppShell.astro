@@ -8,6 +8,7 @@ import { COMMUNITY, communityPath } from '../lib/community';
 import { LAST_UPDATED, OG_IMAGE, SITE_NAME, serialize } from '../lib/seo';
 import { flagSvg } from '../lib/flags';
 import { LANGUAGES, fill, langsFor, languageOf, localeOf, localePath, pageHref, splitLocale, switchHref } from '../lib/i18n';
+import { trFor } from '../lib/i18n/loader';
 
 interface Props {
   title: string;
@@ -25,6 +26,7 @@ const { lang, key } = splitLocale(path);
 const language = languageOf(lang);
 const locale = localeOf(lang);
 const t = locale.chrome;
+const tt = trFor(lang);
 const isHome = key === '/';
 const groups = liveGroups();
 // The group holding the current page starts open; on any other page the first group does.
@@ -155,9 +157,9 @@ const fullTitle = bareTitle.length + BRAND_SUFFIX.length <= 59 ? `${bareTitle}${
                     <ul class="nav-children" id={`group-${i}`} hidden={!open}>
                       {calcsInGroup(group.id).map((c) => (
                         <li data-calc={c.slug}>
-                          <a class="nav-item nav-small" href={calcPath(c.slug)} aria-current={key === calcPath(c.slug) ? 'page' : undefined}>
+                          <a class="nav-item nav-small" href={href(calcPath(c.slug))} aria-current={key === calcPath(c.slug) ? 'page' : undefined}>
                             <span class="nav-icon" aria-hidden="true">{c.emoji}</span>
-                            <span class="nav-text">{c.name}</span>
+                            <span class="nav-text">{tt(c.name)}</span>
                           </a>
                         </li>
                       ))}
@@ -262,7 +264,7 @@ const fullTitle = bareTitle.length + BRAND_SUFFIX.length <= 59 ? `${bareTitle}${
       </div>
     </div>
 
-    <CommandPalette placeholder={`${t.searchAria}…`} label={t.searchAria} />
+    <CommandPalette placeholder={`${t.searchAria}…`} label={t.searchAria} title={t.search} src={`/palette/${lang}.json`} hints={{ move: tt('move'), open: tt('open'), close: tt('close') }} results={tt('Results')} />
 
     <script>
       import { THEME_STORAGE_KEY } from '../lib/theme';

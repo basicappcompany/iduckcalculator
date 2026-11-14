@@ -9,7 +9,7 @@ import { respond } from '../../src/lib/helper';
 import { contrast, dark, light } from '../../src/lib/theme';
 import { faqLd, serialize } from '../../src/lib/seo';
 import { flagSvg } from '../../src/lib/flags';
-import { DEFAULT_LANG, LANGUAGES, LOCALES, PAGE_LANGS, EN as en, fill, langsFor, localePath, pageHref, splitLocale, switchHref } from '../../src/lib/i18n';
+import { DEFAULT_LANG, LANGUAGES, LOCALES, EN as en, fill, langsFor, localePath, pageHref, splitLocale, switchHref } from '../../src/lib/i18n';
 
 const words = (s: string) => s.trim().split(/\s+/).length;
 const inr = (n: number) => formatNumber(Math.round(n), 0, 'en-IN');
@@ -162,7 +162,15 @@ describe('languages', () => {
     expect(switchHref('de', '/')).toBe('/de/');
     expect(switchHref('de', '/some-page-nobody-translated/')).toBe('/de/');
     expect(switchHref('en', '/some-page-nobody-translated/')).toBe('/some-page-nobody-translated/');
-    for (const langs of Object.values(PAGE_LANGS)) expect(langs).toContain('en');
+    // Every calculator, guide and indexable community page exists everywhere; the legal pages and the forms are English only.
+    expect(langsFor('/emi-calculator/')).toEqual(codes);
+    expect(langsFor('/guides/how-emi-is-calculated/')).toEqual(codes);
+    expect(langsFor('/about/')).toEqual(codes);
+    expect(langsFor('/privacy/')).toEqual(['en']);
+    expect(langsFor('/terms/')).toEqual(['en']);
+    expect(langsFor('/feedback/')).toEqual(['en']);
+    expect(pageHref('de', '/privacy/')).toBe('/privacy/');
+    expect(switchHref('de', '/emi-calculator/')).toBe('/de/emi-calculator/');
   });
   it('fills placeholders and leaves unknown ones visible', () => {
     expect(fill('All {total} calculators', { total: 49 })).toBe('All 49 calculators');

@@ -1,0 +1,15 @@
+---
+import GuidePage from '../../../components/GuidePage.astro';
+import { GUIDES } from '../../../lib/guides';
+import { DEFAULT_LANG, LANGUAGES, isLang } from '../../../lib/i18n';
+
+/** Every guide in every language except English, which is src/pages/guides/[slug].astro. */
+export function getStaticPaths() {
+  return LANGUAGES.filter((l) => l.code !== DEFAULT_LANG).flatMap((l) => GUIDES.map((g) => ({ params: { lang: l.code, slug: g.slug }, props: { slug: g.slug } })));
+}
+const { lang } = Astro.params;
+const { slug } = Astro.props;
+if (!isLang(lang)) throw new Error(`Unknown language: ${lang}`);
+---
+
+<GuidePage slug={slug} lang={lang} />

@@ -1,0 +1,111 @@
+---
+import AppShell from './AppShell.astro';
+import TrustNote from './TrustNote.astro';
+import { guideBySlug, guidePath } from '../lib/guides';
+import { calcBySlug, calcPath } from '../lib/calc';
+import { TRUST } from '../lib/calc/sources';
+import { articleLd, breadcrumbLd, faqLd, howToLd } from '../lib/seo';
+import { fill, languageOf, localeOf, localePath, pageHref, type LangCode } from '../lib/i18n';
+import { trFor } from '../lib/i18n/loader';
+
+/** One how-to guide, in one language. src/pages/guides/[slug].astro renders it in English and src/pages/[lang]/guides/[slug].astro in the others. */
+interface Props {
+  slug: string;
+  lang: LangCode;
+}
+const { slug, lang } = Astro.props;
+const tt = trFor(lang);
+const chrome = localeOf(lang).chrome;
+const href = (key: string) => pageHref(lang, key);
+const guide = guideBySlug(slug)!;
+const path = guidePath(guide.slug);
+const calcs = guide.calcs.map((s) => calcBySlug(s)!);
+const others = guide.related.map((s) => guideBySlug(s)!);
+// Finance and health guides carry the same review date, sources and estimate-only line as their calculators.
+const trust = guide.calcs.map((s) => TRUST[s]).find(Boolean);
+const title = tt(guide.title);
+const steps = guide.steps.map((s) => tt(s));
+const faqs = guide.faqs.map((f) => ({ q: tt(f.q), a: tt(f.a) }));
+const guidesName = chrome.guides;
+---
+
+<AppShell
+  title={`${title} | iDuckCalculator`}
+  description={tt(guide.description)}
+  jsonLd={[
+    articleLd({ headline: title, description: tt(guide.description), path: localePath(lang, path), datePublished: guide.published, dateModified: guide.updated, inLanguage: languageOf(lang).hreflang }),
+    howToLd(title, steps),
+    faqLd(faqs),
+    breadcrumbLd([{ name: chrome.home, path: localePath(lang, '/') }, { name: guidesName, path: href('/guides/') }, { name: title, path: localePath(lang, path) }]),
+  ]}
+>
+  <p class="eyebrow"><a href={href('/guides/')} class="underline decoration-2 underline-offset-2">{guidesName}</a></p>
+  <h1 class="display mt-2 text-3xl min-[400px]:text-4xl sm:text-5xl">{title}</h1>
+  <p class="mt-2 text-sm text-muted">{fill(tt('Updated {date}'), { date: guide.updated })}</p>
+
+  <section class="card mt-5 p-4" aria-label={chrome.quick}>
+    <p class="eyebrow">{chrome.quick}</p>
+    <p class="mt-1 leading-relaxed">{tt(guide.intro)}</p>
+  </section>
+
+  <div class="prose mt-8">
+    <h2>{tt('Steps')}</h2>
+    <ol data-step={tt('Step')}>
+      {steps.map((s) => <li data-step={tt('Step')}>{s}</li>)}
+    </ol>
+    {
+      guide.sections.map((s) => (
+        <>
+          <h2>{tt(s.h)}</h2>
+          {s.p.map((p) => <p>{tt(p)}</p>)}
+        </>
+      ))
+    }
+  </div>
+
+  {trust && <TrustNote trust={trust} reviewed={guide.updated} lang={lang} />}
+
+  <section class="mt-10" aria-label={tt('Try the calculators')}>
+    <h2 class="text-2xl font-black tracking-tight">{tt('Try it yourself')}</h2>
+    <ul class="mt-3 grid gap-4 sm:grid-cols-3">
+      {
+        calcs.map((c) => (
+          <li>
+            <a href={href(calcPath(c.slug))} class="card card-link h-full p-4">
+              <span class="flex items-center gap-2 text-lg font-black"><span aria-hidden="true">{c.emoji}</span>{tt(c.name)}</span>
+              <span class="mt-1 block text-sm text-muted">{tt(c.summary)}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section class="mt-10" aria-label={chrome.faq}>
+    <h2 class="text-2xl font-black tracking-tight">{chrome.faq}</h2>
+    <div class="mt-4 grid gap-3">
+      {
+        faqs.map((f) => (
+          <details class="card px-4 py-3">
+            <summary class="cursor-pointer text-lg font-black">{f.q}</summary>
+            <p class="mt-2 leading-relaxed">{f.a}</p>
+          </details>
+        ))
+      }
+    </div>
+  </section>
+
+  {
+    others.length > 0 && (
+      <p class="mt-8 text-sm">
+        {tt('Also read:')}{' '}
+        {others.map((o, i) => (
+          <>
+            {i > 0 && ', '}
+            <a class="link" href={href(guidePath(o.slug))}>{tt(o.title)}</a>
+          </>
+        ))}
+      </p>
+    )
+  }
+</AppShell>

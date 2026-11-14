@@ -619,7 +619,7 @@ body {
     padding: 0.9rem 1rem;
   }
   .prose ol > li::before {
-    content: 'Step ' counter(step);
+    content: attr(data-step) ' ' counter(step);
     display: block;
     margin-bottom: 0.25rem;
     font-size: 0.7rem;

@@ -1,0 +1,164 @@
+---
+import AppShell from './AppShell.astro';
+import CalculatorTool from './CalculatorTool';
+import ReferenceTable from './ReferenceTable.astro';
+import TrustNote from './TrustNote.astro';
+import { answerFor, topicOf } from '../lib/calc/answers';
+import { referenceFor } from '../lib/calc/reference';
+import { trustOf } from '../lib/calc/sources';
+import { calcBySlug, calcPath, calcsInGroup } from '../lib/calc';
+import { GUIDES, guidePath } from '../lib/guides';
+import { breadcrumbLd, faqLd, webApplicationLd } from '../lib/seo';
+import { languageOf, localeOf, localePath, pageHref, type LangCode } from '../lib/i18n';
+import { islandStrings } from '../lib/i18n/island';
+import { trFor } from '../lib/i18n/loader';
+
+/** One calculator page, in one language. src/pages/[slug].astro renders it in English and src/pages/[lang]/[slug].astro in the others. */
+interface Props {
+  slug: string;
+  lang: LangCode;
+}
+const { slug, lang } = Astro.props;
+const tt = trFor(lang);
+const chrome = localeOf(lang).chrome;
+const groupNames = localeOf(lang).groups;
+const href = (key: string) => pageHref(lang, key);
+const def = calcBySlug(slug)!;
+const path = calcPath(slug);
+const related = def.related.map((r) => calcBySlug(r)!);
+const mates = calcsInGroup(def.group).filter((c) => c.slug !== slug && !def.related.includes(c.slug)).slice(0, 4);
+const guide = GUIDES.find((g) => g.calcs.includes(slug));
+const answer = answerFor(def);
+const topic = topicOf(def);
+const reference = referenceFor(slug);
+const trust = trustOf(def);
+const name = tt(def.name);
+const how = `How is ${topic} calculated?`;
+const formulaQ = `What is the formula for ${topic}?`;
+const exampleQ = `Can you show a worked example of ${topic}?`;
+const faqs = def.faqs.map((f) => ({ q: tt(f.q), a: tt(f.a) }));
+const inLanguage = languageOf(lang).hreflang;
+const jsonLd = [
+  webApplicationLd(name, localePath(lang, path), tt(def.description), def.group, inLanguage),
+  breadcrumbLd([
+    { name: chrome.home, path: localePath(lang, '/') },
+    { name: tt('Calculators'), path: href('/calculators/') },
+    { name, path: localePath(lang, path) },
+  ]),
+  faqLd(faqs),
+];
+const moreIn = tt('More in {0}:').replace('{0}', groupNames[def.group]);
+---
+
+<AppShell title={tt(def.title)} description={tt(def.description)} jsonLd={jsonLd}>
+  <p class="eyebrow">
+    <a href={href('/')} class="underline decoration-2 underline-offset-2">{chrome.home}</a>
+    <span aria-hidden="true"> / </span>
+    {groupNames[def.group]}
+  </p>
+  <h1 class="display mt-2 flex items-center gap-3 text-[2rem] min-[400px]:text-4xl sm:text-5xl">
+    <span aria-hidden="true" class="shrink-0 text-[2rem] min-[400px]:text-4xl sm:text-5xl">{def.emoji}</span>
+    <span class="min-w-0 hyphens-auto [overflow-wrap:anywhere]">{name}</span>
+  </h1>
+  <p class="mt-3 text-lg text-muted">{tt(def.summary)}</p>
+
+  <div class="mt-3 flex flex-wrap gap-2">
+    <span class="pill pill-ok">{chrome.runs}</span>
+    <span class="pill">{chrome.noSignup}</span>
+    <span class="pill">{chrome.noAds}</span>
+  </div>
+
+  <section aria-label={chrome.quick} class="card mt-5 p-4">
+    <p class="eyebrow">{chrome.quick}</p>
+    <p class="mt-1 leading-relaxed" data-answer>{tt(answer)}</p>
+    {
+      guide && (
+        <p class="mt-2 text-sm">
+          <span aria-hidden="true">📖</span> <span>{chrome.readGuide}</span>: <a class="link" href={href(guidePath(guide.slug))}>{tt(guide.title)}</a>
+        </p>
+      )
+    }
+  </section>
+
+  <section class="tool-area mt-5 grid gap-5" aria-label={name}>
+    <CalculatorTool client:load slug={slug} {...(lang === 'en' ? {} : { strings: islandStrings(lang, slug)! })} />
+  </section>
+
+  {
+    def.rules && (
+      <p class="mt-4 text-sm">
+        <b>{chrome.rulesAsOf}</b> {def.rules.asOf}: {tt(def.rules.year)}. {tt('Sources')}:{' '}
+        {def.rules.sources.map((s, i) => (
+          <>
+            {i > 0 && ', '}
+            <a class="link" href={s.url} rel="noopener">{tt(s.name)}</a>
+          </>
+        ))}
+        .
+      </p>
+    )
+  }
+
+  <div class="prose mt-12">
+    <h2>{tt(how)}</h2>
+    {def.how.map((p) => <p>{tt(p)}</p>)}
+
+    <h2>{tt(formulaQ)}</h2>
+    <ul class="formula">
+      {def.formula.map((line) => <li>{tt(line)}</li>)}
+    </ul>
+
+    <h2>{tt(exampleQ)}</h2>
+    <p>{tt(def.example)}</p>
+  </div>
+
+  {reference && <ReferenceTable table={reference} lang={lang} />}
+
+  {trust && <TrustNote trust={trust} lang={lang} />}
+
+  <section class="mt-12" aria-label={chrome.faq}>
+    <h2 class="text-3xl font-black tracking-tight">{chrome.faq}</h2>
+    <div class="mt-4 grid gap-3">
+      {
+        faqs.map((f) => (
+          <details class="card px-4 py-3">
+            <summary class="cursor-pointer text-lg font-black">{f.q}</summary>
+            <p class="mt-2 leading-relaxed">{f.a}</p>
+          </details>
+        ))
+      }
+    </div>
+  </section>
+
+  <nav class="mt-12" aria-label={chrome.related} data-related-nav>
+    <h2 class="text-2xl font-black tracking-tight">{chrome.related}</h2>
+    <ul class="mt-3 grid gap-4 sm:grid-cols-3">
+      {
+        related.map((c) => (
+          <li>
+            <a href={href(calcPath(c.slug))} class="card card-link h-full p-4">
+              <span class="flex items-center gap-2 text-lg font-black">
+                <span aria-hidden="true">{c.emoji}</span>
+                {tt(c.name)}
+              </span>
+              <span class="mt-1 block text-sm text-muted">{tt(c.summary)}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    {
+      mates.length > 0 && (
+        <p class="mt-4 text-sm text-muted">
+          {moreIn}{' '}
+          {mates.map((c, i) => (
+            <>
+              {i > 0 && ', '}
+              <a class="link" href={href(calcPath(c.slug))}>{tt(c.name)}</a>
+            </>
+          ))}
+        </p>
+      )
+    }
+  </nav>
+</AppShell>

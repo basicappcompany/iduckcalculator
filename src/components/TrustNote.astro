@@ -1,26 +1,32 @@
 ---
 import { DISCLAIMER, LAST_REVIEWED, type Trust } from '../lib/calc/sources';
+import { languageOf, pageHref, type LangCode } from '../lib/i18n';
+import { trFor } from '../lib/i18n/loader';
 
 interface Props {
   trust: Trust;
   /** The date shown as "Last reviewed". */
   reviewed?: string;
+  lang?: LangCode;
 }
-const { trust, reviewed = LAST_REVIEWED } = Astro.props;
-const date = new Date(`${reviewed}T00:00:00Z`).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+const { trust, reviewed = LAST_REVIEWED, lang = 'en' } = Astro.props;
+const tt = trFor(lang);
+// Western digits in every language, like the rest of the site.
+const locale = lang === 'en' ? 'en-GB' : `${languageOf(lang).hreflang}-u-nu-latn`;
+const date = new Date(`${reviewed}T00:00:00Z`).toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
 ---
 
-<aside class="trust card mt-6 p-4 text-sm" aria-label="How this was checked">
+<aside class="trust card mt-6 p-4 text-sm" aria-label={tt('How this was checked')}>
   <p>
-    <b>Last reviewed:</b> <time datetime={reviewed}>{date}</time>. <b>Where the maths comes from:</b> {trust.basis}
+    <b>{tt('Last reviewed:')}</b> <time datetime={reviewed}>{date}</time>. <b>{tt('Where the maths comes from:')}</b> {tt(trust.basis)}
     {
       trust.sources.length > 0 && (
         <>
-          {' '}Formula reference:{' '}
+          {' '}{tt('Formula reference:')}{' '}
           {trust.sources.map((s, i) => (
             <>
               {i > 0 && ', '}
-              <a class="link" href={s.url} rel="noopener">{s.name}</a>
+              <a class="link" href={s.url} rel="noopener">{tt(s.name)}</a>
             </>
           ))}
           .
@@ -28,5 +34,5 @@ const date = new Date(`${reviewed}T00:00:00Z`).toLocaleDateString('en-GB', { day
       )
     }
   </p>
-  <p class="mt-2 text-muted">{DISCLAIMER[trust.kind]} <a class="link" href="/how-we-check/">How we check our calculators</a>.</p>
+  <p class="mt-2 text-muted">{tt(DISCLAIMER[trust.kind])} <a class="link" href={pageHref(lang, '/how-we-check/')}>{tt('How we check our calculators')}</a>.</p>
 </aside>

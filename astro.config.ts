@@ -5,7 +5,7 @@ import tailwindcss from '@tailwindcss/vite';
 import { NOINDEX_PATHS } from './src/lib/community';
 import { guideBySlug } from './src/lib/guides';
 import { LAST_UPDATED } from './src/lib/seo';
-import { DEFAULT_LANG, LANGUAGES } from './src/lib/i18n';
+import { DEFAULT_LANG, LANGUAGES } from './src/lib/i18n/languages';
 
 export default defineConfig({
   site: 'https://iduckcalculator.com',
