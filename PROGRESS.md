@@ -17,11 +17,11 @@ Last synced 2026-11-13. Live: https://iduckcalculator.com. Detail and owners: `d
 - [x] Turkish (TR) chrome translation (not reviewed by a native speaker)
 - [x] CI (verify + build + e2e) green on main
 
-## Step 3: calculators (48 live of 52 planned)
+## Step 3: calculators (49 live of 52 planned)
 ### Loans & EMI
 - [x] EMI  - [x] Home loan EMI  - [x] Car loan EMI  - [x] Personal loan EMI  - [x] Loan prepayment savings  - [x] Loan eligibility
 ### Savings & investing
-- [x] SIP  - [x] Lumpsum  - [x] Step-up SIP  - [x] SWP  - [x] FD  - [x] RD  - [x] PPF (NSI and PPF Scheme 2019, read on 2026-11-14)  - [ ] Sukanya Samriddhi  - [ ] NPS
+- [x] SIP  - [x] Lumpsum  - [x] Step-up SIP  - [x] SWP  - [x] FD  - [x] RD  - [x] PPF (NSI and PPF Scheme 2019, read on 2026-11-14)  - [x] Sukanya Samriddhi (NSI and the 2019 Scheme, read on 2026-11-14)  - [ ] NPS
 - [x] Compound interest  - [x] Simple interest  - [x] CAGR  - [x] Inflation  - [x] Retirement corpus
 ### Tax & salary (India) - rules MUST be looked up on official sources first
 - [x] Income tax old vs new (tax year 2026-27, read from official sources on 2026-11-14)  - [ ] In-hand salary from CTC  - [x] HRA exemption (Income-tax Rules 2026, rule 279, read on 2026-11-14)  - [x] Gratuity (Code on Social Security, read on 2026-11-14)  - [x] GST add/remove (rates read from PIB and CBIC on 2026-11-14)  - [ ] TDS basics
@@ -44,11 +44,11 @@ Last synced 2026-11-13. Live: https://iduckcalculator.com. Detail and owners: `d
 - [x] Dark/light, Ctrl+K, language switch, no console errors, no sideways scroll on every page (Playwright, 117 passing; the sideways-scroll check was not re-confirmed at a phone-width viewport by hand)
 - [ ] Broken links check (no link checker has been run)
 
-Measured at last sync: 439 unit tests in 11 files, 127 browser tests, 111 pages built, 106 sitemap URLs. Security headers A+ on securityheaders.com and Mozilla Observatory; mobile PageSpeed 100/100/100/100 on the home page, the EMI page and a guide. See AUDIT.md for the security and SEO audit.
+Measured at last sync: 454 unit tests in 11 files, 129 browser tests, 113 pages built, 108 sitemap URLs. Security headers A+ on securityheaders.com and Mozilla Observatory; mobile PageSpeed 100/100/100/100 on the home page, the EMI page and a guide. See AUDIT.md for the security and SEO audit.
 
 ## Open items and decisions
 - Email Routing is set up for hello@ and feedback@iduckcalculator.com (MX, SPF, DKIM live; both rules Active, forwarding to the company inbox; catch-all off). A real test message has not been sent: send one from another mailbox to each address and confirm it arrives.
-- Income tax, GST, gratuity, HRA and PPF are built, each citing the official sources read on 2026-11-14. In-hand salary, TDS, Sukanya and NPS are not built: read the official sources first, and give each page a "rules as of" date.
+- Income tax, GST, gratuity, HRA, PPF and Sukanya Samriddhi are built, each citing the official sources read on 2026-11-14. In-hand salary, TDS and NPS are not built: read the official sources first, and give each page a "rules as of" date.
 - DuckConvert (iduckconvert.com) is live, links back here, and is in the sidebar, footer and About. iduckimg.com does not link to this site in its page source; iduckpdf.com's links could not be read.
 - Ask the helper is now "Duck", styled like iDuckIMG, and answers simple sums and "X% of Y" itself. Every page, the home page included, defaults to light whatever the device setting, with a light/dark toggle; a saved choice (light, dark or Match my device) stays on every page until changed.
 - Mobile Lighthouse (PageSpeed Insights, 13 Nov): the home page, the EMI page and a guide score 100 on Performance, Accessibility, Best Practices and SEO. Other pages were not measured.

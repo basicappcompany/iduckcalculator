@@ -213,4 +213,44 @@ export const GUIDES_TAX: readonly Guide[] = [
     published: '2026-11-14',
     updated: '2026-11-14',
   },
+  {
+    slug: 'how-to-calculate-sukanya-samriddhi-maturity',
+    title: 'How to calculate Sukanya Samriddhi maturity',
+    description: 'Work out what a Sukanya Samriddhi account grows to after 21 years, with the 15-year deposit period, the limits and the rate, with worked examples.',
+    intro: 'Deposit for 15 years, then let the balance grow to year 21. At 8.2%, ₹1,50,000 a year for 15 years is ₹44,75,989 at year 15 and ₹71,82,119 at year 21, of which ₹22,50,000 is what you put in and ₹49,32,119 is interest.',
+    steps: [
+      'Choose the yearly deposit, between ₹250 and ₹1,50,000. Here: ₹1,50,000 for 15 years.',
+      'Take the interest rate. The National Savings Institute shows 8.2% from 1 January 2024, and the Government reviews it every quarter.',
+      'After year 1: (0 + 1,50,000) × 1.082 = ₹1,62,300. For each later year up to year 15, add the deposit and multiply by 1.082.',
+      'After year 15 the balance is ₹44,75,989. Deposits stop, but the balance keeps earning: multiply by 1.082 for each of the next six years.',
+      'At year 21 the balance is ₹71,82,119. Subtract the ₹22,50,000 you invested to get the interest, ₹49,32,119. Or use the Sukanya Samriddhi calculator.',
+    ],
+    sections: [
+      {
+        h: 'The last six years do the heavy lifting',
+        p: ['Deposits stop at year 15 but the account runs to year 21. Without those six years the balance is ₹44,75,989; with them it is ₹71,82,119, an extra ₹27,06,130 from interest on interest alone. With ₹50,000 a year the balance at year 21 is ₹23,94,040.'],
+      },
+      {
+        h: 'When you deposit matters',
+        p: [
+          'The Scheme says interest is worked out for each calendar month on the lowest balance between the close of the 5th day and the end of the month, and is credited at the end of each financial year. A deposit made on or before 5 April therefore earns for all twelve months.',
+          'Spreading the same ₹1,50,000 over twelve monthly deposits of ₹12,500, each on or before the 5th, gives ₹69,32,648 at year 21 instead of ₹71,82,119, which is ₹2,49,471 less, only because the money went in later.',
+        ],
+      },
+      {
+        h: 'Limits, term and the rate',
+        p: ['An account takes at least ₹250 and at most ₹1,50,000 in a financial year. Deposits can be made for fifteen years from the date of opening, and the account matures after twenty-one years. The rate is set by the Government and may change each quarter, so treat a long projection as an illustration. The National Savings Institute states that the interest is free from income tax. The account has its own rules for withdrawal for education and for closure on marriage, which the calculator does not cover.'],
+      },
+    ],
+    faqs: [
+      { q: 'How long can I deposit?', a: 'For fifteen years from the date of opening the account. It matures after twenty-one years.' },
+      { q: 'What is the maximum I can invest?', a: '₹1,50,000 in a financial year. The minimum is ₹250.' },
+      { q: 'Does the balance earn interest after year 15?', a: 'Yes, until the account matures or is closed.' },
+      { q: 'What is the Sukanya Samriddhi rate?', a: 'The National Savings Institute shows 8.2% from 1 January 2024. It is reviewed every quarter.' },
+    ],
+    calcs: ['sukanya-samriddhi-calculator', 'ppf-calculator', 'compound-interest-calculator'],
+    related: ['how-to-calculate-ppf-maturity', 'how-compound-interest-works'],
+    published: '2026-11-14',
+    updated: '2026-11-14',
+  },
 ];

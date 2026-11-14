@@ -51,6 +51,7 @@ const gstg = L('how-to-add-and-remove-gst', 'gst-calculator');
 const gratg = L('how-to-calculate-gratuity', 'gratuity-calculator');
 const hrag = L('how-to-calculate-hra-exemption', 'hra-calculator');
 const ppfg = L('how-to-calculate-ppf-maturity', 'ppf-calculator');
+const ssag = L('how-to-calculate-sukanya-samriddhi-maturity', 'sukanya-samriddhi-calculator');
 const simp = L('how-to-calculate-simple-interest', 'simple-interest-calculator');
 const simpComp = L('how-to-calculate-simple-interest', 'compound-interest-calculator');
 const basicG = L('how-to-use-the-basic-calculator', 'basic-calculator');
@@ -153,6 +154,9 @@ const CLAIMS: Claim[] = [
   ppfg({}, 'Maturity value', 'inr'), ppfg({}, 'Amount invested', 'inr'), ppfg({}, 'Interest earned', 'inr'),
   ppfg({ pattern: 'monthly' }, 'Maturity value', 'inr'), ppfg({ yearly: 50000 }, 'Maturity value', 'inr'),
   ppfg({ years: 20 }, 'Maturity value', 'inr'), ppfg({ years: 25 }, 'Maturity value', 'inr'),
+  ssag({}, 'Maturity value', 'inr'), ssag({}, 'Amount invested', 'inr'), ssag({}, 'Interest earned', 'inr'),
+  ssag({ years: 15 }, 'Maturity value', 'inr'), ssag({ yearly: 50000 }, 'Maturity value', 'inr'),
+  ssag({ pattern: 'monthly' }, 'Maturity value', 'inr'),
   // ---- everyday maths
   pchg({}, 'Percentage increase', 'num'), pchg({ from: 100, to: 80 }, 'Percentage decrease', 'num'), pchg({ from: 50, to: 75 }, 'Percentage increase', 'num'), pchg({ from: 200, to: 150 }, 'Percentage decrease', 'num'),
   disc({}, 'You pay', 'inr'), disc({}, 'You save', 'inr'), disc({}, 'Effective discount', 'num'),
@@ -268,6 +272,12 @@ describe('guides quote the maths the calculators give', () => {
     expect(text).toContain('15,000');
     expect(text).toContain('15% of 2,400 is 360');
     expect(text).toContain('17 mod 5 is 2');
+  });
+
+  it('quotes the Sukanya Samriddhi figures worked by hand', () => {
+    const t = JSON.stringify(guideBySlug('how-to-calculate-sukanya-samriddhi-maturity'));
+    expect(Math.round(7_182_119.17 - 4_475_989.33)).toBe(2_706_130);
+    for (const s of ['₹1,62,300', '₹27,06,130', '₹12,500', '₹2,49,471', '₹250', '₹1,50,000', '8.2%', '1 January 2024']) expect(t, s).toContain(s);
   });
 
   it('quotes the PPF figures worked by hand', () => {

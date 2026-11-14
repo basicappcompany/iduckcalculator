@@ -36,6 +36,7 @@ export const ANSWER_META: Record<string, AnswerMeta> = {
   'gratuity-calculator': { topic: 'gratuity', what: 'Gratuity is a lump sum your employer pays when you leave after long service: fifteen days’ wages for each completed year.' },
   'hra-calculator': { topic: 'HRA exemption', what: 'HRA is part of your salary, and the tax-free part is the least of three limits, if you pay rent and choose the old regime.' },
   'ppf-calculator': { topic: 'PPF maturity', what: 'PPF is a government savings scheme with a 15-year term and interest credited every year.' },
+  'sukanya-samriddhi-calculator': { topic: 'Sukanya Samriddhi maturity', what: 'Sukanya Samriddhi is a government savings account for a girl child that matures after 21 years.' },
   'percentage-calculator': { topic: 'a percentage', what: 'A percentage is a number out of 100, and this tool answers the five questions people ask most, from percent of to increase and decrease.' },
   'percentage-change-calculator': { topic: 'percentage change', what: 'Percentage change measures how much a value rose or fell compared with where it started, and a negative result means a fall.' },
   'discount-calculator': { topic: 'a discount', what: 'A discount takes a percentage off a price, and a second discount applies to the price already reduced.' },
