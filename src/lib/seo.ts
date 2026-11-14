@@ -22,14 +22,14 @@ export function organizationLd(): Json {
   };
 }
 
-export function websiteLd(): Json {
+export function websiteLd(inLanguage = 'en', description = 'Free calculators that run in your browser.'): Json {
   return {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     name: SITE_NAME,
     url: `${SITE_URL}/`,
-    description: 'Free calculators that run in your browser.',
-    inLanguage: 'en',
+    description,
+    inLanguage,
   };
 }
 

@@ -3,7 +3,7 @@ import Chips from './Chips';
 import { CURRENCY_EVENT } from './CalculatorTool';
 import { THEME_EVENT, browserTheme, type ThemeChoice } from '../lib/theme-client';
 import { CURRENCIES, CURRENCY_STORAGE_KEY, DEFAULT_CURRENCY, currencyByCode, formatMoney } from '../lib/format';
-import { LANGUAGES, LANG_STORAGE_KEY } from '../lib/i18n';
+import { LANGUAGES, localePath } from '../lib/i18n';
 
 const THEME_OPTIONS: { id: ThemeChoice; emoji: string; label: string }[] = [
   { id: 'system', emoji: '🖥️', label: 'Match my device' },
@@ -33,7 +33,6 @@ export default function SettingsPanel() {
   const [choice, setChoice] = useState<ThemeChoice>('light');
   const [saved, setSaved] = useState<ThemeChoice | null>(null);
   const [currency, setCurrency] = useState(DEFAULT_CURRENCY);
-  const [lang, setLang] = useState('en');
   const [note, setNote] = useState('');
 
   useEffect(() => {
@@ -45,7 +44,6 @@ export default function SettingsPanel() {
     };
     sync();
     setCurrency(currencyByCode(read(CURRENCY_STORAGE_KEY, DEFAULT_CURRENCY)).code);
-    setLang(read(LANG_STORAGE_KEY, 'en'));
     // The header button changes the theme too, so keep this page in step with it.
     window.addEventListener(THEME_EVENT, sync);
     return () => window.removeEventListener(THEME_EVENT, sync);
@@ -60,28 +58,16 @@ export default function SettingsPanel() {
     }
     window.dispatchEvent(new CustomEvent(CURRENCY_EVENT));
   };
-  const pickLang = (code: string) => {
-    setLang(code);
-    try {
-      localStorage.setItem(LANG_STORAGE_KEY, code);
-    } catch {
-      // Private mode: the choice still applies until you leave.
-    }
-    // The shell applies the language when a page loads; reload this page so it shows at once.
-    location.reload();
-  };
   const clearAll = () => {
     theme?.clearSaved();
     try {
       localStorage.removeItem(CURRENCY_STORAGE_KEY);
-      localStorage.removeItem(LANG_STORAGE_KEY);
     } catch {
       // Nothing was saved.
     }
     setCurrency(DEFAULT_CURRENCY);
-    setLang('en');
     window.dispatchEvent(new CustomEvent(CURRENCY_EVENT));
-    setNote('Cleared. Theme follows your device, the currency is ₹ and the language is English.');
+    setNote('Cleared. Theme follows your device, the currency is ₹.');
   };
 
   return (
@@ -121,9 +107,17 @@ export default function SettingsPanel() {
           Language
         </h2>
         <div class="mt-3">
-          <Chips label="Language" options={LANGUAGES.map((l) => ({ id: l.code, label: l.native }))} value={lang} onChange={pickLang} />
+          <ul class="flex flex-wrap gap-2">
+            {LANGUAGES.map((l) => (
+              <li key={l.code}>
+                <a class="btn btn-sm" href={localePath(l.code, '/')} lang={l.hreflang} hreflang={l.hreflang} aria-current={l.code === 'en' ? 'true' : undefined}>
+                  {l.native}
+                </a>
+              </li>
+            ))}
+          </ul>
         </div>
-        <p class="mt-3 text-sm text-muted">Turkish covers the menus, buttons and page headings. Calculator names, labels and answers are still English, and the Turkish has not been read by a person yet.</p>
+        <p class="mt-3 text-sm text-muted">Each language has its own address, such as /de/ for German. Pages that are not translated yet stay in English. Machine-made translations say so at the top of the page until a native speaker has read them.</p>
       </section>
 
       <section class="card p-5" aria-labelledby="local-data">
@@ -131,7 +125,7 @@ export default function SettingsPanel() {
           Saved in this browser
         </h2>
         <p class="mt-2 text-sm text-muted" data-testid="saved-summary">
-          {saved === null && currency === DEFAULT_CURRENCY && lang === 'en' ? 'Nothing is saved: everything follows the defaults (light theme).' : `Saved: theme ${saved ?? 'light (default)'}, currency ${currency}, language ${lang}.`} That is all we keep. The numbers you type are never saved.
+          {saved === null && currency === DEFAULT_CURRENCY ? 'Nothing is saved: everything follows the defaults (light theme).' : `Saved: theme ${saved ?? 'light (default)'}, currency ${currency}.`} That is all we keep. The numbers you type are never saved.
         </p>
         <div class="mt-3 flex flex-wrap items-center gap-3">
           <button type="button" class="btn" onClick={clearAll}>

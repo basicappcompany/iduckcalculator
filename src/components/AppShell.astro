@@ -7,7 +7,7 @@ import { THEME_STORAGE_KEY } from '../lib/theme';
 import { COMMUNITY, communityPath } from '../lib/community';
 import { LAST_UPDATED, OG_IMAGE, SITE_NAME, serialize } from '../lib/seo';
 import { flagSvg } from '../lib/flags';
-import { EN, LANGUAGES } from '../lib/i18n';
+import { LANGUAGES, fill, langsFor, languageOf, localeOf, localePath, pageHref, splitLocale, switchHref } from '../lib/i18n';
 
 interface Props {
   title: string;
@@ -20,11 +20,32 @@ interface Props {
 const { title, description, noindex = false, jsonLd = [] } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
 const path = Astro.url.pathname.endsWith('/') ? Astro.url.pathname : `${Astro.url.pathname}/`;
-const isHome = path === '/';
+// The language comes from the URL (/de/about/ is German); `key` is the same page's English path (/about/).
+const { lang, key } = splitLocale(path);
+const language = languageOf(lang);
+const locale = localeOf(lang);
+const t = locale.chrome;
+const isHome = key === '/';
 const groups = liveGroups();
 // The group holding the current page starts open; on any other page the first group does.
-const openGroup = groups.find((g) => calcsInGroup(g.id).some((c) => calcPath(c.slug) === path))?.id ?? groups[0]?.id;
-const t = EN;
+const openGroup = groups.find((g) => calcsInGroup(g.id).some((c) => calcPath(c.slug) === key))?.id ?? groups[0]?.id;
+const href = (k: string) => pageHref(lang, k);
+const communityName: Record<string, string> = {
+  roadmap: t.roadmap,
+  request: t.request,
+  feedback: t.feedback,
+  support: t.supportFull,
+  settings: t.settings,
+  'how-we-check': t.howWeCheck,
+  about: t.about,
+};
+// The same page in every language it exists in, for search engines. Pages in one language only, and pages that stay out of search results, carry none.
+const alternates = noindex || langsFor(key).length < 2 ? [] : langsFor(key).map((code) => ({ hreflang: languageOf(code).hreflang, href: new URL(localePath(code, key), Astro.site).href }));
+const alsoTry = fill(t.alsoTry, {
+  pdf: '<a class="link" href="https://iduckpdf.com/" rel="noopener">iDuckPDF</a>',
+  img: '<a class="link" href="https://iduckimg.com/" rel="noopener">iDuckIMG</a>',
+  convert: '<a class="link" href="https://iduckconvert.com/" rel="noopener">iDuckConvert</a>',
+});
 // The brand goes after the title only when the whole <title> stays under 60 characters; search results cut longer ones.
 const BRAND_SUFFIX = ' | iDuckCalculator';
 const bareTitle = title.endsWith(BRAND_SUFFIX) ? title.slice(0, -BRAND_SUFFIX.length) : title;
@@ -32,7 +53,7 @@ const fullTitle = bareTitle.length + BRAND_SUFFIX.length <= 59 ? `${bareTitle}${
 ---
 
 <!doctype html>
-<html lang="en-US" data-theme="light">
+<html lang={language.hreflang} data-theme="light">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -48,11 +69,13 @@ const fullTitle = bareTitle.length + BRAND_SUFFIX.length <= 59 ? `${bareTitle}${
         <>
           <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1" />
           <link rel="canonical" href={canonical} />
+          {alternates.map((a) => <link rel="alternate" hreflang={a.hreflang} href={a.href} />)}
+          {alternates.length > 0 && <link rel="alternate" hreflang="x-default" href={new URL(localePath('en', key), Astro.site).href} />}
         </>
       )
     }
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale" content={language.ogLocale} />
     <meta property="og:site_name" content={SITE_NAME} />
     <meta property="og:type" content="website" />
     <meta property="og:title" content={fullTitle} />
@@ -83,43 +106,42 @@ const fullTitle = bareTitle.length + BRAND_SUFFIX.length <= 59 ? `${bareTitle}${
   <body>
     <a
       href="#main"
-      data-i18n="skip"
       class="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-50 focus:rounded-lg focus:border-2 focus:border-line focus:bg-duck focus:px-4 focus:py-2 focus:font-black focus:text-duckink"
     >
       {t.skip}
     </a>
 
     <div class="shell">
-      <aside class="sidebar" id="sidebar" aria-label="Site menu">
+      <aside class="sidebar" id="sidebar" aria-label={t.siteMenu}>
         <div class="nav-scroll">
-          <a href="/" class="nav-brand" aria-label="iDuckCalculator home">
+          <a href={href('/')} class="nav-brand" aria-label={t.homeAria}>
             <DuckMark size={34} />
             <span>iDuckCalculator</span>
           </a>
 
-          <button type="button" id="sidebar-search" class="nav-search" aria-label={t.searchAria} data-i18n-aria="searchAria">
+          <button type="button" id="sidebar-search" class="nav-search" aria-label={t.searchAria}>
             <span aria-hidden="true">🔍</span>
-            <span class="flex-1 text-left" data-i18n="searchPlaceholder">{t.searchPlaceholder}</span>
+            <span class="flex-1 text-left">{t.searchPlaceholder}</span>
             <kbd aria-hidden="true">Ctrl K</kbd>
           </button>
 
-          <nav aria-label="Main">
-            <a class="nav-item" href="/" aria-current={isHome ? 'page' : undefined}>
-              <span class="nav-icon" aria-hidden="true">🏠</span><span class="nav-text" data-i18n="home">{t.home}</span>
+          <nav aria-label={t.mainNav}>
+            <a class="nav-item" href={href('/')} aria-current={isHome ? 'page' : undefined}>
+              <span class="nav-icon" aria-hidden="true">🏠</span><span class="nav-text">{t.home}</span>
             </a>
-            <a class="nav-item" href="/chat/" aria-current={path === '/chat/' ? 'page' : undefined}>
-              <span class="nav-icon" aria-hidden="true">💬</span><span class="nav-text" data-i18n="helper">{t.helper}</span>
+            <a class="nav-item" href={href('/chat/')} aria-current={key === '/chat/' ? 'page' : undefined}>
+              <span class="nav-icon" aria-hidden="true">💬</span><span class="nav-text">{t.helper}</span>
             </a>
-            <a class="nav-item" href="/calculators/" aria-current={path === '/calculators/' ? 'page' : undefined}>
-              <span class="nav-icon" aria-hidden="true">🧮</span><span class="nav-text" data-i18n="all">{t.all}</span>
+            <a class="nav-item" href={href('/calculators/')} aria-current={key === '/calculators/' ? 'page' : undefined}>
+              <span class="nav-icon" aria-hidden="true">🧮</span><span class="nav-text">{t.all}</span>
             </a>
-            <a class="nav-item" href="/guides/" aria-current={path.startsWith('/guides/') ? 'page' : undefined}>
-              <span class="nav-icon" aria-hidden="true">📖</span><span class="nav-text" data-i18n="guides">{t.guides}</span>
+            <a class="nav-item" href={href('/guides/')} aria-current={key.startsWith('/guides/') ? 'page' : undefined}>
+              <span class="nav-icon" aria-hidden="true">📖</span><span class="nav-text">{t.guides}</span>
             </a>
           </nav>
 
-          <nav aria-label="Calculators">
-            <p class="nav-label" data-i18n="calculators">{t.calculators}</p>
+          <nav aria-label={t.calculators}>
+            <p class="nav-label">{t.calculators}</p>
             {
               groups.map((group, i) => {
                 const open = group.id === openGroup;
@@ -127,13 +149,13 @@ const fullTitle = bareTitle.length + BRAND_SUFFIX.length <= 59 ? `${bareTitle}${
                   <div data-group>
                     <button type="button" class="nav-group" data-nav-group aria-expanded={open ? 'true' : 'false'} aria-controls={`group-${i}`}>
                       <span class="nav-icon" aria-hidden="true">{group.emoji}</span>
-                      <span class="nav-text">{group.name}</span>
+                      <span class="nav-text">{locale.groups[group.id] ?? group.name}</span>
                       <span class="nav-chevron" aria-hidden="true">›</span>
                     </button>
                     <ul class="nav-children" id={`group-${i}`} hidden={!open}>
                       {calcsInGroup(group.id).map((c) => (
                         <li data-calc={c.slug}>
-                          <a class="nav-item nav-small" href={calcPath(c.slug)} aria-current={path === calcPath(c.slug) ? 'page' : undefined}>
+                          <a class="nav-item nav-small" href={calcPath(c.slug)} aria-current={key === calcPath(c.slug) ? 'page' : undefined}>
                             <span class="nav-icon" aria-hidden="true">{c.emoji}</span>
                             <span class="nav-text">{c.name}</span>
                           </a>
@@ -146,21 +168,21 @@ const fullTitle = bareTitle.length + BRAND_SUFFIX.length <= 59 ? `${bareTitle}${
             }
           </nav>
 
-          <p class="nav-label" data-i18n="community">{t.community}</p>
+          <p class="nav-label">{t.community}</p>
           <ul>
             {
               COMMUNITY.map((page) => (
                 <li>
-                  <a class="nav-item" href={communityPath(page.slug)} aria-current={path === communityPath(page.slug) ? 'page' : undefined}>
+                  <a class="nav-item" href={href(communityPath(page.slug))} aria-current={key === communityPath(page.slug) ? 'page' : undefined}>
                     <span class="nav-icon" aria-hidden="true">{page.emoji}</span>
-                    <span class="nav-text">{page.name}</span>
+                    <span class="nav-text">{communityName[page.slug] ?? page.name}</span>
                   </a>
                 </li>
               ))
             }
           </ul>
 
-          <p class="nav-label" data-i18n="alsoFrom">{t.alsoFrom}</p>
+          <p class="nav-label">{t.alsoFrom}</p>
           <a class="nav-item" href="https://iduckpdf.com/" rel="noopener">
             <span class="nav-icon" aria-hidden="true">📚</span><span class="nav-text">iDuckPDF</span>
           </a>
@@ -177,77 +199,73 @@ const fullTitle = bareTitle.length + BRAND_SUFFIX.length <= 59 ? `${bareTitle}${
 
       <div class="min-w-0">
         <header class="topbar sticky top-0 z-20 flex items-center gap-1.5 px-2.5 py-2 min-[400px]:gap-2 min-[400px]:px-3">
-          <button type="button" class="btn btn-sm" data-menu-button aria-label={t.menu} data-i18n-aria="menu" aria-controls="sidebar" aria-expanded="false">☰</button>
-          <a href="/" class="flex items-center gap-2 rounded-lg min-[900px]:hidden">
+          <button type="button" class="btn btn-sm" data-menu-button aria-label={t.menu} aria-controls="sidebar" aria-expanded="false">☰</button>
+          <a href={href('/')} class="flex items-center gap-2 rounded-lg min-[900px]:hidden">
             <DuckMark size={28} />
             <span class="hidden font-black min-[460px]:inline">iDuckCalculator</span>
           </a>
           <div class="ml-auto flex items-center gap-1.5 min-[400px]:gap-2">
-            <button type="button" class="btn btn-sm" id="search-open" aria-label={t.searchAria} data-i18n-aria="searchAria">
+            <button type="button" class="btn btn-sm" id="search-open" aria-label={t.searchAria}>
               <span aria-hidden="true">🔍</span>
-              <span class="hidden sm:inline" data-i18n="search">{t.search}</span>
+              <span class="hidden sm:inline">{t.search}</span>
             </button>
             <details class="lang" data-lang-menu>
-              <summary class="btn btn-sm" aria-label={t.language} data-i18n-aria="language">
-                <span data-lang-flag><Fragment set:html={flagSvg('en')} /></span>
-                <span class="hidden min-[520px]:inline" data-lang-name>English (US)</span>
+              <summary class="btn btn-sm" aria-label={t.language}>
+                <span data-lang-flag><Fragment set:html={flagSvg(language.flag)} /></span>
+                <span class="hidden min-[520px]:inline" data-lang-name>{language.native}</span>
               </summary>
               <ul class="lang-list">
                 {
                   LANGUAGES.map((l) => (
                     <li>
-                      <button type="button" data-lang={l.code} lang={l.hreflang} aria-current={l.code === 'en' ? 'true' : undefined} class="w-full text-left">
-                        <Fragment set:html={flagSvg(l.code)} />
+                      <a href={switchHref(l.code, key)} data-lang={l.code} lang={l.hreflang} hreflang={l.hreflang} aria-current={l.code === lang ? 'true' : undefined}>
+                        <Fragment set:html={flagSvg(l.flag)} />
                         <span>{l.native}</span>
-                      </button>
+                      </a>
                     </li>
                   ))
                 }
               </ul>
             </details>
-            <button type="button" class="btn btn-sm" id="theme-toggle" aria-label={t.theme} data-i18n-aria="theme" aria-pressed="false">
+            <button type="button" class="btn btn-sm" id="theme-toggle" aria-label={t.theme} aria-pressed="false">
               <span data-theme-icon="moon" aria-hidden="true">🌙</span>
               <span data-theme-icon="sun" aria-hidden="true">☀️</span>
             </button>
-            <a href="/support/" class="btn btn-sm btn-primary" aria-label={t.support} data-i18n-aria="support">
+            <a href={href('/support/')} class="btn btn-sm btn-primary" aria-label={t.support}>
               <span aria-hidden="true">💛</span>
-              <span class="hidden min-[520px]:inline" data-i18n="support">{t.support}</span>
+              <span class="hidden min-[520px]:inline">{t.support}</span>
             </a>
           </div>
         </header>
 
         <main id="main" class="mx-auto w-full max-w-[1072px] px-4 py-8">
-          <p class="mb-5 hidden text-sm font-bold" data-machine-note>{t.machine}</p>
+          {!language.reviewed && <p class="mb-5 text-sm font-bold" data-machine-note>{t.machine}</p>}
           <slot />
         </main>
 
         <footer class="mx-auto max-w-[1072px] px-4 pb-10 text-sm text-muted">
           <div class="border-t-2 border-line pt-6">
             <p class="flex flex-wrap gap-x-4 gap-y-1">
-              <a class="link" href="/calculators/" data-i18n="all">{t.all}</a>
-              <a class="link" href="/guides/" data-i18n="guides">{t.guides}</a>
-              <a class="link" href="/about/" data-i18n="about">{t.about}</a>
-              <a class="link" href="/privacy/" data-i18n="privacy">{t.privacy}</a>
-              <a class="link" href="/terms/" data-i18n="terms">{t.terms}</a>
-              <a class="link" href="/feedback/" data-i18n="feedback">{t.feedback}</a>
+              <a class="link" href={href('/calculators/')}>{t.all}</a>
+              <a class="link" href={href('/guides/')}>{t.guides}</a>
+              <a class="link" href={href('/about/')}>{t.about}</a>
+              <a class="link" href={href('/privacy/')}>{t.privacy}</a>
+              <a class="link" href={href('/terms/')}>{t.terms}</a>
+              <a class="link" href={href('/feedback/')}>{t.feedback}</a>
             </p>
+            <p class="mt-3" set:html={alsoTry} />
             <p class="mt-3">
-              Also try <a class="link" href="https://iduckpdf.com/" rel="noopener">iDuckPDF</a>, <a class="link" href="https://iduckimg.com/" rel="noopener">iDuckIMG</a> and <a class="link" href="https://iduckconvert.com/" rel="noopener">iDuckConvert</a>.
-            </p>
-            <p class="mt-3">
-              © 2026 Basic App Company · iDuckCalculator · iduckcalculator.com · <span data-i18n="footerTagline">{t.footerTagline}</span> Last updated {LAST_UPDATED}.
+              © 2026 Basic App Company · iDuckCalculator · iduckcalculator.com · <span>{t.footerTagline}</span> {fill(t.lastUpdated, { date: LAST_UPDATED })}
             </p>
           </div>
         </footer>
       </div>
     </div>
 
-    <CommandPalette />
+    <CommandPalette placeholder={`${t.searchAria}…`} label={t.searchAria} />
 
     <script>
       import { THEME_STORAGE_KEY } from '../lib/theme';
-      import { DICTS, LANGUAGES, LANG_STORAGE_KEY, type Dict } from '../lib/i18n';
-      import { flagSvg } from '../lib/flags';
 
       const root = document.documentElement;
       const body = document.body;
@@ -272,53 +290,8 @@ const fullTitle = bareTitle.length + BRAND_SUFFIX.length <= 59 ? `${bareTitle}${
         window.dispatchEvent(new CustomEvent('duck-theme'));
       });
 
-      // ---- language (page chrome only) ----
+      // ---- language menu: plain links to the other languages; this only closes it ----
       const langMenu = document.querySelector<HTMLDetailsElement>('[data-lang-menu]');
-      function applyLang(code: string) {
-        const lang = LANGUAGES.find((l) => l.code === code) ?? LANGUAGES[0]!;
-        const dict: Dict = DICTS[lang.code];
-        root.lang = lang.hreflang;
-        document.querySelectorAll<HTMLElement>('[data-i18n]').forEach((el) => {
-          const v = dict[el.dataset['i18n'] as keyof Dict];
-          if (v) el.textContent = v;
-        });
-        document.querySelectorAll<HTMLElement>('[data-i18n-aria]').forEach((el) => {
-          const v = dict[el.dataset['i18nAria'] as keyof Dict];
-          if (v) el.setAttribute('aria-label', v);
-        });
-        const flag = document.querySelector('[data-lang-flag]');
-        if (flag) flag.innerHTML = flagSvg(lang.code);
-        const name = document.querySelector('[data-lang-name]');
-        if (name) name.textContent = lang.native;
-        document.querySelectorAll<HTMLElement>('[data-lang]').forEach((b) => b.toggleAttribute('aria-current', b.dataset['lang'] === lang.code));
-        const note = document.querySelector<HTMLElement>('[data-machine-note]');
-        if (note) {
-          note.hidden = lang.reviewed;
-          note.classList.toggle('hidden', lang.reviewed);
-          if (!lang.reviewed) note.textContent = dict.machine;
-        }
-        const input = document.getElementById('palette-input') as HTMLInputElement | null;
-        if (input) input.placeholder = dict.searchPlaceholder;
-      }
-      let saved = 'en';
-      try {
-        saved = localStorage.getItem(LANG_STORAGE_KEY) ?? 'en';
-      } catch {
-        // Storage blocked: stay on English.
-      }
-      if (saved !== 'en') applyLang(saved);
-      langMenu?.querySelectorAll<HTMLElement>('[data-lang]').forEach((b) =>
-        b.addEventListener('click', () => {
-          const code = b.dataset['lang'] ?? 'en';
-          try {
-            localStorage.setItem(LANG_STORAGE_KEY, code);
-          } catch {
-            // Private mode: the choice still applies for this visit.
-          }
-          applyLang(code);
-          langMenu.open = false;
-        }),
-      );
       if (langMenu) {
         // The menu closes on a tap or click elsewhere ("pointerdown" covers touch; iOS sends no click for plain page taps), Escape, or focus leaving.
         document.addEventListener('pointerdown', (e) => {

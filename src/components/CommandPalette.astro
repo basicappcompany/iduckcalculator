@@ -5,6 +5,11 @@
  * duck yellow, and a hint bar. Opens with Ctrl K or Cmd K (toggles), with "/" when you are not
  * typing, and from the Search button. Arrow keys move, Enter opens, Esc closes.
  */
+interface Props {
+  placeholder?: string;
+  label?: string;
+}
+const { placeholder = 'Search calculators, pages and actions…', label = 'Search calculators, pages and actions' } = Astro.props;
 ---
 
 <div id="palette" class="palette" hidden>
@@ -16,14 +21,14 @@
         id="palette-input"
         type="text"
         class="palette-input"
-        placeholder="Search calculators, pages and actions…"
+        placeholder={placeholder}
         autocomplete="off"
         spellcheck="false"
         role="combobox"
         aria-expanded="true"
         aria-controls="palette-list"
         aria-autocomplete="list"
-        aria-label="Search calculators, pages and actions"
+        aria-label={label}
       />
       <kbd class="palette-kbd" aria-hidden="true">Esc</kbd>
     </div>

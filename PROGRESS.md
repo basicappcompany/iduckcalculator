@@ -14,7 +14,10 @@ Last synced 2026-11-13. Live: https://iduckcalculator.com. Detail and owners: `d
 - [x] Home, All calculators, settings (theme, currency, language), helper chat, roadmap, request, feedback, support, about, privacy, terms, 404
 - [x] SEO: sitemap (96 URLs, each with a lastmod), robots, canonical, OG/Twitter tags, og.png, favicon, llms.txt, _headers (canonical and social tags not re-read at last sync)
 - [x] How-to guides: 45, one or more for every live calculator, figures checked by tests (tax guide included). Each new tax or scheme calculator needs its own guide.
-- [x] Turkish (TR) chrome translation (not reviewed by a native speaker)
+- [x] Localization stage 1: 11 languages (en-US, en-GB, hi, bn, pt-BR, id, ru, de, es, fr, tr) with real URLs (`/de/`), hreflang, sitemap alternates, translated menus, footer and home page. None of the 9 machine-translated languages has been read by a native speaker
+- [ ] Localization stage 2: calculators, by group, most-used first
+- [ ] Localization stage 3: how-to guides
+- [ ] Localization stage 4: static pages, then the India tax and scheme pages (labelled unreviewed)
 - [x] CI (verify + build + e2e) green on main
 
 ## Step 3: calculators (49 live of 52 planned)
@@ -44,7 +47,7 @@ Last synced 2026-11-13. Live: https://iduckcalculator.com. Detail and owners: `d
 - [x] Dark/light, Ctrl+K, language switch, no console errors, no sideways scroll on every page (Playwright, 117 passing; the sideways-scroll check was not re-confirmed at a phone-width viewport by hand)
 - [ ] Broken links check (no link checker has been run)
 
-Measured at last sync: 454 unit tests in 11 files, 129 browser tests, 113 pages built, 108 sitemap URLs. Security headers A+ on securityheaders.com and Mozilla Observatory; mobile PageSpeed 100/100/100/100 on the home page, the EMI page and a guide. See AUDIT.md for the security and SEO audit.
+Measured at last sync: 461 unit tests in 11 files, 140 browser tests, 123 pages built, 118 sitemap URLs. Security headers A+ on securityheaders.com and Mozilla Observatory; mobile PageSpeed 100/100/100/100 on the home page, the EMI page and a guide. See AUDIT.md for the security and SEO audit.
 
 ## Open items and decisions
 - Email Routing is set up for hello@ and feedback@iduckcalculator.com (MX, SPF, DKIM live; both rules Active, forwarding to the company inbox; catch-all off). A real test message has not been sent: send one from another mailbox to each address and confirm it arrives.
@@ -54,5 +57,5 @@ Measured at last sync: 454 unit tests in 11 files, 129 browser tests, 113 pages 
 - Mobile Lighthouse (PageSpeed Insights, 13 Nov): the home page, the EMI page and a guide score 100 on Performance, Accessibility, Best Practices and SEO. Other pages were not measured.
 - Security headers: A+ on securityheaders.com and Mozilla Observatory (13 Nov). Search Console (Success) and Bing (Processing) have the sitemap; keep the Google verification TXT record in DNS.
 - Needs the account owner (steps in AUDIT.md): GitHub two-factor login and Dependabot alerts (secret scanning and branch protection need a paid plan), Cloudflare TLS and bot settings, Crawler Hints, DNSSEC, GoDaddy lock and auto-renew, the SPF and DMARC decision, Dependabot PR #9.
-- Not yet done: tips provider (Dodo Payments), native Turkish read-through, a broken-link check.
+- Not yet done: tips provider (Dodo Payments), native read-throughs of the 9 machine-translated languages, a broken-link check.
 - Some office or VPN resolvers still cache the old GoDaddy parking page for iduckcalculator.com (up to 48 hours from the nameserver change); check the live site with `curl --resolve` or from a phone on mobile data.

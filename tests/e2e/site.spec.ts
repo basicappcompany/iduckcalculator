@@ -207,19 +207,51 @@ test('"Match my device" is remembered on every page, and clearing the saved sett
   await ctx.close();
 });
 
-test('the language switch changes the page chrome to Turkish and back', async ({ page }) => {
+const LANG_PAGES: [string, string, string][] = [
+  ['/', 'en-US', 'quacked'],
+  ['/en-gb/', 'en-GB', 'quacked'],
+  ['/hi/', 'hi', 'क्वैक'],
+  ['/bn/', 'bn', 'কোয়াকে'],
+  ['/pt-br/', 'pt-BR', 'quá'],
+  ['/id/', 'id', 'kwek'],
+  ['/ru/', 'ru', 'кря'],
+  ['/de/', 'de', 'quakend'],
+  ['/es/', 'es', 'cuac'],
+  ['/fr/', 'fr', 'coin-coin'],
+  ['/tr/', 'tr', 'vaklayarak'],
+];
+
+test('the language menu opens the real page in another language and links back', async ({ page }) => {
   await openReady(page, '/emi-calculator/');
   await page.locator('[data-lang-menu] summary').click();
-  await page.locator('[data-lang="tr"]').click();
-  await expect(page.locator('[data-i18n="home"]').first()).toHaveText('Ana sayfa');
-  await expect(page.locator('html')).toHaveAttribute('lang', 'tr');
+  // This calculator page is not translated yet, so German goes to the German home page.
+  await page.locator('[data-lang="de"]').click();
+  await expect(page).toHaveURL(/\/de\/$/);
+  await expect(page.locator('html')).toHaveAttribute('lang', 'de');
+  await expect(page.locator('h1')).toContainText('quakend');
   await expect(page.locator('[data-machine-note]')).toBeVisible();
-  await page.reload();
-  await expect(page.locator('[data-i18n="home"]').first()).toHaveText('Ana sayfa');
+  await expect(page.getByRole('link', { name: 'Startseite' }).first()).toBeVisible();
   await page.locator('[data-lang-menu] summary').click();
   await page.locator('[data-lang="en"]').click();
-  await expect(page.locator('[data-i18n="home"]').first()).toHaveText('Home');
+  await expect(page).toHaveURL(/\/$/);
+  await expect(page.locator('html')).toHaveAttribute('lang', 'en-US');
+  await expect(page.locator('[data-machine-note]')).toHaveCount(0);
 });
+
+for (const [path, lang, word] of LANG_PAGES) {
+  test(`the home page in ${lang} loads, declares its language and links to every other language`, async ({ page }) => {
+    await page.goto(path);
+    await expect(page.locator('html')).toHaveAttribute('lang', lang);
+    await expect(page.locator('h1')).toHaveCount(1);
+    await expect(page.locator('h1')).toContainText(word);
+    expect(await page.locator('link[rel="alternate"][hreflang]').count(), 'hreflang links').toBe(12);
+    expect(await page.locator('[data-lang-menu] [data-lang]').count(), 'menu links').toBe(11);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', `https://iduckcalculator.com${path}`);
+    const machine = page.locator('[data-machine-note]');
+    if (lang === 'en-US' || lang === 'en-GB') await expect(machine).toHaveCount(0);
+    else await expect(machine).toBeVisible();
+  });
+}
 
 test('home page has the promised sections and filters by group', async ({ page }) => {
   await page.goto('/');

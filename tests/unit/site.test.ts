@@ -6,9 +6,10 @@ import { GUIDES, guideBySlug, wordCount } from '../../src/lib/guides';
 import { emi, loanPlan, compound, sipFutureValue } from '../../src/lib/finance';
 import { formatNumber } from '../../src/lib/format';
 import { respond } from '../../src/lib/helper';
-import { DICTS, EN, TR } from '../../src/lib/i18n';
 import { contrast, dark, light } from '../../src/lib/theme';
 import { faqLd, serialize } from '../../src/lib/seo';
+import { flagSvg } from '../../src/lib/flags';
+import { DEFAULT_LANG, LANGUAGES, LOCALES, PAGE_LANGS, EN as en, fill, langsFor, localePath, pageHref, splitLocale, switchHref } from '../../src/lib/i18n';
 
 const words = (s: string) => s.trim().split(/\s+/).length;
 const inr = (n: number) => formatNumber(Math.round(n), 0, 'en-IN');
@@ -98,11 +99,78 @@ describe('helper', () => {
   });
 });
 
-describe('language and theme', () => {
-  it('Turkish has every English key, with the same placeholders', () => {
-    expect(Object.keys(TR).sort()).toEqual(Object.keys(EN).sort());
-    for (const k of Object.keys(EN) as (keyof typeof EN)[]) expect(DICTS.tr[k].length, k).toBeGreaterThan(1);
+describe('languages', () => {
+  const codes = LANGUAGES.map((l) => l.code);
+  /** Every {placeholder} in a string, sorted, so two translations of one sentence can be compared. */
+  const holes = (s: string) => [...s.matchAll(/\{(\w+)\}/g)].map((m) => m[1]).sort().join(',');
+  /** Every leaf string of a locale with its path, such as "home.faqs.0.a". */
+  const leaves = (o: unknown, path = ''): [string, string][] =>
+    typeof o === 'string' ? [[path, o]] : Array.isArray(o) ? o.flatMap((v, i) => leaves(v, `${path}.${i}`)) : Object.entries(o as object).flatMap(([k, v]) => leaves(v, path ? `${path}.${k}` : k));
+  const english = leaves(en);
+
+  it('lists unique codes and hreflang values, English (US) first, with a flag each', () => {
+    expect(codes[0]).toBe('en');
+    expect(new Set(codes).size).toBe(codes.length);
+    expect(new Set(LANGUAGES.map((l) => l.hreflang)).size).toBe(codes.length);
+    expect(DEFAULT_LANG).toBe('en');
+    for (const l of LANGUAGES) expect(flagSvg(l.flag), l.code).toContain('<svg');
   });
+  it('every language has every text of the English file, with the same {placeholders}', () => {
+    for (const l of LANGUAGES) {
+      const text = leaves(LOCALES[l.code]);
+      expect(text.map(([k]) => k), l.code).toEqual(english.map(([k]) => k));
+      text.forEach(([k, v], i) => {
+        expect(v.trim().length, `${l.code} ${k}`).toBeGreaterThan(0);
+        expect(holes(v), `${l.code} ${k}`).toBe(holes(english[i]![1]));
+      });
+    }
+  });
+  it('a translated language is not a copy of the English text', () => {
+    for (const l of LANGUAGES.filter((x) => x.code !== 'en' && x.code !== 'en-gb')) {
+      const same = leaves(LOCALES[l.code]).filter(([k, v]) => v === english.find(([ek]) => ek === k)![1] && v.length > 12);
+      expect(same.map(([k]) => k), l.code).toEqual([]);
+    }
+  });
+  it('titles and descriptions fit the search-result limits the SEO audit enforces', () => {
+    for (const l of LANGUAGES) {
+      const h = LOCALES[l.code]!.home;
+      expect(h.title.length, `${l.code} title`).toBeLessThan(60);
+      expect(h.description.length, `${l.code} description`).toBeLessThan(155);
+    }
+  });
+  it('only languages nobody has read yet carry the machine-translation notice, and every one of them has it', () => {
+    for (const l of LANGUAGES) expect(l.reviewed, l.code).toBe(l.code === 'en' || l.code === 'en-gb');
+  });
+  it('builds localized paths and splits them again', () => {
+    expect(localePath('en', '/')).toBe('/');
+    expect(localePath('en', '/about/')).toBe('/about/');
+    expect(localePath('de', '/')).toBe('/de/');
+    expect(localePath('pt-br', '/about/')).toBe('/pt-br/about/');
+    expect(splitLocale('/')).toEqual({ lang: 'en', key: '/' });
+    expect(splitLocale('/de/')).toEqual({ lang: 'de', key: '/' });
+    expect(splitLocale('/pt-br/about/')).toEqual({ lang: 'pt-br', key: '/about/' });
+    expect(splitLocale('/about/')).toEqual({ lang: 'en', key: '/about/' });
+    expect(splitLocale('/emi-calculator/')).toEqual({ lang: 'en', key: '/emi-calculator/' });
+    expect(splitLocale('/de')).toEqual({ lang: 'de', key: '/' });
+    for (const l of LANGUAGES) for (const key of ['/', '/about/', '/guides/x/']) expect(splitLocale(localePath(l.code, key))).toEqual({ lang: l.code, key });
+  });
+  it('a page falls back to English where it is not translated, and the language menu falls back to that language\'s home', () => {
+    expect(langsFor('/')).toEqual(codes);
+    expect(langsFor('/some-page-nobody-translated/')).toEqual(['en']);
+    expect(pageHref('de', '/')).toBe('/de/');
+    expect(pageHref('de', '/some-page-nobody-translated/')).toBe('/some-page-nobody-translated/');
+    expect(switchHref('de', '/')).toBe('/de/');
+    expect(switchHref('de', '/some-page-nobody-translated/')).toBe('/de/');
+    expect(switchHref('en', '/some-page-nobody-translated/')).toBe('/some-page-nobody-translated/');
+    for (const langs of Object.values(PAGE_LANGS)) expect(langs).toContain('en');
+  });
+  it('fills placeholders and leaves unknown ones visible', () => {
+    expect(fill('All {total} calculators', { total: 49 })).toBe('All 49 calculators');
+    expect(fill('{a} and {b}', { a: 1 })).toBe('1 and {b}');
+  });
+});
+
+describe('language and theme', () => {
   it('every text and background pair is readable (WCAG AA 4.5:1) in both themes', () => {
     for (const [name, t] of [['light', light], ['dark', dark]] as const) {
       expect(contrast(t.ink, t.bg), `${name} ink/bg`).toBeGreaterThanOrEqual(4.5);

@@ -1,5 +1,5 @@
 // Checks the built site (run `pnpm build` first): `node scripts/seo-audit.mjs`. Prints a report and exits 1 if a rule is broken.
-// Rules: one <h1> per page; a unique <title> under 60 characters and a unique description under 155; a robots meta tag with
+// Rules: one <h1> per page; a unique <title> under 60 characters and a unique description under 155 (unique within one language); a robots meta tag with
 // index,follow and the large-preview directives on every public page; a canonical URL that matches the page; the sitemap lists exactly
 // the indexable pages, each with a lastmod date.
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
@@ -27,6 +27,8 @@ const pages = [];
         robots: /<meta name="robots" content="([^"]*)"/.exec(html)?.[1] ?? '',
         canonical: /<link rel="canonical" href="([^"]*)"/.exec(html)?.[1] ?? '',
         h1: (html.match(/<h1\b/g) ?? []).length,
+        lang: /<html lang="([^"]*)"/.exec(html)?.[1] ?? '',
+        alternates: [...html.matchAll(/<link rel="alternate" hreflang="([^"]*)" href="([^"]*)"/g)].map((m) => ({ hreflang: m[1], href: m[2] })),
       });
     }
   }
@@ -43,8 +45,9 @@ for (const p of pages) {
   if (p.description === '') add(p.rel, 'no meta description');
   if (p.description.length >= 155) add(p.rel, `description is ${p.description.length} characters`);
   if (p.rel !== '/404.html') {
-    byTitle.set(p.title, [...(byTitle.get(p.title) ?? []), p.rel]);
-    byDescription.set(p.description, [...(byDescription.get(p.description) ?? []), p.rel]);
+    // Two pages in different languages may share a title (a brand name, say); two in the same language may not.
+    byTitle.set(`${p.lang}|${p.title}`, [...(byTitle.get(`${p.lang}|${p.title}`) ?? []), p.rel]);
+    byDescription.set(`${p.lang}|${p.description}`, [...(byDescription.get(`${p.lang}|${p.description}`) ?? []), p.rel]);
   }
   p.noindex = p.robots === 'noindex';
   if (NOINDEX_PAGES.has(p.rel) && !p.noindex) add(p.rel, 'must be noindex');
@@ -55,6 +58,31 @@ for (const p of pages) {
 }
 for (const [t, rels] of byTitle) if (rels.length > 1) add(rels.join(', '), `same title "${t}"`);
 for (const [d, rels] of byDescription) if (rels.length > 1) add(rels.join(', '), `same description "${d.slice(0, 50)}..."`);
+
+// Languages: every page that lists alternates must list itself and x-default, point only at pages that were built, and be listed back by each of them.
+const byUrl = new Map(pages.map((p) => [`${SITE}${p.rel}`, p]));
+for (const p of pages) {
+  if (p.alternates.length === 0) continue;
+  const self = `${SITE}${p.rel}`;
+  if (!p.alternates.some((a) => a.href === self)) add(p.rel, 'hreflang links do not include the page itself');
+  if (!p.alternates.some((a) => a.hreflang === 'x-default')) add(p.rel, 'hreflang links have no x-default');
+  const seen = new Set();
+  for (const a of p.alternates) {
+    if (seen.has(a.hreflang)) add(p.rel, `hreflang ${a.hreflang} appears twice`);
+    seen.add(a.hreflang);
+    const target = byUrl.get(a.href);
+    if (!target) add(p.rel, `hreflang ${a.hreflang} points at ${a.href}, which was not built`);
+    else if (a.hreflang !== 'x-default' && target.lang !== a.hreflang) add(p.rel, `hreflang ${a.hreflang} points at a page in language "${target.lang}"`);
+    else if (!target.alternates.some((b) => b.href === self)) add(p.rel, `${a.href} does not link back`);
+  }
+}
+// The English home page must offer every language, and a translated page must declare its own language.
+const home = pages.find((p) => p.rel === '/');
+if (home && home.alternates.length < 3) add('/', 'the home page lists fewer than 3 language versions');
+for (const p of pages) {
+  const m = /^\/([a-z]{2}(?:-[a-z]{2})?)\//.exec(p.rel);
+  if (m && p.rel !== '/404.html' && p.lang.toLowerCase() !== m[1]) add(p.rel, `html lang is "${p.lang}", expected "${m[1]}"`);
+}
 
 // Sitemap: every indexable page, a lastmod on each, nothing else.
 const sitemapFile = join(DIST, 'sitemap-0.xml');
