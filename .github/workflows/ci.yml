@@ -1,9 +1,19 @@
 name: CI
 
+# Actions minutes are limited, so this workflow spends as few as it can:
+# - a change that only touches documents does not start it (the docs are checked by `docs-sync`);
+# - a newer push to the same branch cancels the run still going for the older one;
+# - the browser tests (about 70% of a run) run on pull requests only: the merge into main is the same code, so main gets the quick checks.
 on:
   pull_request:
+    paths-ignore: ['**.md', 'docs/**']
   push:
     branches: [main]
+    paths-ignore: ['**.md', 'docs/**']
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
@@ -27,3 +37,4 @@ jobs:
       - run: pnpm build
       - run: pnpm seo:check
       - run: pnpm test:e2e
+        if: github.event_name == 'pull_request'

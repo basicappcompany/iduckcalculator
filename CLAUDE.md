@@ -8,7 +8,7 @@ Astro 7.4.10 (static output), Preact 11.2.0 islands, Tailwind 4.3.5, TypeScript 
 - `pnpm dev` | `pnpm build` (output `dist/`) | `pnpm preview`
 - `pnpm verify` = `astro check` + `eslint` + `vitest run`. Run it before every commit.
 - `pnpm test:e2e` = Playwright against a built site. Needs `pnpm build` first.
-- CI (`.github/workflows/ci.yml`): check, lint, test, build, e2e on every PR and on `main`.
+- CI (`.github/workflows/ci.yml`): check, lint, test, build and SEO audit on every PR and on `main`; the browser tests (e2e, about 70% of a run) on PRs only. Docs-only changes (`**.md`, `docs/**`) start no run, and a newer push cancels the older run. This saves Actions minutes: the free allowance is a pool shared by every repo on the account (checked on 2026-11-14), and a docs-only PR shows no checks, which is expected.
 
 ## Workflow (the user's rules)
 - Never push to `main`. New branch, commit, push, pull request, fix CI on the same PR, merge when green, delete the branch, pull `main`.
