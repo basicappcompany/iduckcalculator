@@ -263,6 +263,17 @@ test('the language menu opens the same page in another language and links back',
   await expect(page.locator('[data-machine-note]')).toHaveCount(0);
 });
 
+test('tax pages in an unreviewed language carry an extra machine-translation warning, English and other pages do not', async ({ page }) => {
+  await page.goto('/de/uk-income-tax-calculator/');
+  await expect(page.locator('[data-tax-lang-note]')).toBeVisible();
+  await page.goto('/de/guides/how-to-calculate-uk-income-tax/');
+  await expect(page.locator('[data-tax-lang-note]')).toBeVisible();
+  await page.goto('/de/emi-calculator/');
+  await expect(page.locator('[data-tax-lang-note]')).toHaveCount(0);
+  await page.goto('/uk-income-tax-calculator/');
+  await expect(page.locator('[data-tax-lang-note]')).toHaveCount(0);
+});
+
 test('a page that exists only in English sends the menu to the other language\'s home page', async ({ page }) => {
   await page.goto('/privacy/');
   await page.locator('[data-lang-menu] summary').click();

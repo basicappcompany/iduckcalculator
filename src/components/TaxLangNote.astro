@@ -1,0 +1,20 @@
+---
+import { languageOf, type LangCode } from '../lib/i18n';
+import { trFor } from '../lib/i18n/loader';
+
+/** Extra warning on tax pages in a language no native speaker has read yet: a mistranslated tax term or figure costs more than elsewhere. */
+interface Props {
+  lang: LangCode;
+}
+const { lang } = Astro.props;
+const tt = trFor(lang);
+const show = !languageOf(lang).reviewed;
+---
+
+{
+  show && (
+    <p class="card mt-4 p-3 text-sm font-bold" role="note" data-tax-lang-note>
+      {tt('This tax page is machine-translated and no native speaker has read it yet.')} {tt('Check every figure against the official sources listed on the page, or use the English version.')}
+    </p>
+  )
+}

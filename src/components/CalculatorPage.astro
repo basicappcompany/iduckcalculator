@@ -3,6 +3,7 @@ import AppShell from './AppShell.astro';
 import CalculatorTool from './CalculatorTool';
 import ReferenceTable from './ReferenceTable.astro';
 import TrustNote from './TrustNote.astro';
+import TaxLangNote from './TaxLangNote.astro';
 import { answerFor, topicOf } from '../lib/calc/answers';
 import { referenceFor } from '../lib/calc/reference';
 import { trustOf } from '../lib/calc/sources';
@@ -77,6 +78,8 @@ const moreIn = tt('More in {0}:').replace('{0}', groupNames[def.group]);
     <span class="pill">{chrome.noSignup}</span>
     <span class="pill">{chrome.noAds}</span>
   </div>
+
+  {def.country && <TaxLangNote lang={lang} />}
 
   <section aria-label={chrome.quick} class="card mt-5 p-4">
     <p class="eyebrow">{chrome.quick}</p>

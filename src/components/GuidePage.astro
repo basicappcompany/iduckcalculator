@@ -1,6 +1,7 @@
 ---
 import AppShell from './AppShell.astro';
 import TrustNote from './TrustNote.astro';
+import TaxLangNote from './TaxLangNote.astro';
 import { guideBySlug, guidePath } from '../lib/guides';
 import { calcBySlug, calcPath } from '../lib/calc';
 import { TRUST } from '../lib/calc/sources';
@@ -42,6 +43,8 @@ const guidesName = chrome.guides;
   <p class="eyebrow"><a href={href('/guides/')} class="underline decoration-2 underline-offset-2">{guidesName}</a></p>
   <h1 class="display mt-2 text-3xl min-[400px]:text-4xl sm:text-5xl">{title}</h1>
   <p class="mt-2 text-sm text-muted">{fill(tt('Updated {date}'), { date: guide.updated })}</p>
+
+  {calcs.some((c) => c.country) && <TaxLangNote lang={lang} />}
 
   <section class="card mt-5 p-4" aria-label={chrome.quick}>
     <p class="eyebrow">{chrome.quick}</p>
