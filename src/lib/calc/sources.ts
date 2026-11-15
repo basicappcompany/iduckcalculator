@@ -1,5 +1,6 @@
 import type { CalcDef } from './types';
 import { PPF_RULES, SUKANYA_RULES } from './defs/schemes';
+import { CA_INCOME_TAX_RULES, CA_TAKE_HOME_RULES } from './defs/ca-tax';
 import { UK_INCOME_TAX_RULES, UK_TAKE_HOME_RULES } from './defs/uk-tax';
 import { US_INCOME_TAX_RULES, US_TAKE_HOME_RULES } from './defs/us-tax';
 import { GRATUITY_RULES, GST_RULES, HRA_RULES, INCOME_TAX_RULES } from './defs/tax';
@@ -60,6 +61,8 @@ export const TRUST: Record<string, Trust> = {
   'us-income-tax-calculator': { kind: 'finance', basis: 'The 2026 tax rate tables and standard deductions in IRS Revenue Procedure 2025-32, read from the official IRS pages below on 15 November 2026. Credits, state tax and capital gains are not included.', sources: US_INCOME_TAX_RULES.sources },
   'uk-income-tax-calculator': { kind: 'finance', basis: 'The 2026 to 2027 Income Tax rates, Personal Allowance and Scottish bands that GOV.UK publishes, read from the official GOV.UK pages below on 15 November 2026. National Insurance, reliefs and savings or dividend tax are not included.', sources: UK_INCOME_TAX_RULES.sources },
   'uk-take-home-pay-calculator': { kind: 'finance', basis: 'The 2026 to 2027 Income Tax rates and Scottish bands, plus the Class 1 employee National Insurance thresholds and rates GOV.UK publishes, read from the official GOV.UK pages below on 15 November 2026. Pensions, student loans and other payslip deductions are not included.', sources: UK_TAKE_HOME_RULES.sources },
+  'ca-income-tax-calculator': { kind: 'finance', basis: 'The 2026 federal tax brackets, basic personal amount and credit rate published by the Canada Revenue Agency (the rates page, the indexation page and the T4127 payroll formulas), read from the official CRA pages below on 15 November 2026. Provincial tax and other credits are not included.', sources: CA_INCOME_TAX_RULES.sources },
+  'ca-take-home-pay-calculator': { kind: 'finance', basis: 'The 2026 federal brackets and credits, the CPP and CPP2 rates and limits and the EI premium, as published by the Canada Revenue Agency and its T4127 payroll formulas, read from the official CRA pages below on 15 November 2026. Provincial tax, Quebec and other deductions are not included.', sources: CA_TAKE_HOME_RULES.sources },
   'us-take-home-pay-calculator': { kind: 'finance', basis: 'The 2026 federal income tax tables and standard deductions, plus the Social Security wage base and the Medicare and Additional Medicare rates the IRS publishes, read from the official IRS pages below on 15 November 2026. State tax and paycheck deductions are not included.', sources: US_TAKE_HOME_RULES.sources },
   'bmi-calculator': { kind: 'health', basis: 'Weight in kg divided by height in metres squared, with the WHO categories.', sources: [{ name: 'WHO: obesity and overweight', url: 'https://www.who.int/news-room/fact-sheets/detail/obesity-and-overweight' }] },
   'bmr-calculator': { kind: 'health', basis: 'The Mifflin-St Jeor equation.', sources: [MIFFLIN, BMR_REF] },

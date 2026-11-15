@@ -3,6 +3,7 @@ import { GUIDES, guideBySlug } from '../../src/lib/guides';
 import { CALCULATORS, calcBySlug, defaultValues } from '../../src/lib/calc';
 import { evaluate } from '../../src/lib/calc/expr';
 import { incomeTax } from '../../src/lib/calc/defs/tax';
+import { caEmployeeTax, caFederalTax } from '../../src/lib/calc/defs/ca-tax';
 import { ukIncomeTax, ukNationalInsurance } from '../../src/lib/calc/defs/uk-tax';
 import { usIncomeTax, usPayrollTax } from '../../src/lib/calc/defs/us-tax';
 import { formatNumber } from '../../src/lib/format';
@@ -54,6 +55,8 @@ const usTax = L('how-to-calculate-us-federal-income-tax', 'us-income-tax-calcula
 const usPay = L('how-to-calculate-us-take-home-pay', 'us-take-home-pay-calculator');
 const ukTax = L('how-to-calculate-uk-income-tax', 'uk-income-tax-calculator');
 const ukPay = L('how-to-calculate-uk-take-home-pay', 'uk-take-home-pay-calculator');
+const caTax = L('how-to-calculate-canadian-federal-income-tax', 'ca-income-tax-calculator');
+const caPay = L('how-to-calculate-canadian-take-home-pay', 'ca-take-home-pay-calculator');
 const taxg = L('how-to-choose-old-or-new-tax-regime', 'income-tax-calculator');
 const gstg = L('how-to-add-and-remove-gst', 'gst-calculator');
 const gratg = L('how-to-calculate-gratuity', 'gratuity-calculator');
@@ -185,6 +188,14 @@ const CLAIMS: Claim[] = [
   ukPay({ salary: 30000 }, 'Take-home pay per year', 'us2'), ukPay({ salary: 30000 }, 'National Insurance', 'us2'),
   ukPay({ salary: 110000 }, 'Take-home pay per year', 'us2'), ukPay({ salary: 110000 }, 'National Insurance', 'us2'), ukPay({ salary: 110000 }, 'Income Tax', 'us'),
   ukPay({ region: 'sco' }, 'Take-home pay per year', 'us2'), ukPay({ region: 'sco' }, 'Income Tax', 'us2'),
+  // ---- Canada tax (rules read from the CRA pages on 2026-11-15)
+  caTax({}, 'Federal income tax', 'us'), caTax({}, 'Effective federal tax rate', 'num'),
+  caTax({ income: 30000 }, 'Federal income tax', 'us'), caTax({ income: 30000 }, 'Effective federal tax rate', 'num'),
+  caTax({ income: 100000 }, 'Federal income tax', 'us'), caTax({ income: 100000 }, 'Effective federal tax rate', 'num'), caTax({ income: 100000 }, 'Tax before', 'us2'),
+  caPay({}, 'Take-home pay per year', 'us'), caPay({}, 'Take-home pay per month', 'us'), caPay({}, 'Federal income tax', 'us'),
+  caPay({}, 'Share of your pay', 'num'),
+  caPay({ salary: 40000 }, 'Take-home pay per year', 'us'), caPay({ salary: 40000 }, 'Federal income tax', 'us'),
+  caPay({ salary: 90000 }, 'Take-home pay per year', 'us'), caPay({ salary: 90000 }, 'Federal income tax', 'us'),
   // ---- everyday maths
   pchg({}, 'Percentage increase', 'num'), pchg({ from: 100, to: 80 }, 'Percentage decrease', 'num'), pchg({ from: 50, to: 75 }, 'Percentage increase', 'num'), pchg({ from: 200, to: 150 }, 'Percentage decrease', 'num'),
   disc({}, 'You pay', 'inr'), disc({}, 'You save', 'inr'), disc({}, 'Effective discount', 'num'),
@@ -414,6 +425,22 @@ describe('guides quote the maths the calculators give', () => {
     const pay = t('how-to-calculate-uk-take-home-pay');
     expect(ukNationalInsurance(110_000).total).toBeCloseTo(4_210.6, 6);
     for (const s of ['£12,570', '£50,270', '£10,480.40', '£3,016', '£59,730', '£1,194.60', '£4,210.60', '£33,432']) expect(pay, s).toContain(s);
+  });
+
+  it('quotes the Canada tax figures worked by hand', () => {
+    const t = (slug: string) => JSON.stringify(guideBySlug(slug));
+    const tax = t('how-to-calculate-canadian-federal-income-tax');
+    const r = caFederalTax(60_000, 16_452);
+    expect(r.bands[0]!.tax).toBeCloseTo(8_193.22, 6);
+    expect(r.bands[1]!.tax).toBeCloseTo(302.785, 6); // written $302.79, half a cent rounded up
+    for (const s of ['$58,523', '$117,045', '$181,440', '$258,482', '$16,452', '$14,829', '$2,303.28', '$8,193.22', '$302.79', '$8,496.01', '$6,192.73', '$4,200', '$41,477', '$16,696.01']) expect(tax, s).toContain(s);
+    const pay = t('how-to-calculate-canadian-take-home-pay');
+    const e = caEmployeeTax(60_000);
+    expect([e.payroll.cpp, Math.round(e.payroll.ei * 100) / 100, e.payroll.cpp2]).toEqual([3_361.75, 978, 0]);
+    expect(Math.round(e.tax + e.payroll.total)).toBe(9_678);
+    const e90 = caEmployeeTax(90_000);
+    expect([e90.payroll.cpp, e90.payroll.cpp2, e90.payroll.ei]).toEqual([4_230.45, 416, 1_123.07]);
+    for (const s of ['$3,500', '$74,600', '$85,000', '$68,900', '$3,361.75', '$9,678', '$10,400', '$416', '$4,230.45', '$1,123.07']) expect(pay, s).toContain(s);
   });
 
   it('links every live calculator from at least one guide', () => {
