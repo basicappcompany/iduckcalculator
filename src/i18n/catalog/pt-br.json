@@ -3975,6 +3975,7 @@
  "{0} years": "{0} anos",
  "{0} years {1} month": "{0} anos e {1} mês",
  "{0} years {1} months": "{0} anos e {1} meses",
+ "{0} years, {1} months, {2} day": "{0} anos, {1} meses, {2} dia",
  "{0} years, {1} months, {2} days": "{0} anos, {1} meses, {2} dias",
  "{0} year{1}": "{0} ano{1}",
  "{0}% a year": "{0}% ao ano",

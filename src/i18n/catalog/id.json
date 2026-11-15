@@ -3975,6 +3975,7 @@
  "{0} years": "{0} tahun",
  "{0} years {1} month": "{0} tahun {1} bulan",
  "{0} years {1} months": "{0} tahun {1} bulan",
+ "{0} years, {1} months, {2} day": "{0} tahun, {1} bulan, {2} hari",
  "{0} years, {1} months, {2} days": "{0} tahun, {1} bulan, {2} hari",
  "{0} year{1}": "{0} tahun{1}",
  "{0}% a year": "{0}% per tahun",

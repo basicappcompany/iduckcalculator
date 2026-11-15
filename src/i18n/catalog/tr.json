@@ -3975,6 +3975,7 @@
  "{0} years": "{0} yıl",
  "{0} years {1} month": "{0} yıl {1} ay",
  "{0} years {1} months": "{0} yıl {1} ay",
+ "{0} years, {1} months, {2} day": "{0} yıl, {1} ay, {2} gün",
  "{0} years, {1} months, {2} days": "{0} yıl, {1} ay, {2} gün",
  "{0} year{1}": "{0} yıl{1}",
  "{0}% a year": "Yıllık {0}%",

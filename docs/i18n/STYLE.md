@@ -1,0 +1,39 @@
+# Translating iDuckCalculator
+
+iDuckCalculator (iduckcalculator.com) is a free website of calculators: loans and EMI, savings and investing, Indian tax, everyday maths, dates, health and school. Most of the text is explanation, worked examples and FAQs. You translate it into one language. Real people will use the calculators for real money decisions, so **numbers must be exactly right**.
+
+## What you do
+
+1. Read your chunk: `i18n-work/<lang>/chunks/NNN.json`. It is a list of `{ "i": 12, "en": "English text", "kind": "text|title|description", "ctx": "emi-calculator" }`.
+2. Write `i18n-work/<lang>/out/NNN.json`: one JSON object, the index as a string and your translation as the value: `{ "12": "…", "13": "…" }`. Every `i` of the chunk needs an entry. Use the Write tool; make it valid JSON (escape double quotes inside strings as `\"`).
+3. Run `node scripts/i18n/validate.mjs <lang> NNN` from the project root. It lists every problem with the English and your text. Fix them in the file and run it again until it prints `ok`. **Do not stop before it prints `ok`.**
+4. Report one line: the chunk, how many strings, and `ok`.
+
+Do not edit any other file. Do not translate in your head and skip entries: translate every one.
+
+## Rules
+
+- **Keep every number exactly as written**, in Western digits 0-9, with the same commas and decimal points: `₹3,46,154` stays `₹3,46,154`, `7.1%` stays `7.1%`. Do not convert digits to Devanagari, Bengali or Arabic digits. Do not round, reformat or localize numbers.
+- Keep `₹`, `%`, `×`, `÷`, `=`, `^`, `√`, brackets and other maths symbols. Keep formulas such as `EMI = P × r × (1 + r)^n ÷ ((1 + r)^n − 1)` and the letters in them (P, r, n) as they are.
+- Keep `{0}`, `{1}`... placeholders: each must appear exactly once in your translation (you may move them to where the grammar needs them). They stand for numbers.
+- Keep these as they are: EMI, SIP, SWP, PPF, GST, TDS, HRA, NPS, CAGR, BMI, BMR, TDEE, CGPA, GPA, FD, RD, AY, FY, "Sukanya Samriddhi", "Mifflin-St Jeor", "Devine", "Robinson", "Labour Codes", "lakh", "crore", "iDuckCalculator", "iDuckPDF", "iDuckIMG", "iDuckConvert", and the names of laws, forms and government bodies (you may add a short translation in brackets for a body's name only if the English has none).
+- Keep HTML tags such as `<b>…</b>` exactly. Do not add markdown, quotes or notes.
+- Translate month and weekday names into your language (`1 December 2026` becomes the natural date in your language) but keep the digits.
+- Units (kg, cm, ml, %) stay. Words like years, months, days, weeks, calories are translated.
+- `kind: "title"` must be under 60 characters and `kind: "description"` under 155 characters in your language: shorten the wording if needed (the validator checks).
+- Write natural, plain, friendly text, the way a good local website would say it. Do not translate word for word. Keep a similar sentence structure and length. Do not add or drop information.
+- Strings with the same `ctx` come from the same calculator or guide and sit together: keep terms consistent between them, and use the glossary in `LANGS.md` for the language's standard terms.
+- Names of calculators (for example "EMI calculator", "Percentage calculator") are translated like normal phrases, with the word "calculator" as in the glossary.
+- Mentions of "India", Indian taxes and schemes stay accurate: this is Indian law and Indian schemes explained for readers anywhere. Do not "localize" the rules to your country.
+
+## United States tax pages (added 2026-11-15)
+
+Some strings explain United States federal tax and payroll tax for readers anywhere, for tax year 2026. Keep these as they are, in English: IRS, FICA, Social Security, Medicare, Additional Medicare Tax, W-2, 401(k), "Revenue Procedure 2025-32", form and topic names ("IRS Topic 751"), and the dollar sign `$` with its digits (`$75,000`, `$61,592.50`). The text uses the American style (comma for thousands, dot for decimals): keep digits exactly as written even if your language normally uses a different separator. Translate the descriptive terms naturally and consistently: filing status (single, married filing jointly, married filing separately, head of household), standard deduction, itemized deductions, tax bracket, taxable income, effective tax rate, marginal rate (the rate on the next dollar), take-home pay, payroll tax, wage base, salary, per year, per month. Names of countries (India, United States, United Kingdom, Canada, Australia, Germany) are translated to the usual name in your language. Do not "localize" United States rules to your country.
+
+## United Kingdom tax pages (added 2026-11-15)
+
+Some strings explain UK Income Tax and National Insurance for readers anywhere, for the 2026 to 2027 tax year. Keep these as they are, in English: HMRC, GOV.UK, "National Insurance", "Income Tax" (a proper name for the UK tax: you may add a translation in brackets only if it reads naturally; otherwise keep it), "Personal Allowance", "Primary Threshold", "Upper Earnings Limit", "Class 1", "Class 4", "Self Assessment", "Gift Aid", "Marriage Allowance", "PAYE", and the pound sign with its digits (`£50,000`, `£39,519.60`). The text uses the British style (comma for thousands, dot for decimals): keep digits exactly as written. Translate the descriptive terms naturally and consistently: basic rate, higher rate, additional rate, starter, intermediate, advanced and top rate (Scotland), taxable income, take-home pay, effective rate, tax year, England, Wales, Northern Ireland, Scotland.
+
+## Canada tax pages (added 2026-11-15)
+
+Some strings explain Canadian federal income tax and payroll contributions for readers anywhere, for tax year 2026. Keep these as they are, in English: CRA, "Canada Revenue Agency", CPP, CPP2, EI, QPP, RRSP, "T4127", and the dollar sign with its digits (`$60,000`, `$50,321.96`). The text uses the English style (comma for thousands, dot for decimals): keep digits exactly as written. Translate descriptive terms naturally and consistently: basic personal amount, federal income tax, provincial or territorial tax, brackets, taxable income, take-home pay, effective rate, tax credit, Canada employment amount, province, Quebec.
