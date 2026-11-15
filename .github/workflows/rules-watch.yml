@@ -1,0 +1,25 @@
+name: rules-watch
+on:
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+permissions:
+  contents: read
+  issues: write
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version-file: .node-version
+      - id: run
+        run: |
+          set +e
+          node scripts/rules-watch.mjs | tee out.txt
+          echo "code=${PIPESTATUS[0]}" >> "$GITHUB_OUTPUT"
+      - if: steps.run.outputs.code != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh issue create --title "Tax source page changed: re-read the rules" --body "$(grep -A1 CHANGED out.txt) See CLAUDE.md for the yearly re-read steps." || true
