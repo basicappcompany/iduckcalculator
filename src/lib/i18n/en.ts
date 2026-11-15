@@ -49,7 +49,7 @@ export const en: Locale = {
   groups: {
     loans: 'Loans & EMI',
     savings: 'Savings & investing',
-    tax: 'Tax & salary (India)',
+    tax: 'Tax & salary',
     maths: 'Everyday maths',
     dates: 'Dates & time',
     health: 'Health',

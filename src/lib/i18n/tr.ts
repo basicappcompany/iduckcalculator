@@ -49,7 +49,7 @@ export const tr: Locale = {
   groups: {
     loans: 'Krediler ve taksitler',
     savings: 'Birikim ve yatırım',
-    tax: 'Vergi ve maaş (Hindistan)',
+    tax: 'Vergi ve maaş',
     maths: 'Günlük matematik',
     dates: 'Tarih ve saat',
     health: 'Sağlık',

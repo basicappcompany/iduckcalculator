@@ -45,7 +45,7 @@ Last synced 2026-11-15. Live: https://iduckcalculator.com. Detail and owners: `d
 - [x] Dark/light, Ctrl+K, language switch, no console errors, no sideways scroll on every page (Playwright, 143 passing on 2026-11-15; the sideways-scroll check was not re-confirmed at a phone-width viewport by hand)
 - [x] Broken links check (2026-11-14): 126,900 internal links and anchors across 1173 built pages resolve; 33 of 34 external links return 200, and incometaxindia.gov.in/w/section-156-84 returns 403 to scripts (likely bot blocking; open it in a browser)
 
-Measured 2026-11-15: 507 unit tests passing (1 skipped) in 13 files, 143 browser tests passing, 1173 pages built, 1168 sitemap URLs, SEO audit passed. Security headers A+ on securityheaders.com and Mozilla Observatory; mobile PageSpeed 100/100/100/100 on the home page, the EMI page and a guide. See AUDIT.md for the security and SEO audit.
+Measured 2026-11-15: 517 unit tests passing (1 skipped) in 14 files, 143 browser tests passing, 1173 pages built, 1168 sitemap URLs, SEO audit passed. Security headers A+ on securityheaders.com and Mozilla Observatory; mobile PageSpeed 100/100/100/100 on the home page, the EMI page and a guide. See AUDIT.md for the security and SEO audit.
 
 ## Open items and decisions
 - Email Routing is set up for hello@ and feedback@iduckcalculator.com (MX, SPF, DKIM live; both rules Active, forwarding to the company inbox; catch-all off). A real test message has not been sent: send one from another mailbox to each address and confirm it arrives.
@@ -55,5 +55,6 @@ Measured 2026-11-15: 507 unit tests passing (1 skipped) in 13 files, 143 browser
 - Mobile Lighthouse (PageSpeed Insights, 13 Nov): the home page, the EMI page and a guide score 100 on Performance, Accessibility, Best Practices and SEO. Other pages were not measured.
 - Security headers: A+ on securityheaders.com and Mozilla Observatory (13 Nov). Search Console (Success) and Bing (Processing) have the sitemap; keep the Google verification TXT record in DNS.
 - Needs the account owner (steps in AUDIT.md): GitHub two-factor login and Dependabot alerts (secret scanning and branch protection need a paid plan), Cloudflare TLS and bot settings, Crawler Hints, DNSSEC, GoDaddy lock and auto-renew, the SPF and DMARC decision, Dependabot PR #9.
+- Country tax and salary calculators (US, UK, Canada, Australia, Germany): plan in `docs/country-tax-design.md`. Plumbing built (country and currency fields, group renamed "Tax & salary"); no country calculator yet. Next: the US federal slice with the `/tax/` hubs.
 - Not yet done: tips provider (Dodo Payments), native read-throughs of the 9 machine-translated languages. Tax and scheme sources were last read on 2026-11-14 and not re-read at this sync.
 - Some office or VPN resolvers still cache the old GoDaddy parking page for iduckcalculator.com (up to 48 hours from the nameserver change); check the live site with `curl --resolve` or from a phone on mobile data.

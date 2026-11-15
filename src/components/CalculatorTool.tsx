@@ -229,7 +229,9 @@ function FieldInput({ f, value, onChange, cur, tr }: { f: Field; value: number |
 export default function CalculatorTool({ slug, strings }: { slug: string; /** The translations this calculator needs, English text to the page's language. Absent on English pages. */ strings?: Record<string, string> }) {
   const def = calcBySlug(slug);
   const tr: Tr = useMemo(() => (strings ? makeTr(strings) : (s: string) => s), [strings]);
-  const cur = useCurrency();
+  const chosen = useCurrency();
+  // A country's tax page always shows that country's currency; every other page follows the Settings choice.
+  const cur = def?.currency ?? chosen;
   const [values, setValues] = useState<Values>(() => (def ? defaultValues(def) : {}));
   // "today" defaults become the real date on the visitor's device; the build has a different "today".
   useEffect(() => {

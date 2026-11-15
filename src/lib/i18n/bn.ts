@@ -49,7 +49,7 @@ export const bn: Locale = {
   groups: {
     loans: 'ঋণ ও EMI',
     savings: 'সঞ্চয় ও বিনিয়োগ',
-    tax: 'কর ও বেতন (ভারত)',
+    tax: 'কর ও বেতন',
     maths: 'দৈনন্দিন গণিত',
     dates: 'তারিখ ও সময়',
     health: 'স্বাস্থ্য',

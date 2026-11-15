@@ -49,7 +49,7 @@ export const ptBr: Locale = {
   groups: {
     loans: 'Empréstimos e parcelas',
     savings: 'Poupança e investimentos',
-    tax: 'Impostos e salário (Índia)',
+    tax: 'Impostos e salário',
     maths: 'Matemática do dia a dia',
     dates: 'Datas e horas',
     health: 'Saúde',

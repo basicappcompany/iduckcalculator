@@ -85,6 +85,7 @@ export function schemePlan(o: { yearly: number; depositYears: number; years: num
 export const SCHEMES: CalcDef[] = [
   {
     slug: 'ppf-calculator',
+    country: 'in',
     name: 'PPF calculator',
     group: 'savings',
     emoji: '🇮🇳',
@@ -144,6 +145,7 @@ export const SCHEMES: CalcDef[] = [
   },
   {
     slug: 'sukanya-samriddhi-calculator',
+    country: 'in',
     name: 'Sukanya Samriddhi calculator',
     group: 'savings',
     emoji: '👧',

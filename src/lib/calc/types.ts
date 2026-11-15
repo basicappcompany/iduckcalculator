@@ -85,7 +85,7 @@ export interface Result {
 export const CALC_GROUPS = [
   { id: 'loans', name: 'Loans & EMI', emoji: '💰' },
   { id: 'savings', name: 'Savings & investing', emoji: '📈' },
-  { id: 'tax', name: 'Tax & salary (India)', emoji: '🧾' },
+  { id: 'tax', name: 'Tax & salary', emoji: '🧾' },
   { id: 'maths', name: 'Everyday maths', emoji: '🧮' },
   { id: 'dates', name: 'Dates & time', emoji: '📅' },
   { id: 'health', name: 'Health', emoji: '❤️' },
@@ -107,8 +107,19 @@ export interface RulesInfo {
   sources: { name: string; url: string }[];
 }
 
+/** Countries that have, or are planned to have, tax and salary calculators. The code is lowercase ISO 3166-1 alpha-2, except `uk` (what people search for). */
+export const COUNTRY_CODES = ['in', 'us', 'uk', 'ca', 'au', 'de'] as const;
+export type CountryCode = (typeof COUNTRY_CODES)[number];
+
 export interface CalcDef {
   slug: string;
+  /**
+   * Set on a calculator that only makes sense in one country (a tax, a scheme). Country-neutral calculators leave it out.
+   * Slugs of new countries start with the code (`us-income-tax-calculator`); India's came first and keep their plain slugs.
+   */
+  country?: CountryCode;
+  /** The currency this page always uses (an ISO code from CURRENCIES), whatever the visitor chose in Settings. Left out, the Settings choice applies. */
+  currency?: string;
   name: string;
   group: GroupId;
   emoji: string;

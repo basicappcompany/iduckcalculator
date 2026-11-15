@@ -351,6 +351,15 @@ const PHASES = [
     I("11.10", "SPF and DMARC records: tighten or leave", "waiting", "you", { prio: 4, decision: true, blockedBy: "Your decision", note: "The domain receives mail through Email Routing, whose SPF record would be replaced by `v=spf1 -all`, and a DMARC record (`p=quarantine`, reporting to GoDaddy) already exists. Recommended: keep Cloudflare's SPF include with `-all` and set DMARC to `p=reject`. See AUDIT.md (A6b)." }),
     I("11.11", "Dependabot pull request #9: TypeScript 6 to 7", "todo", "you", { prio: 5, effort: "5 min", note: "Opened by the new Dependabot config. It is a major version bump in dev tooling only. It has not been merged; review it or close it." }),
   ]},
+  { num: 12, name: "Country tax and salary", summary: "Income tax and take-home pay for more countries than India, built one country at a time from the official sources. Plan: docs/country-tax-design.md.", items: [
+    I("12.1", "Plumbing: country and currency fields, group renamed Tax & salary, pinned currency, rules tests", "done", "none", { when: "15 Nov", note: "`country` and `currency` on `CalcDef`, CAD and AUD currencies, `src/lib/calc/countries.ts`, `tests/unit/countries.test.ts` (slug prefix, pinned currency, related links, reserved `tax`). India's six calculators are tagged `in` and their addresses are unchanged. The `/tax/` hubs and country labels come with the second country." }),
+    I("12.2", "United States (federal): income tax and take-home pay, guide, hubs", "todo", "me", { prio: 3, effort: "research first", note: "First country. Read the IRS sources in a browser, build the rule pack, known-answer tests from the IRS's own examples, the `/tax/` and `/tax/us/` hubs, translations. State income tax is left out of the first version and the page says so." }),
+    I("12.3", "United Kingdom: income tax and take-home pay", "todo", "me", { prio: 4, effort: "research first", note: "HMRC / GOV.UK sources; the tax year starts 6 April; Scottish rates need a decision." }),
+    I("12.4", "Canada (federal): income tax and take-home pay", "todo", "me", { prio: 4, effort: "research first", note: "CRA sources; provincial tax is added one province at a time later." }),
+    I("12.5", "Australia: income tax and take-home pay", "todo", "me", { prio: 4, effort: "research first", note: "ATO sources; the tax year starts 1 July." }),
+    I("12.6", "Germany: income tax and take-home pay", "todo", "me", { prio: 4, effort: "research first", note: "Income tax is a formula, not brackets; read the official formula and the social contribution limits." }),
+    I("12.7", "Language scope for country pages", "later", "you", { decision: true, note: "Default stands: all 11 languages, no new code. Alternative: English plus the country's own language only, which needs a `langs` field and changes to the catalog test, the audit and hreflang. Tax terms in the nine machine-translated languages have not been read by native speakers." }),
+  ]},
 ];
 
 const DECISIONS = [
@@ -387,6 +396,7 @@ const TIMELINE = [
   ["14 Nov 2026", "Sukanya Samriddhi calculator", "Sukanya Samriddhi balance year by year at the 8.2% rate the National Savings Institute shows, with 15 years of deposits, maturity at 21 years and the 250 to 1,50,000 limits, plus its guide (49 calculators live)."],
   ["14 Nov 2026", "Whole site in 11 languages", "Every calculator, guide and main page is now built in English (US and UK), Hindi, Bengali, Portuguese, Indonesian, Russian, German, Spanish, French and Turkish, each with its own address, language links and sitemap entries. 1,173 pages. The nine machine-translated languages have not been read by native speakers."],
   ["14 Nov 2026", "Localization stage 1", "Eleven languages with their own URLs (/de/, /hi/ and so on), hreflang links, sitemap alternates, and translated menus, footer and home page. The rest of the site follows in stages."],
+  ["15 Nov 2026", "Country tax plan and plumbing", "Design for tax and salary calculators in other countries (one site, country as a second dimension next to language; first the US, UK, Canada, Australia and Germany), and the first step built: country and currency fields, group renamed Tax & salary, pinned currency."],
   ["14 Nov 2026", "Broken-link check", "126,900 internal links and anchors across 1,173 built pages resolve; 33 of 34 external links return 200 and one government page returns 403 to scripts (needs a browser check)."],
   ["14 Nov 2026", "Consistent theme", "Light is the default on every page and the home page has its toggle back; a saved theme choice stays the same on every page until changed."],
   ["13 Nov 2026", "Helper redesigned, start page light", "Duck chat in the iDuckIMG style that answers sums and percentages itself; the home page no longer follows a dark system setting."],
@@ -398,7 +408,7 @@ const TIMELINE = [
 
 const SCORECARD = [
   { k: "Calculators", v: READY.length + " built of " + TOOLS_DATA.length + " planned", d: "Measured from the registry in `src/lib/calc`. Not built: salary, TDS and NPS (the official rules have to be read first). Income tax (tax year 2026-27) is built from the Finance Bill 2026 memorandum and the Income-tax Act, 2025, read on 14 Nov 2026." },
-  { k: "Unit tests", v: "507 passing", d: "Vitest, 13 files, 1 skipped (`pnpm test`, 15 Nov). They check every calculator's page fields and a known answer for each of the 49, every figure the 50 guides quote, every reference table, the answer text and the security headers." },
+  { k: "Unit tests", v: "517 passing", d: "Vitest, 14 files, 1 skipped (`pnpm test`, 15 Nov). They check every calculator's page fields and a known answer for each of the 49, every figure the 50 guides quote, every reference table, the answer text and the security headers." },
   { k: "Browser tests", v: "143 passing", d: "Playwright (`pnpm test:e2e`): every page loads with no errors and no sideways scroll, live results, currency, Ctrl K, theme, language pages, home sections in all 11 languages, 404, helper, footer." },
   { k: "CI", v: "Green", d: "The latest run on `main` (#23, 14 Nov) succeeded: check, lint, test, dependency audit, build, SEO audit and e2e." },
   { k: "Security headers", v: "A+ / A+", d: "securityheaders.com and Mozilla Observatory, measured on 13 Nov 2026 (both were D before the headers went live)." },

@@ -21,7 +21,7 @@ Cloudflare Pages git integration deploys `main` (project `iduckcalculator`, buil
 Contact mail: Cloudflare Email Routing forwards hello@ and feedback@iduckcalculator.com to the company inbox (receive only, catch-all off).
 
 ## Layout
-- `src/lib/calc/types.ts`: the `CalcDef` model. A calculator is a field list plus one pure `compute` function.
+- `src/lib/calc/types.ts`: the `CalcDef` model. A calculator is a field list plus one pure `compute` function. Country-specific calculators set `country` (a `CountryCode`); a country other than India also pins its currency with `currency` (see `countries.ts`) and starts its slug with the code (`us-income-tax-calculator`). India's came first and keep plain slugs. Plan and status: `docs/country-tax-design.md`.
 - `src/lib/calc/defs/*.ts`: the calculators by group; `src/lib/calc/index.ts` is the registry (home page, sidebar, search, sitemap and related links all read it).
 - `src/lib/calc/expr.ts`: the safe expression parser behind the scientific calculator (no `eval`).
 - `src/components/CalculatorTool.tsx` renders any calculator; `src/pages/[slug].astro` builds every calculator page.
@@ -45,7 +45,7 @@ Contact mail: Cloudflare Email Routing forwards hello@ and feedback@iduckcalcula
 1. Add an entry to the right file in `src/lib/calc/defs/`: slug, name, group, summary, quick answer, title (<= 65 chars), description (70 to 175), fields, `compute`, formula, worked example, `how`, 4 to 6 FAQs, exactly 3 `related` slugs that exist.
 2. Add a known-answer unit test (the worked example's numbers). The registry test already enforces the page fields.
 3. Run `pnpm verify`, `pnpm build`, `pnpm test:e2e`. The e2e suite reads the registry, so the new page is covered automatically.
-4. Tax and savings-scheme calculators: read the official source first (incometax.gov.in, India Post, the Finance Ministry), put the financial year and the date it was read in `rules`, and never use a rate from memory.
+4. Tax and savings-scheme calculators: read the official source first (incometax.gov.in, India Post, the Finance Ministry, or the country's own authority: IRS, HMRC, CRA, ATO, Bundeszentralamt/BMF), put the tax year and the date it was read in `rules`, and never use a rate from memory. A tax calculator must set `country` (a test enforces it).
 
 ## Gotchas
 - A built calculator counts as done only with its page on `main`, a known-answer test, FAQs and 3 related links.

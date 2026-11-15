@@ -183,6 +183,7 @@ const minus = (x: number): number => (x === 0 ? 0 : -x);
 export const TAX: CalcDef[] = [
   {
     slug: 'income-tax-calculator',
+    country: 'in',
     name: 'Income tax calculator: old vs new regime',
     group: 'tax',
     emoji: '🧮',
@@ -259,6 +260,7 @@ export const TAX: CalcDef[] = [
   },
   {
     slug: 'gst-calculator',
+    country: 'in',
     name: 'GST calculator: add and remove GST',
     group: 'tax',
     emoji: '🧾',
@@ -313,6 +315,7 @@ export const TAX: CalcDef[] = [
   },
   {
     slug: 'gratuity-calculator',
+    country: 'in',
     name: 'Gratuity calculator',
     group: 'tax',
     emoji: '🎁',
@@ -374,6 +377,7 @@ export const TAX: CalcDef[] = [
   },
   {
     slug: 'hra-calculator',
+    country: 'in',
     name: 'HRA exemption calculator',
     group: 'tax',
     emoji: '🏘️',
