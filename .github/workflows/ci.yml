@@ -40,5 +40,8 @@ jobs:
           I18N_LOG: '1'
       - run: pnpm seo:check
       - run: pnpm i18n:audit
+      # The site was built above (with I18N_LOG, which only records text): serve that build instead of building a second time.
       - run: pnpm test:e2e
         if: github.event_name == 'pull_request'
+        env:
+          E2E_NO_BUILD: '1'
