@@ -3,6 +3,7 @@ import { GUIDES, guideBySlug } from '../../src/lib/guides';
 import { CALCULATORS, calcBySlug, defaultValues } from '../../src/lib/calc';
 import { evaluate } from '../../src/lib/calc/expr';
 import { incomeTax } from '../../src/lib/calc/defs/tax';
+import { ukIncomeTax, ukNationalInsurance } from '../../src/lib/calc/defs/uk-tax';
 import { usIncomeTax, usPayrollTax } from '../../src/lib/calc/defs/us-tax';
 import { formatNumber } from '../../src/lib/format';
 import type { Values } from '../../src/lib/calc/types';
@@ -51,6 +52,8 @@ const rd = L('how-to-calculate-rd-maturity', 'rd-calculator');
 const comp = L('how-compound-interest-works', 'compound-interest-calculator');
 const usTax = L('how-to-calculate-us-federal-income-tax', 'us-income-tax-calculator');
 const usPay = L('how-to-calculate-us-take-home-pay', 'us-take-home-pay-calculator');
+const ukTax = L('how-to-calculate-uk-income-tax', 'uk-income-tax-calculator');
+const ukPay = L('how-to-calculate-uk-take-home-pay', 'uk-take-home-pay-calculator');
 const taxg = L('how-to-choose-old-or-new-tax-regime', 'income-tax-calculator');
 const gstg = L('how-to-add-and-remove-gst', 'gst-calculator');
 const gratg = L('how-to-calculate-gratuity', 'gratuity-calculator');
@@ -172,6 +175,16 @@ const CLAIMS: Claim[] = [
   usPay({}, 'Social Security and Medicare', 'us2'), usPay({}, 'Share of your pay', 'num'),
   usPay({ salary: 250000 }, 'Take-home pay per year', 'us'), usPay({ salary: 250000 }, 'Federal income tax', 'us'),
   usPay({ status: 'mfj', salary: 120000 }, 'Take-home pay per year', 'us'), usPay({ status: 'mfj', salary: 120000 }, 'Federal income tax', 'us'),
+  // ---- UK tax (rules read from GOV.UK on 2026-11-15)
+  ukTax({}, 'Income Tax', 'us'), ukTax({}, 'Taxable income', 'us'), ukTax({}, 'Effective tax rate', 'num'),
+  ukTax({ income: 30000 }, 'Income Tax', 'us'), ukTax({ income: 30000 }, 'Effective tax rate', 'num'),
+  ukTax({ income: 110000 }, 'Income Tax', 'us'), ukTax({ income: 110000 }, 'Taxable income', 'us'), ukTax({ income: 110000 }, 'Effective tax rate', 'num'),
+  ukTax({ region: 'sco' }, 'Income Tax', 'us2'), ukTax({ region: 'sco' }, 'Effective tax rate', 'num'),
+  ukPay({}, 'Take-home pay per year', 'us2'), ukPay({}, 'Take-home pay per month', 'us2'), ukPay({}, 'Income Tax', 'us'),
+  ukPay({}, 'National Insurance', 'us2'), ukPay({}, 'Share of your pay', 'num'),
+  ukPay({ salary: 30000 }, 'Take-home pay per year', 'us2'), ukPay({ salary: 30000 }, 'National Insurance', 'us2'),
+  ukPay({ salary: 110000 }, 'Take-home pay per year', 'us2'), ukPay({ salary: 110000 }, 'National Insurance', 'us2'), ukPay({ salary: 110000 }, 'Income Tax', 'us'),
+  ukPay({ region: 'sco' }, 'Take-home pay per year', 'us2'), ukPay({ region: 'sco' }, 'Income Tax', 'us2'),
   // ---- everyday maths
   pchg({}, 'Percentage increase', 'num'), pchg({ from: 100, to: 80 }, 'Percentage decrease', 'num'), pchg({ from: 50, to: 75 }, 'Percentage increase', 'num'), pchg({ from: 200, to: 150 }, 'Percentage decrease', 'num'),
   disc({}, 'You pay', 'inr'), disc({}, 'You save', 'inr'), disc({}, 'Effective discount', 'num'),
@@ -389,6 +402,18 @@ describe('guides quote the maths the calculators give', () => {
     const p120 = usPayrollTax(120_000, 'mfj');
     expect(p120.total).toBe(9_180);
     expect(pay).toContain('$9,180');
+  });
+
+  it('quotes the UK tax figures worked by hand', () => {
+    const t = (slug: string) => JSON.stringify(guideBySlug(slug));
+    const tax = t('how-to-calculate-uk-income-tax');
+    const sco = ukIncomeTax({ income: 50_000, region: 'sco' });
+    expect(sco.bands.map((b) => b.income)).toEqual([3_967, 12_989, 14_136, 6_338]);
+    for (const s of ['£12,570', '£37,700', '£125,140', '£100,000', '£37,430', '£17,430', '£3,486', '£7,540', '£25,892', '£64,730', '£7,570', '£5,000', '£3,967', '£12,989', '£14,136', '£6,338', '£1,496.05']) expect(tax, s).toContain(s);
+    expect(ukIncomeTax({ income: 110_000, region: 'eng' }).marginal).toBeCloseTo(0.6, 10);
+    const pay = t('how-to-calculate-uk-take-home-pay');
+    expect(ukNationalInsurance(110_000).total).toBeCloseTo(4_210.6, 6);
+    for (const s of ['£12,570', '£50,270', '£10,480.40', '£3,016', '£59,730', '£1,194.60', '£4,210.60', '£33,432']) expect(pay, s).toContain(s);
   });
 
   it('links every live calculator from at least one guide', () => {

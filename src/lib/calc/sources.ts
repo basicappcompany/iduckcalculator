@@ -1,5 +1,6 @@
 import type { CalcDef } from './types';
 import { PPF_RULES, SUKANYA_RULES } from './defs/schemes';
+import { UK_INCOME_TAX_RULES, UK_TAKE_HOME_RULES } from './defs/uk-tax';
 import { US_INCOME_TAX_RULES, US_TAKE_HOME_RULES } from './defs/us-tax';
 import { GRATUITY_RULES, GST_RULES, HRA_RULES, INCOME_TAX_RULES } from './defs/tax';
 
@@ -57,6 +58,8 @@ export const TRUST: Record<string, Trust> = {
   'ppf-calculator': { kind: 'finance', basis: 'The PPF Scheme, 2019: interest on the lowest balance between the 5th and month-end, credited each year, at the rate the National Savings Institute shows (7.1% from 1 April 2020). Read from the official sources below on 14 November 2026. The Government can change the rate every quarter.', sources: PPF_RULES.sources },
   'sukanya-samriddhi-calculator': { kind: 'finance', basis: 'The Sukanya Samriddhi Account Scheme, 2019: deposits for 15 years, maturity at 21 years, interest on the lowest balance between the 5th and month-end, credited each financial year, at the rate the National Savings Institute shows (8.2% from 1 January 2024). Read from the official sources below on 14 November 2026. The Government can change the rate every quarter.', sources: SUKANYA_RULES.sources },
   'us-income-tax-calculator': { kind: 'finance', basis: 'The 2026 tax rate tables and standard deductions in IRS Revenue Procedure 2025-32, read from the official IRS pages below on 15 November 2026. Credits, state tax and capital gains are not included.', sources: US_INCOME_TAX_RULES.sources },
+  'uk-income-tax-calculator': { kind: 'finance', basis: 'The 2026 to 2027 Income Tax rates, Personal Allowance and Scottish bands that GOV.UK publishes, read from the official GOV.UK pages below on 15 November 2026. National Insurance, reliefs and savings or dividend tax are not included.', sources: UK_INCOME_TAX_RULES.sources },
+  'uk-take-home-pay-calculator': { kind: 'finance', basis: 'The 2026 to 2027 Income Tax rates and Scottish bands, plus the Class 1 employee National Insurance thresholds and rates GOV.UK publishes, read from the official GOV.UK pages below on 15 November 2026. Pensions, student loans and other payslip deductions are not included.', sources: UK_TAKE_HOME_RULES.sources },
   'us-take-home-pay-calculator': { kind: 'finance', basis: 'The 2026 federal income tax tables and standard deductions, plus the Social Security wage base and the Medicare and Additional Medicare rates the IRS publishes, read from the official IRS pages below on 15 November 2026. State tax and paycheck deductions are not included.', sources: US_TAKE_HOME_RULES.sources },
   'bmi-calculator': { kind: 'health', basis: 'Weight in kg divided by height in metres squared, with the WHO categories.', sources: [{ name: 'WHO: obesity and overweight', url: 'https://www.who.int/news-room/fact-sheets/detail/obesity-and-overweight' }] },
   'bmr-calculator': { kind: 'health', basis: 'The Mifflin-St Jeor equation.', sources: [MIFFLIN, BMR_REF] },

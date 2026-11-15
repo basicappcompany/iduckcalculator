@@ -31,6 +31,7 @@ const s = (slug: string, over: Values, label: string): string => String(metric(s
 const inr = (v: number) => formatNumber(Math.round(v), 0, 'en-IN');
 const rs = (v: number) => `₹${inr(v)}`;
 const usd = (v: number) => `$${formatNumber(Math.round(v), 0, 'en-US')}`;
+const gbp = (v: number) => `£${formatNumber(Math.round(v), 0, 'en-GB')}`;
 const pct = (v: number, dp = 2) => `${String(Math.round(v * 10 ** dp) / 10 ** dp)}%`;
 const noDay = (d: string) => d.replace(/^[A-Za-z]+, /, '');
 const yrs = (y: number) => `${y} year${y === 1 ? '' : 's'}`;
@@ -133,6 +134,18 @@ const TABLES: Record<string, () => Reference> = {
     note: 'Tax year 2026 for a single filer with the standard deduction: salary minus federal income tax, Social Security and Medicare. State and local taxes and benefits are not included.',
     columns: ['Salary per year', 'Take-home per year', 'Take-home per month', 'Share you keep'],
     rows: [40000, 60000, 75000, 100000, 150000, 250000].map((salary) => [usd(salary), usd(n('us-take-home-pay-calculator', { salary }, 'Take-home pay per year')), usd(n('us-take-home-pay-calculator', { salary }, 'Take-home pay per month')), pct(n('us-take-home-pay-calculator', { salary }, 'Share of your pay'), 1)]),
+  }),
+  'uk-income-tax-calculator': () => ({
+    question: 'How much Income Tax do I pay at common incomes?',
+    note: 'Tax year 2026 to 2027, with the standard Personal Allowance and no other reliefs. Rounded to the pound.',
+    columns: ['Income per year', 'England, Wales and Northern Ireland', 'Scotland'],
+    rows: [25000, 35000, 50000, 75000, 100000, 125140].map((income) => [gbp(income), ...(['eng', 'sco'] as const).map((region) => gbp(n('uk-income-tax-calculator', { income, region }, 'Income Tax')))]),
+  }),
+  'uk-take-home-pay-calculator': () => ({
+    question: 'What is my take-home pay at common salaries?',
+    note: 'Tax year 2026 to 2027 in England, Wales or Northern Ireland: salary minus Income Tax and employee National Insurance. Pensions, student loans and benefits are not included.',
+    columns: ['Salary per year', 'Take-home per year', 'Take-home per month', 'Share you keep'],
+    rows: [25000, 35000, 50000, 75000, 100000, 150000].map((salary) => [gbp(salary), gbp(n('uk-take-home-pay-calculator', { salary }, 'Take-home pay per year')), gbp(n('uk-take-home-pay-calculator', { salary }, 'Take-home pay per month')), pct(n('uk-take-home-pay-calculator', { salary }, 'Share of your pay'), 1)]),
   }),
   // ---- everyday maths
   'percentage-calculator': () => ({
