@@ -12,13 +12,13 @@ Last synced 2026-11-15. Live: https://iduckcalculator.com. Detail and owners: `d
 - [x] Scaffold: config, theme (global.css), shell (sidebar, top bar, Ctrl K, theme toggle, language switch, footer)
 - [x] Generic calculator engine: registry, live form, formula, worked example, table, SVG chart, FAQ schema
 - [x] Home, All calculators, settings (theme, currency, language), helper chat, roadmap, request, feedback, support, about, privacy, terms, 404
-- [x] SEO: sitemap (1168 URLs, each with a lastmod), robots, canonical, OG/Twitter tags, og.png, favicon, llms.txt, _headers (canonical and social tags not re-read at last sync)
-- [x] How-to guides: 50, one or more for every live calculator, figures checked by tests (tax guide included). Each new tax or scheme calculator needs its own guide.
+- [x] SEO: sitemap (1245 URLs, each with a lastmod), robots, canonical, OG/Twitter tags, og.png, favicon, llms.txt, _headers (canonical and social tags not re-read at last sync)
+- [x] How-to guides: 52, one or more for every live calculator, figures checked by tests (tax guide included). Each new tax or scheme calculator needs its own guide.
 - [x] Localization stage 1: 11 languages (en-US, en-GB, hi, bn, pt-BR, id, ru, de, es, fr, tr) with real URLs (`/de/`), hreflang, sitemap alternates, translated menus, footer and home page. None of the 9 machine-translated languages has been read by a native speaker
 - [x] Localization stages 2 to 4: every calculator (text, form labels, results, notes and errors), every guide, the calculators and guides lists, About, Roadmap, Support, How we check and the search window, in all 11 languages. Privacy, Terms, the helper chat, Feedback, Request and Settings stay English
 - [x] CI (verify + build + e2e) green on main
 
-## Step 3: calculators (49 live of 52 planned)
+## Step 3: calculators (51 live of 54 planned)
 ### Loans & EMI
 - [x] EMI  - [x] Home loan EMI  - [x] Car loan EMI  - [x] Personal loan EMI  - [x] Loan prepayment savings  - [x] Loan eligibility
 ### Savings & investing
@@ -26,6 +26,8 @@ Last synced 2026-11-15. Live: https://iduckcalculator.com. Detail and owners: `d
 - [x] Compound interest  - [x] Simple interest  - [x] CAGR  - [x] Inflation  - [x] Retirement corpus
 ### Tax & salary (India) - rules MUST be looked up on official sources first
 - [x] Income tax old vs new (tax year 2026-27, read from official sources on 2026-11-14)  - [ ] In-hand salary from CTC  - [x] HRA exemption (Income-tax Rules 2026, rule 279, read on 2026-11-14)  - [x] Gratuity (Code on Social Security, read on 2026-11-14)  - [x] GST add/remove (rates read from PIB and CBIC on 2026-11-14)  - [ ] TDS basics
+### Tax & salary (United States) - rules read from IRS pages on 2026-11-15
+- [x] US federal income tax (tax year 2026)  - [x] US take-home pay (federal income tax, Social Security, Medicare)  - [ ] UK  - [ ] Canada  - [ ] Australia  - [ ] Germany (plan: `docs/country-tax-design.md`)
 ### Everyday maths
 - [x] Percentage (all forms)  - [x] Percentage change  - [x] Discount  - [x] Profit and loss  - [x] Average  - [x] Ratio  - [x] Fraction
 - [x] Scientific  - [x] Basic
@@ -38,14 +40,14 @@ Last synced 2026-11-15. Live: https://iduckcalculator.com. Detail and owners: `d
 
 ## Step 4: guides
 - [x] How EMI is calculated  - [x] Old vs new tax regime  - [x] SIP vs lumpsum  - [x] How to calculate percentage
-- [x] 46 more how-to guides (50 in all), covering all 49 calculators (loans, savings, tax and schemes, maths, dates, health, students), grouped on the guides page
+- [x] 48 more how-to guides (52 in all), covering all 51 calculators (loans, savings, tax and schemes, maths, dates, health, students), grouped on the guides page
 
 ## Step 5: checks
 - [x] Every calculator spot-checked against a known answer (unit tests)
-- [x] Dark/light, Ctrl+K, language switch, no console errors, no sideways scroll on every page (Playwright, 143 passing on 2026-11-15; the sideways-scroll check was not re-confirmed at a phone-width viewport by hand)
+- [x] Dark/light, Ctrl+K, language switch, no console errors, no sideways scroll on every page (Playwright, 152 passing on 2026-11-15; the sideways-scroll check was not re-confirmed at a phone-width viewport by hand)
 - [x] Broken links check (2026-11-14): 126,900 internal links and anchors across 1173 built pages resolve; 33 of 34 external links return 200, and incometaxindia.gov.in/w/section-156-84 returns 403 to scripts (likely bot blocking; open it in a browser)
 
-Measured 2026-11-15: 517 unit tests passing (1 skipped) in 14 files, 143 browser tests passing, 1173 pages built, 1168 sitemap URLs, SEO audit passed. Security headers A+ on securityheaders.com and Mozilla Observatory; mobile PageSpeed 100/100/100/100 on the home page, the EMI page and a guide. See AUDIT.md for the security and SEO audit.
+Measured 2026-11-15: 554 unit tests passing (1 skipped) in 15 files, 152 browser tests passing, 1250 pages built, 1245 sitemap URLs, SEO and i18n audits passed. Security headers A+ on securityheaders.com and Mozilla Observatory; mobile PageSpeed 100/100/100/100 on the home page, the EMI page and a guide. See AUDIT.md for the security and SEO audit.
 
 ## Open items and decisions
 - Email Routing is set up for hello@ and feedback@iduckcalculator.com (MX, SPF, DKIM live; both rules Active, forwarding to the company inbox; catch-all off). A real test message has not been sent: send one from another mailbox to each address and confirm it arrives.
@@ -55,6 +57,6 @@ Measured 2026-11-15: 517 unit tests passing (1 skipped) in 14 files, 143 browser
 - Mobile Lighthouse (PageSpeed Insights, 13 Nov): the home page, the EMI page and a guide score 100 on Performance, Accessibility, Best Practices and SEO. Other pages were not measured.
 - Security headers: A+ on securityheaders.com and Mozilla Observatory (13 Nov). Search Console (Success) and Bing (Processing) have the sitemap; keep the Google verification TXT record in DNS.
 - Needs the account owner (steps in AUDIT.md): GitHub two-factor login and Dependabot alerts (secret scanning and branch protection need a paid plan), Cloudflare TLS and bot settings, Crawler Hints, DNSSEC, GoDaddy lock and auto-renew, the SPF and DMARC decision, Dependabot PR #9.
-- Country tax and salary calculators (US, UK, Canada, Australia, Germany): plan in `docs/country-tax-design.md`. Plumbing built (country and currency fields, group renamed "Tax & salary"); no country calculator yet. Next: the US federal slice with the `/tax/` hubs.
+- Country tax and salary calculators (US, UK, Canada, Australia, Germany): plan in `docs/country-tax-design.md`. Built: the plumbing (country and currency fields, group renamed "Tax & salary"), the `/tax/` hubs, and the US federal slice (income tax and take-home pay, two guides, IRS sources read 2026-11-15, state tax and credits left out). Next: the UK, then Canada, Australia and Germany.
 - Not yet done: tips provider (Dodo Payments), native read-throughs of the 9 machine-translated languages. Tax and scheme sources were last read on 2026-11-14 and not re-read at this sync.
 - Some office or VPN resolvers still cache the old GoDaddy parking page for iduckcalculator.com (up to 48 hours from the nameserver change); check the live site with `curl --resolve` or from a phone on mobile data.

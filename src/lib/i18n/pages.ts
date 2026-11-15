@@ -5,6 +5,7 @@
  * search results (the helper chat, forms, settings).
  */
 import { CALCULATORS, calcPath } from '../calc';
+import { hubPath, liveCountries } from '../calc/countries';
 import { GUIDES, guidePath } from '../guides';
 import { COMMUNITY, communityPath } from '../community';
 import { DEFAULT_LANG, LANGUAGES, localePath } from './languages';
@@ -17,6 +18,8 @@ const EVERYWHERE = new Set<string>([
   '/',
   '/calculators/',
   '/guides/',
+  hubPath(),
+  ...liveCountries().map((c) => hubPath(c)),
   ...CALCULATORS.map((c) => calcPath(c.slug)),
   ...GUIDES.map((g) => guidePath(g.slug)),
   ...COMMUNITY.filter((p) => p.indexable).map((p) => communityPath(p.slug)),

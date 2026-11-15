@@ -100,7 +100,7 @@ function collectNow(): Collected {
     join(ROOT, 'src/lib/calc/reference.ts'),
     join(ROOT, 'src/lib/calc/sources.ts'),
     join(ROOT, 'src/lib/i18n/page-data.ts'),
-    ...readdirSync(join(ROOT, 'src/lib')).filter((f) => /^guides(-[a-z]+)?\.ts$/.test(f)).map((f) => join(ROOT, 'src/lib', f)),
+    ...readdirSync(join(ROOT, 'src/lib')).filter((f) => /^guides(-[a-z]+)*\.ts$/.test(f)).map((f) => join(ROOT, 'src/lib', f)),
   ];
   for (const file of dataFiles) {
     const where = file.replace(/\\/g, '/').split('/').pop()!;

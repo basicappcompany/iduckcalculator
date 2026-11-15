@@ -33,6 +33,7 @@ const total = CALCULATORS.length;
     groups.map((g) => (
       <section class="mt-10" id={g.id} aria-label={groupNames[g.id]}>
         <h2 class="text-2xl font-black tracking-tight">{g.emoji} {groupNames[g.id]}</h2>
+        {g.id === 'tax' && <p class="mt-1 text-sm"><a class="link" href={href('/tax/')}>{tt('Tax and salary calculators by country')}</a></p>}
         <ul class="card-grid mt-3">
           {calcsInGroup(g.id).map((c) => (
             <li>

@@ -3,6 +3,7 @@ import { GUIDES, guideBySlug } from '../../src/lib/guides';
 import { CALCULATORS, calcBySlug, defaultValues } from '../../src/lib/calc';
 import { evaluate } from '../../src/lib/calc/expr';
 import { incomeTax } from '../../src/lib/calc/defs/tax';
+import { usIncomeTax, usPayrollTax } from '../../src/lib/calc/defs/us-tax';
 import { formatNumber } from '../../src/lib/format';
 import type { Values } from '../../src/lib/calc/types';
 
@@ -22,6 +23,8 @@ const metricOf = (calc: string, over: Values, label: string): number | string =>
 const FORMAT = {
   inr: (v: number) => formatNumber(Math.round(v), 0, 'en-IN'), // 43,391 and 1,04,13,879
   d1: (v: number) => v.toFixed(1),
+  us: (v: number) => formatNumber(Math.round(v), 0, 'en-US'), // 7,670 and 183,182
+  us2: (v: number) => formatNumber(v, 2, 'en-US'), // 61,592.50
   num: (v: number) => String(Math.round(v * 100) / 100).replace('-', '−'), // 32.5, 61.75, 14.87, −7.17
   raw: (v: number | string) => String(v),
   // The age calculator prints "30 years, 6 months, 17 days"; the prose writes "30 years, 6 months and 17 days".
@@ -46,6 +49,8 @@ const swp = L('how-to-plan-regular-withdrawals-swp', 'swp-calculator');
 const fd = L('how-to-calculate-fd-maturity', 'fd-calculator');
 const rd = L('how-to-calculate-rd-maturity', 'rd-calculator');
 const comp = L('how-compound-interest-works', 'compound-interest-calculator');
+const usTax = L('how-to-calculate-us-federal-income-tax', 'us-income-tax-calculator');
+const usPay = L('how-to-calculate-us-take-home-pay', 'us-take-home-pay-calculator');
 const taxg = L('how-to-choose-old-or-new-tax-regime', 'income-tax-calculator');
 const gstg = L('how-to-add-and-remove-gst', 'gst-calculator');
 const gratg = L('how-to-calculate-gratuity', 'gratuity-calculator');
@@ -157,6 +162,16 @@ const CLAIMS: Claim[] = [
   ssag({}, 'Maturity value', 'inr'), ssag({}, 'Amount invested', 'inr'), ssag({}, 'Interest earned', 'inr'),
   ssag({ years: 15 }, 'Maturity value', 'inr'), ssag({ yearly: 50000 }, 'Maturity value', 'inr'),
   ssag({ pattern: 'monthly' }, 'Maturity value', 'inr'),
+  // ---- US tax (rules read from the IRS pages on 2026-11-15)
+  usTax({}, 'Federal income tax', 'us'), usTax({}, 'Taxable income', 'us'), usTax({}, 'Effective tax rate', 'num'),
+  usTax({ income: 100000 }, 'Federal income tax', 'us'), usTax({ income: 100000 }, 'Taxable income', 'us'), usTax({ income: 100000 }, 'Effective tax rate', 'num'),
+  usTax({ status: 'mfj', income: 120000 }, 'Federal income tax', 'us'), usTax({ status: 'mfj', income: 120000 }, 'Taxable income', 'us'), usTax({ status: 'mfj', income: 120000 }, 'Effective tax rate', 'num'),
+  usTax({ status: 'hoh', income: 75000 }, 'Federal income tax', 'us'), usTax({ status: 'hoh', income: 75000 }, 'Taxable income', 'us'),
+  usTax({ income: 100000, itemized: 30000 }, 'Federal income tax', 'us'), usTax({ income: 100000, itemized: 30000 }, 'Taxable income', 'us'),
+  usPay({}, 'Take-home pay per year', 'us2'), usPay({}, 'Take-home pay per month', 'us2'), usPay({}, 'Federal income tax', 'us'),
+  usPay({}, 'Social Security and Medicare', 'us2'), usPay({}, 'Share of your pay', 'num'),
+  usPay({ salary: 250000 }, 'Take-home pay per year', 'us'), usPay({ salary: 250000 }, 'Federal income tax', 'us'),
+  usPay({ status: 'mfj', salary: 120000 }, 'Take-home pay per year', 'us'), usPay({ status: 'mfj', salary: 120000 }, 'Federal income tax', 'us'),
   // ---- everyday maths
   pchg({}, 'Percentage increase', 'num'), pchg({ from: 100, to: 80 }, 'Percentage decrease', 'num'), pchg({ from: 50, to: 75 }, 'Percentage increase', 'num'), pchg({ from: 200, to: 150 }, 'Percentage decrease', 'num'),
   disc({}, 'You pay', 'inr'), disc({}, 'You save', 'inr'), disc({}, 'Effective discount', 'num'),
@@ -356,6 +371,25 @@ describe('guides quote the maths the calculators give', () => {
     for (const s of ['30 days 12 hours', '732 hours', '4 weeks and 2 days']) expect(text, s).toContain(s);
   });
   afterEach(() => vi.useRealTimers());
+
+  it('quotes the US tax figures worked by hand', () => {
+    const t = (slug: string) => JSON.stringify(guideBySlug(slug));
+    const tax = t('how-to-calculate-us-federal-income-tax');
+    const r = usIncomeTax({ income: 75_000, status: 'single', itemized: 0 });
+    expect(r.bands.map((b) => b.tax)).toEqual([1_240, 4_560, 1_870]);
+    for (const s of ['$16,100', '$32,200', '$24,150', '$12,400', '$38,000', '$8,500', '$1,240', '$4,560', '$1,870', '$50,400', '13.17%', '22%', '$3,058']) expect(tax, s).toContain(s);
+    expect(usIncomeTax({ income: 100_000, status: 'single', itemized: 0 }).tax - usIncomeTax({ income: 100_000, status: 'single', itemized: 30_000 }).tax).toBe(3_058);
+    const pay = t('how-to-calculate-us-take-home-pay');
+    const p75 = usPayrollTax(75_000, 'single');
+    expect([p75.socialSecurity, p75.medicare, p75.total + r.tax]).toEqual([4_650, 1_087.5, 13_407.5]);
+    for (const s of ['$4,650', '$1,087.50', '$13,407.50', '$184,500', '$200,000', '$250,000', '$125,000']) expect(pay, s).toContain(s);
+    const p250 = usPayrollTax(250_000, 'single');
+    [p250.socialSecurity, p250.medicare, p250.additionalMedicare, p250.total].forEach((x, i) => expect(x).toBeCloseTo([11_439, 3_625, 450, 15_514][i]!, 6));
+    for (const s of ['$11,439', '$3,625', '$450', '$50,000']) expect(pay, s).toContain(s);
+    const p120 = usPayrollTax(120_000, 'mfj');
+    expect(p120.total).toBe(9_180);
+    expect(pay).toContain('$9,180');
+  });
 
   it('links every live calculator from at least one guide', () => {
     const covered = new Set(GUIDES.flatMap((g) => g.calcs));

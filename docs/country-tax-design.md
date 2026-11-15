@@ -1,6 +1,6 @@
 # Country tax and salary calculators: design
 
-Status: step 1 (plumbing) built on 2026-11-15 in the `country-plumbing` branch; steps 2 onward not started. First countries decided by the owner on 2026-11-15: United States, United Kingdom, Canada, Australia, Germany, in that order. The language question (section 6) was not answered, so the default stands: the full set of 11 languages, no new code. Decisions marked **[you]** are still open.
+Status: step 1 (plumbing, PR #25) and step 2 (United States federal, with the `/tax/` hubs) built on 2026-11-15; steps 3 onward not started. First countries decided by the owner on 2026-11-15: United States, United Kingdom, Canada, Australia, Germany, in that order. The language question (section 6) was not answered, so the default stands: the full set of 11 languages, no new code. Decisions marked **[you]** are still open.
 
 ## 1. Decision and goal
 

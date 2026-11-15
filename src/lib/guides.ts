@@ -5,6 +5,7 @@ import { GUIDES_MATHS } from './guides-maths';
 import { GUIDES_SAVINGS } from './guides-savings';
 import { GUIDES_STUDENTS } from './guides-students';
 import { GUIDES_TAX } from './guides-tax';
+import { GUIDES_US_TAX } from './guides-us-tax';
 
 /** How-to guides. Every figure in them is checked by tests/unit/guides.test.ts against the same maths the calculators use. */
 export interface Guide {
@@ -158,7 +159,7 @@ const CORE: readonly Guide[] = [
 ];
 
 /** Every guide, grouped as the guides index shows them: loans, savings, maths, dates, health, students. */
-export const GUIDES: readonly Guide[] = [...CORE, ...GUIDES_LOANS, ...GUIDES_SAVINGS, ...GUIDES_TAX, ...GUIDES_MATHS, ...GUIDES_DATES, ...GUIDES_HEALTH, ...GUIDES_STUDENTS];
+export const GUIDES: readonly Guide[] = [...CORE, ...GUIDES_LOANS, ...GUIDES_SAVINGS, ...GUIDES_TAX, ...GUIDES_US_TAX, ...GUIDES_MATHS, ...GUIDES_DATES, ...GUIDES_HEALTH, ...GUIDES_STUDENTS];
 
 export const guidePath = (slug: string): string => `/guides/${slug}/`;
 export const guideBySlug = (slug: string): Guide | undefined => GUIDES.find((g) => g.slug === slug);

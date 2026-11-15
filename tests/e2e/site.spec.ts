@@ -3,7 +3,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { CALCULATORS, calcPath, liveGroups } from '../../src/lib/calc';
 import { GUIDES, guidePath } from '../../src/lib/guides';
 
-const STATIC = ['/', '/calculators/', '/guides/', '/chat/', '/roadmap/', '/request/', '/feedback/', '/support/', '/settings/', '/about/', '/privacy/', '/terms/'];
+const STATIC = ['/', '/calculators/', '/guides/', '/tax/', '/tax/in/', '/tax/us/', '/chat/', '/roadmap/', '/request/', '/feedback/', '/support/', '/settings/', '/about/', '/privacy/', '/terms/'];
 const CALC_PATHS = CALCULATORS.map((c) => calcPath(c.slug));
 const GUIDE_PATHS = GUIDES.map((g) => guidePath(g.slug));
 
@@ -123,6 +123,29 @@ test('the currency chosen in Settings applies to calculators', async ({ page }) 
   await expect(page.getByTestId('currency-preview')).toContainText('$1,234,567.50');
   await openReady(page, '/emi-calculator/');
   await expect(page.getByTestId('big-result')).toHaveText('$8,997');
+});
+
+test('a US page keeps dollars even when another currency is chosen in Settings', async ({ page }) => {
+  await page.goto('/settings/');
+  await page.getByRole('radio', { name: 'Euro (€)' }).click();
+  await openReady(page, '/us-take-home-pay-calculator/');
+  await expect(page.getByTestId('big-result')).toHaveText('$61,592.50');
+  await expect(page.getByTestId('big-result')).not.toContainText('€');
+  await openReady(page, '/emi-calculator/');
+  await expect(page.getByTestId('big-result')).toContainText('€');
+});
+
+test('the tax hubs list the countries and link to their calculators', async ({ page }) => {
+  await page.goto('/tax/');
+  await expect(page.getByRole('heading', { level: 1 })).toContainText('Tax and salary calculators by country');
+  await expect(page.getByRole('link', { name: 'United States', exact: true })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'India', exact: true })).toBeVisible();
+  await page.goto('/tax/us/');
+  await expect(page.getByRole('link', { name: /US federal income tax calculator 2026/ }).first()).toBeVisible();
+  await expect(page.getByRole('link', { name: /US take-home pay calculator 2026/ }).first()).toBeVisible();
+  await expect(page.getByRole('link', { name: /Income tax calculator: old vs new regime/ })).toHaveCount(0);
+  await page.getByRole('link', { name: /US federal income tax calculator 2026/ }).first().click();
+  await expect(page.getByRole('link', { name: 'United States', exact: true })).toHaveAttribute('href', '/tax/us/');
 });
 
 test('Ctrl K opens search, finds a calculator and opens it', async ({ page }) => {

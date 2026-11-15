@@ -30,6 +30,7 @@ const s = (slug: string, over: Values, label: string): string => String(metric(s
 
 const inr = (v: number) => formatNumber(Math.round(v), 0, 'en-IN');
 const rs = (v: number) => `₹${inr(v)}`;
+const usd = (v: number) => `$${formatNumber(Math.round(v), 0, 'en-US')}`;
 const pct = (v: number, dp = 2) => `${String(Math.round(v * 10 ** dp) / 10 ** dp)}%`;
 const noDay = (d: string) => d.replace(/^[A-Za-z]+, /, '');
 const yrs = (y: number) => `${y} year${y === 1 ? '' : 's'}`;
@@ -121,6 +122,18 @@ const TABLES: Record<string, () => Reference> = {
   'hra-calculator': () => grid({ question: 'How much HRA is exempt for common basic pay and rent?', note: 'Per month, for 12 months in a metro city, with HRA received equal to 40% of basic pay. HRA is exempt only in the old tax regime.', corner: 'Monthly basic pay', rows: [20000, 30000, 50000, 75000, 100000], cols: [10000, 20000, 30000, 40000], rowLabel: rs, colLabel: (r) => `Rent ${rs(r)}`, cell: (b, r) => rs(n('hra-calculator', { basic: b, hra: b * 0.4, rent: r, city: 'metro', months: 12 }, 'HRA exempt')) }),
   'ppf-calculator': () => grid({ question: 'What does a PPF account grow to?', note: 'Maturity value at 7.1% a year, with one deposit a year on or before 5 April. The rate can change every quarter.', corner: 'Invested each year', rows: [10000, 50000, 100000, 150000], cols: [15, 20, 25, 30], rowLabel: rs, colLabel: yrs, cell: (a, y) => rs(n('ppf-calculator', { yearly: a, years: y, pattern: 'yearly', rate: 7.1 }, 'Maturity value')) }),
   'sukanya-samriddhi-calculator': () => grid({ question: 'What does a Sukanya Samriddhi account grow to?', note: 'Balance at 8.2% a year, with one deposit a year on or before 5 April for 15 years. The rate can change every quarter.', corner: 'Invested each year', rows: [10000, 50000, 100000, 150000], cols: [15, 18, 21], rowLabel: rs, colLabel: yrs, cell: (a, y) => rs(n('sukanya-samriddhi-calculator', { yearly: a, pattern: 'yearly', depositYears: 15, years: y, rate: 8.2 }, 'Maturity value')) }),
+  'us-income-tax-calculator': () => ({
+    question: 'How much federal income tax do I owe at common incomes?',
+    note: 'Tax year 2026, ordinary income only, with the standard deduction and no credits. Rounded to the dollar.',
+    columns: ['Income per year', 'Single', 'Married filing jointly', 'Head of household'],
+    rows: [30000, 50000, 75000, 100000, 150000, 250000].map((income) => [usd(income), ...(['single', 'mfj', 'hoh'] as const).map((status) => usd(n('us-income-tax-calculator', { income, status }, 'Federal income tax')))]),
+  }),
+  'us-take-home-pay-calculator': () => ({
+    question: 'What is my take-home pay at common salaries?',
+    note: 'Tax year 2026 for a single filer with the standard deduction: salary minus federal income tax, Social Security and Medicare. State and local taxes and benefits are not included.',
+    columns: ['Salary per year', 'Take-home per year', 'Take-home per month', 'Share you keep'],
+    rows: [40000, 60000, 75000, 100000, 150000, 250000].map((salary) => [usd(salary), usd(n('us-take-home-pay-calculator', { salary }, 'Take-home pay per year')), usd(n('us-take-home-pay-calculator', { salary }, 'Take-home pay per month')), pct(n('us-take-home-pay-calculator', { salary }, 'Share of your pay'), 1)]),
+  }),
   // ---- everyday maths
   'percentage-calculator': () => ({
     question: 'What are common percentages of 1,200 and 5,000?',

@@ -1,0 +1,104 @@
+---
+import CommunityLayout from './CommunityLayout.astro';
+import { calcPath } from '../lib/calc';
+import { calcsInCountry, hubPath, liveCountries } from '../lib/calc/countries';
+import type { CountryCode } from '../lib/calc/types';
+import { GUIDES, guidePath } from '../lib/guides';
+import { breadcrumbLd, collectionLd } from '../lib/seo';
+import { fill, localeOf, localePath, pageHref, type LangCode } from '../lib/i18n';
+import { trFor } from '../lib/i18n/loader';
+
+/** The tax and salary hub: `/tax/` lists every country that has calculators, `/tax/<code>/` is one country. */
+interface Props {
+  lang: LangCode;
+  country?: CountryCode;
+}
+const { lang, country } = Astro.props;
+const tt = trFor(lang);
+const chrome = localeOf(lang).chrome;
+const href = (key: string) => pageHref(lang, key);
+
+// Written out one by one so the translation collector finds each name.
+const NAMES: Record<CountryCode, string> = {
+  in: tt('India'),
+  us: tt('United States'),
+  uk: tt('United Kingdom'),
+  ca: tt('Canada'),
+  au: tt('Australia'),
+  de: tt('Germany'),
+};
+const countries = country ? [country] : liveCountries();
+const name = country ? NAMES[country] : '';
+const here = hubPath(country);
+const heading = country ? fill(tt('{country} tax and salary calculators'), { country: name }) : tt('Tax and salary calculators by country');
+const title = country ? fill(tt('{country} tax and salary calculators | iDuckCalculator'), { country: name }) : tt('Tax and salary calculators by country | iDuckCalculator');
+const description = country
+  ? fill(tt('Free {country} tax and salary calculators from official sources, with the tax year shown.'), { country: name })
+  : tt('Income tax and take-home pay calculators for each country, from official sources, with the tax year shown.');
+const intro = country
+  ? fill(tt('Calculators for taxes and pay in {country}, built from the official sources and shown with the tax year they apply to. Everything runs in your browser.'), { country: name })
+  : tt('Pick a country. Each calculator uses that country’s own rules, shows the tax year and the official sources it was read from, and runs in your browser.');
+const sections = countries.map((code) => {
+  const calcs = calcsInCountry(code);
+  const guides = GUIDES.filter((g) => calcs.some((c) => c.slug === g.calcs[0]));
+  return { code, calcs, guides };
+});
+const items = sections.flatMap((s) => s.calcs).map((c) => ({ name: tt(c.name), path: href(calcPath(c.slug)) }));
+---
+
+<CommunityLayout
+  title={title}
+  description={description}
+  heading={heading}
+  intro={intro}
+  jsonLd={[
+    collectionLd(heading, href(here), description, items),
+    breadcrumbLd([
+      { name: chrome.home, path: localePath(lang, '/') },
+      ...(country ? [{ name: tt('Tax and salary calculators by country'), path: href('/tax/') }] : []),
+      { name: country ? name : tt('Tax and salary calculators by country'), path: href(here) },
+    ]),
+  ]}
+>
+  {
+    sections.map((s) => (
+      <section aria-label={NAMES[s.code]}>
+        {!country && (
+          <h2 class="text-2xl font-black tracking-tight">
+            <a href={href(hubPath(s.code))} class="underline decoration-2 underline-offset-2">{NAMES[s.code]}</a>
+          </h2>
+        )}
+        <ul class="card-grid mt-3">
+          {s.calcs.map((c) => (
+            <li>
+              <a href={href(calcPath(c.slug))} class="card card-link h-full p-4">
+                <span class="flex items-center gap-2.5 text-[17px] font-black">
+                  <span aria-hidden="true" class="text-[28px] leading-none">{c.emoji}</span>
+                  {tt(c.name)}
+                </span>
+                <span class="mt-1 block text-sm leading-[19px] text-muted">{tt(c.summary)}</span>
+                {c.rules && <span class="mt-2 block text-xs text-muted">{tt(c.rules.year)}</span>}
+              </a>
+            </li>
+          ))}
+        </ul>
+        {country && s.guides.length > 0 && (
+          <>
+            <h2 class="mt-8 text-2xl font-black tracking-tight">{chrome.guides}</h2>
+            <ul class="mt-3 grid gap-2">
+              {s.guides.map((g) => (
+                <li>
+                  <a class="link" href={href(guidePath(g.slug))}>{tt(g.title)}</a>
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
+      </section>
+    ))
+  }
+  <p class="text-sm text-muted">
+    <a class="link" href={href('/calculators/')}>{chrome.all}</a>
+    {!country && ` · ${tt('Every country uses its own tax year, so check the year shown on each calculator.')}`}
+  </p>
+</CommunityLayout>

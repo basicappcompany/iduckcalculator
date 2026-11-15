@@ -1,0 +1,13 @@
+---
+import TaxHubPage from '../../../components/TaxHubPage.astro';
+import { liveCountries } from '../../../lib/calc/countries';
+import { DEFAULT_LANG, LANGUAGES, isLang } from '../../../lib/i18n';
+
+export function getStaticPaths() {
+  return LANGUAGES.filter((l) => l.code !== DEFAULT_LANG).flatMap((l) => liveCountries().map((country) => ({ params: { lang: l.code, country } })));
+}
+const { lang, country } = Astro.params;
+if (!isLang(lang)) throw new Error(`Unknown language: ${lang}`);
+---
+
+<TaxHubPage lang={lang} country={country as never} />

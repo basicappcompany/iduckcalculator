@@ -1,0 +1,11 @@
+---
+import TaxHubPage from '../../components/TaxHubPage.astro';
+import { liveCountries } from '../../lib/calc/countries';
+
+export function getStaticPaths() {
+  return liveCountries().map((country) => ({ params: { country } }));
+}
+const { country } = Astro.params;
+---
+
+<TaxHubPage lang="en" country={country as never} />

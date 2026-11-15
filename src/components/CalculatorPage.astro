@@ -7,6 +7,7 @@ import { answerFor, topicOf } from '../lib/calc/answers';
 import { referenceFor } from '../lib/calc/reference';
 import { trustOf } from '../lib/calc/sources';
 import { calcBySlug, calcPath, calcsInGroup } from '../lib/calc';
+import { hubPath } from '../lib/calc/countries';
 import { GUIDES, guidePath } from '../lib/guides';
 import { breadcrumbLd, faqLd, webApplicationLd } from '../lib/seo';
 import { languageOf, localeOf, localePath, pageHref, type LangCode } from '../lib/i18n';
@@ -26,7 +27,10 @@ const href = (key: string) => pageHref(lang, key);
 const def = calcBySlug(slug)!;
 const path = calcPath(slug);
 const related = def.related.map((r) => calcBySlug(r)!);
-const mates = calcsInGroup(def.group).filter((c) => c.slug !== slug && !def.related.includes(c.slug)).slice(0, 4);
+// A country's calculators list only that country's others: India's tax pages are not 'more' for a US visitor.
+const mates = calcsInGroup(def.group).filter((c) => c.slug !== slug && !def.related.includes(c.slug) && c.country === def.country).slice(0, 4);
+// Written out one by one so the translation collector finds each name.
+const countryNames = { in: tt('India'), us: tt('United States'), uk: tt('United Kingdom'), ca: tt('Canada'), au: tt('Australia'), de: tt('Germany') };
 const guide = GUIDES.find((g) => g.calcs.includes(slug));
 const answer = answerFor(def);
 const topic = topicOf(def);
@@ -55,6 +59,12 @@ const moreIn = tt('More in {0}:').replace('{0}', groupNames[def.group]);
     <a href={href('/')} class="underline decoration-2 underline-offset-2">{chrome.home}</a>
     <span aria-hidden="true"> / </span>
     {groupNames[def.group]}
+    {def.country && (
+      <>
+        <span aria-hidden="true"> / </span>
+        <a href={href(hubPath(def.country))} class="underline decoration-2 underline-offset-2">{countryNames[def.country]}</a>
+      </>
+    )}
   </p>
   <h1 class="display mt-2 flex items-center gap-3 text-[2rem] min-[400px]:text-4xl sm:text-5xl">
     <span aria-hidden="true" class="shrink-0 text-[2rem] min-[400px]:text-4xl sm:text-5xl">{def.emoji}</span>
