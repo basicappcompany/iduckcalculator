@@ -3,7 +3,7 @@
 Tick items as they ship. A later session can pick up from the first unticked box.
 Template: iDuckIMG (Astro 7.4.10 static + Preact islands + Tailwind 4, pnpm). Theme matches iduckpdf.com and iduckimg.com.
 Workflow: never push to main. Branch, PR, fix CI on the same PR, merge when green. Run `pnpm verify` before each commit.
-Last synced 2026-11-15. Live: https://iduckcalculator.com. Detail and owners: `docs/status.html`.
+Last synced 2026-11-16. Live: https://iduckcalculator.com. Detail and owners: `docs/status.html`.
 
 ## Step 0 and 1: setup
 - [x] Account check: GitHub logged in as basicappcompany, primary email the company inbox (verified)
@@ -51,7 +51,7 @@ Last synced 2026-11-15. Live: https://iduckcalculator.com. Detail and owners: `d
 - [x] Dark/light, Ctrl+K, language switch, no console errors, no sideways scroll on every page (Playwright, 152 passing on 2026-11-15; the sideways-scroll check was not re-confirmed at a phone-width viewport by hand)
 - [x] Broken links check (2026-11-14): 126,900 internal links and anchors across 1173 built pages resolve; 33 of 34 external links return 200, and incometaxindia.gov.in/w/section-156-84 returns 403 to scripts (likely bot blocking; open it in a browser)
 
-Measured 2026-11-15: 614 unit tests passing (1 skipped) in 17 files, 162 browser tests passing (one flaked under load in the full run and passed alone twice), 1360 pages built, 1355 sitemap URLs, SEO and i18n audits passed. Security headers A+ on securityheaders.com and Mozilla Observatory; mobile PageSpeed 100/100/100/100 on the home page, the EMI page and a guide. See AUDIT.md for the security and SEO audit.
+Measured 2026-11-16: 614 unit tests passing (1 skipped) in 17 files, 163 browser tests passing (none failing or flaky in the full run), 1360 pages built, 1355 sitemap URLs, SEO and i18n audits passed. Security headers A+ on securityheaders.com and Mozilla Observatory; mobile PageSpeed 100/100/100/100 on the home page, the EMI page and a guide. See AUDIT.md for the security and SEO audit.
 
 ## Open items and decisions
 - Email Routing is set up for hello@ and feedback@iduckcalculator.com (MX, SPF, DKIM live; both rules Active, forwarding to the company inbox; catch-all off). A real test message has not been sent: send one from another mailbox to each address and confirm it arrives.
@@ -62,5 +62,6 @@ Measured 2026-11-15: 614 unit tests passing (1 skipped) in 17 files, 162 browser
 - Security headers: A+ on securityheaders.com and Mozilla Observatory (13 Nov). Search Console (Success) and Bing (Processing) have the sitemap; keep the Google verification TXT record in DNS.
 - Needs the account owner (steps in AUDIT.md): GitHub two-factor login and Dependabot alerts (secret scanning and branch protection need a paid plan), Cloudflare TLS and bot settings, Crawler Hints, DNSSEC, GoDaddy lock and auto-renew, the SPF and DMARC decision, Dependabot PR #9.
 - Country tax and salary calculators (US, UK, Canada, Australia, Germany): plan in `docs/country-tax-design.md`. Built: the plumbing (country and currency fields, group renamed "Tax & salary"), the `/tax/` hubs, the US federal slice (income tax and take-home pay, two guides, IRS sources read 2026-11-15, state tax and credits left out) and the UK (Income Tax with Scotland, take-home pay with National Insurance, two guides, GOV.UK sources read 2026-11-15, student loans and pension relief left out) and Canada (federal income tax, take-home pay with CPP and EI, two guides, CRA sources read 2026-11-15, provincial tax left out). Next: Australia and Germany; provinces later.
-- Not yet done: tips provider (Dodo Payments), native read-throughs of the 9 machine-translated languages. Tax and scheme sources were last read on 2026-11-14 and not re-read at this sync.
+- Hardening done 2026-11-16 (PRs 29 to 32): a weekly check of the official tax pages (`scripts/rules-watch.mjs`; India, Australia and Germany not covered; the workflow had a YAML error on its first run, fixed, not yet run on GitHub), `scripts/i18n/orphans.mjs` to keep translations when English is reworded, an extra machine-translation warning on tax pages in the nine unreviewed languages (decision: keep all 11 languages), and browser tests that serve the existing build (`E2E_NO_BUILD=1`). Still open from the architecture review: rules as versioned data files, a shared tax engine, the English-only pages, generated doc counts.
+- Not yet done: tips provider (Dodo Payments), native read-throughs of the 9 machine-translated languages. The US, UK and Canada tax sources were last read on 2026-11-15, the India ones on 2026-11-14; the weekly check covers the first three.
 - Some office or VPN resolvers still cache the old GoDaddy parking page for iduckcalculator.com (up to 48 hours from the nameserver change); check the live site with `curl --resolve` or from a phone on mobile data.

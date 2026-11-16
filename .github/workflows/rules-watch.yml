@@ -22,4 +22,5 @@ jobs:
       - if: steps.run.outputs.code != '0'
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh issue create --title "Tax source page changed: re-read the rules" --body "$(grep -A1 CHANGED out.txt) See CLAUDE.md for the yearly re-read steps." || true
+        run: |
+          gh issue create --title "Tax source page changed - re-read the rules" --body "$(grep -A1 CHANGED out.txt). See CLAUDE.md for the yearly re-read steps." || true

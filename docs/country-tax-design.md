@@ -1,6 +1,6 @@
 # Country tax and salary calculators: design
 
-Status: step 1 (plumbing, PR #25), step 2 (United States federal, with the `/tax/` hubs) the UK and Canada (federal only) parts of step 3 built on 2026-11-15; Australia and Germany not started; provinces not started. First countries decided by the owner on 2026-11-15: United States, United Kingdom, Canada, Australia, Germany, in that order. The language question (section 6) was not answered, so the default stands: the full set of 11 languages, no new code. Decisions marked **[you]** are still open.
+Status: step 1 (plumbing, PR #25), step 2 (United States federal, with the `/tax/` hubs) the UK and Canada (federal only) parts of step 3 built on 2026-11-15; Australia and Germany not started; provinces not started. First countries decided by the owner on 2026-11-15: United States, United Kingdom, Canada, Australia, Germany, in that order. The language question (section 6) was answered on 2026-11-16: keep all 11 languages, with a banner on tax pages in the unreviewed ones. Decisions marked **[you]** are still open.
 
 ## 1. Decision and goal
 
@@ -104,4 +104,4 @@ Checklist for a country PR: read and cite the official sources with the date, ru
 - **US state and Canadian provincial tax** matter for take-home pay. v1 is federal only and says so; add states or provinces one at a time through a select field.
 - **Mixed scope in the list views**: country-neutral calculators and country-specific ones need clear labelling so a visitor in one country does not land on another's tax page. A country filter on the tax group is the simplest fix.
 - **Search ranking**: English pages for several countries share one language, so each needs a distinct title and H1 with the country name; the SEO audit already enforces unique titles.
-- **[you]** First countries and order; full 11-language set or limited; whether India moves onto the new layout later.
+- **[you]** Whether India moves onto the new layout later. (Decided: first countries and order on 2026-11-15; all 11 languages with a banner on tax pages on 2026-11-16.)
