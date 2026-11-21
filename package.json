@@ -21,7 +21,7 @@
     "i18n:audit": "node scripts/i18n-audit.mjs"
   },
   "dependencies": {
-    "@astrojs/preact": "6.1.4",
+    "@astrojs/preact": "6.1.6",
     "@astrojs/sitemap": "3.7.4",
     "@tailwindcss/vite": "4.3.5",
     "astro": "7.4.12",
