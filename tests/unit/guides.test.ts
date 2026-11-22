@@ -5,6 +5,7 @@ import { evaluate } from '../../src/lib/calc/expr';
 import { incomeTax } from '../../src/lib/calc/defs/tax';
 import { auTax } from '../../src/lib/calc/defs/au-tax';
 import { caEmployeeTax, caFederalTax } from '../../src/lib/calc/defs/ca-tax';
+import { deTax } from '../../src/lib/calc/defs/de-tax';
 import { ukIncomeTax, ukNationalInsurance } from '../../src/lib/calc/defs/uk-tax';
 import { usIncomeTax, usPayrollTax } from '../../src/lib/calc/defs/us-tax';
 import { formatNumber } from '../../src/lib/format';
@@ -56,6 +57,7 @@ const usTax = L('how-to-calculate-us-federal-income-tax', 'us-income-tax-calcula
 const usPay = L('how-to-calculate-us-take-home-pay', 'us-take-home-pay-calculator');
 const ukTax = L('how-to-calculate-uk-income-tax', 'uk-income-tax-calculator');
 const ukPay = L('how-to-calculate-uk-take-home-pay', 'uk-take-home-pay-calculator');
+const deTaxG = L('how-to-calculate-german-income-tax', 'de-income-tax-calculator');
 const auTaxG = L('how-to-calculate-australian-income-tax', 'au-income-tax-calculator');
 const auPay = L('how-to-calculate-australian-take-home-pay', 'au-take-home-pay-calculator');
 const caTax = L('how-to-calculate-canadian-federal-income-tax', 'ca-income-tax-calculator');
@@ -199,6 +201,11 @@ const CLAIMS: Claim[] = [
   caPay({}, 'Share of your pay', 'num'),
   caPay({ salary: 40000 }, 'Take-home pay per year', 'us'), caPay({ salary: 40000 }, 'Federal income tax', 'us'),
   caPay({ salary: 90000 }, 'Take-home pay per year', 'us'), caPay({ salary: 90000 }, 'Federal income tax', 'us'),
+  // ---- Germany tax (rules read from the German laws on gesetze-im-internet.de on 2026-11-23)
+  deTaxG({}, 'Income tax payable', 'us'), deTaxG({}, 'Effective tax rate', 'num'), deTaxG({}, 'Income tax rate on your next euro', 'num'), deTaxG({}, 'Solidarity surcharge', 'us'),
+  deTaxG({ income: 30000 }, 'Income tax payable', 'us'), deTaxG({ income: 30000 }, 'Effective tax rate', 'num'),
+  deTaxG({ income: 100000 }, 'Income tax payable', 'us'), deTaxG({ income: 100000 }, 'Solidarity surcharge', 'us2'), deTaxG({ income: 100000 }, 'Total income tax and solidarity surcharge', 'us2'), deTaxG({ income: 100000 }, 'Effective tax rate', 'num'),
+  deTaxG({ income: 100000, status: 'joint' }, 'Income tax payable', 'us'), deTaxG({ income: 100000, status: 'joint' }, 'Solidarity surcharge', 'us'), deTaxG({ income: 100000, status: 'joint' }, 'Effective tax rate', 'num'),
   // ---- Australia tax (rules read from the ATO pages on 2026-11-22)
   auTaxG({}, 'Income tax payable', 'us'), auTaxG({}, 'Medicare levy', 'us'), auTaxG({}, 'Total income tax and Medicare levy', 'us'), auTaxG({}, 'Effective tax rate', 'num'),
   auTaxG({ income: 30000 }, 'Income tax payable', 'us'), auTaxG({ income: 30000 }, 'Medicare levy', 'us2'), auTaxG({ income: 30000 }, 'Total income tax and Medicare levy', 'us2'), auTaxG({ income: 30000 }, 'Effective tax rate', 'num'),
@@ -451,6 +458,23 @@ describe('guides quote the maths the calculators give', () => {
     const e90 = caEmployeeTax(90_000);
     expect([e90.payroll.cpp, e90.payroll.cpp2, e90.payroll.ei]).toEqual([4_230.45, 416, 1_123.07]);
     for (const s of ['$3,500', '$74,600', '$85,000', '$68,900', '$3,361.75', '$9,678', '$10,400', '$416', '$4,230.45', '$1,123.07']) expect(pay, s).toContain(s);
+  });
+
+  it('quotes the Germany tax figures worked by hand', () => {
+    const tax = JSON.stringify(guideBySlug('how-to-calculate-german-income-tax'));
+    const z = (50_000 - 17_799) / 10_000;
+    expect(z).toBeCloseTo(3.2201, 10);
+    expect((173.1 * z + 2_397) * z + 1_034.87).toBeCloseTo(10_548.33, 2);
+    const single = deTax(50_000, 'single');
+    expect([single.incomeTax, single.soli]).toEqual([10_548, 0]);
+    const mid = deTax(100_000, 'single');
+    expect([mid.incomeTax, mid.soli, mid.total]).toEqual([30_864, 1_251.16, 32_115.16]);
+    expect(0.055 * 30_864).toBeCloseTo(1_697.52, 2);
+    expect(30_864 - 20_350).toBe(10_514);
+    expect(deTax(30_000, 'single').incomeTax).toBe(4_217);
+    const joint = deTax(100_000, 'joint');
+    expect([joint.incomeTax, joint.soli]).toEqual([21_096, 0]);
+    for (const s of ['€12,348', '€17,799', '€17,800', '€69,878', '€69,879', '€277,825', '€277,826', '€50,000', '€10,548.33', '€10,548', '€20,350', '€30,000', '€4,217', '€100,000', '€30,864', '€1,697.52', '€10,514', '€1,251.16', '€32,115.16', '€21,096', '€40,700', '11,135.63', '19,470.38', '1,034.87']) expect(tax, s).toContain(s);
   });
 
   it('quotes the Australia tax figures worked by hand', () => {

@@ -1,6 +1,6 @@
 # Country tax and salary calculators: design
 
-Status: step 1 (plumbing, PR #25), step 2 (United States federal, with the `/tax/` hubs) the UK and Canada (federal only) parts of step 3 built on 2026-11-15, Australia built on 2026-11-22; Germany not started; provinces not started. First countries decided by the owner on 2026-11-15: United States, United Kingdom, Canada, Australia, Germany, in that order. The language question (section 6) was answered on 2026-11-16: keep all 11 languages, with a banner on tax pages in the unreviewed ones. Decisions marked **[you]** are still open.
+Status: step 1 (plumbing, PR #25), step 2 (United States federal, with the `/tax/` hubs) the UK and Canada (federal only) parts of step 3 built on 2026-11-15, Australia built on 2026-11-22; Germany income tax built on 2026-11-23 (take-home pay still to do, via the BMF payroll algorithm); provinces not started. First countries decided by the owner on 2026-11-15: United States, United Kingdom, Canada, Australia, Germany, in that order. The language question (section 6) was answered on 2026-11-16: keep all 11 languages, with a banner on tax pages in the unreviewed ones. Decisions marked **[you]** are still open.
 
 ## 1. Decision and goal
 

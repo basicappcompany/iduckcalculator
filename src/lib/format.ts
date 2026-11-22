@@ -11,7 +11,7 @@ export interface Currency {
 export const CURRENCIES: readonly Currency[] = [
   { code: 'INR', symbol: '₹', locale: 'en-IN', name: 'Indian rupee (₹)' },
   { code: 'USD', symbol: '$', locale: 'en-US', name: 'US dollar ($)' },
-  { code: 'EUR', symbol: '€', locale: 'de-DE', name: 'Euro (€)' },
+  { code: 'EUR', symbol: '€', locale: 'en-IE', name: 'Euro (€)' },
   { code: 'GBP', symbol: '£', locale: 'en-GB', name: 'British pound (£)' },
   { code: 'CAD', symbol: 'CA$', locale: 'en-CA', name: 'Canadian dollar (CA$)' },
   { code: 'AUD', symbol: 'A$', locale: 'en-AU', name: 'Australian dollar (A$)' },

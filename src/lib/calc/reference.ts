@@ -34,6 +34,7 @@ const usd = (v: number) => `$${formatNumber(Math.round(v), 0, 'en-US')}`;
 const gbp = (v: number) => `£${formatNumber(Math.round(v), 0, 'en-GB')}`;
 const cad = (v: number) => `$${formatNumber(Math.round(v), 0, 'en-CA')}`;
 const aud = (v: number) => `$${formatNumber(Math.round(v), 0, 'en-AU')}`;
+const eur = (v: number) => `€${formatNumber(Math.round(v), 0, 'en-IE')}`;
 const pct = (v: number, dp = 2) => `${String(Math.round(v * 10 ** dp) / 10 ** dp)}%`;
 const noDay = (d: string) => d.replace(/^[A-Za-z]+, /, '');
 const yrs = (y: number) => `${y} year${y === 1 ? '' : 's'}`;
@@ -160,6 +161,12 @@ const TABLES: Record<string, () => Reference> = {
     note: 'Tax year 2026 for an employee outside Quebec: salary minus federal income tax, CPP and EI. Provincial and territorial tax is not included, so real pay is lower.',
     columns: ['Salary per year', 'Take-home per year', 'Take-home per month', 'Share you keep'],
     rows: [40000, 60000, 75000, 100000, 150000, 250000].map((salary) => [cad(salary), cad(n('ca-take-home-pay-calculator', { salary }, 'Take-home pay per year')), cad(n('ca-take-home-pay-calculator', { salary }, 'Take-home pay per month')), pct(n('ca-take-home-pay-calculator', { salary }, 'Share of your pay'), 1)]),
+  }),
+  'de-income-tax-calculator': () => ({
+    question: 'How much income tax and Solidarity Surcharge do I pay at common taxable incomes?',
+    note: 'Tax year 2026, basic tariff for a single person. The Solidarity Surcharge applies only when the income tax is above €20,350. Church tax is not included. Rounded to the euro.',
+    columns: ['Taxable income per year', 'Income tax', 'Solidarity surcharge', 'Effective rate'],
+    rows: [20000, 35000, 50000, 80000, 120000, 300000].map((income) => [eur(income), eur(n('de-income-tax-calculator', { income, status: 'single' }, 'Income tax payable')), eur(n('de-income-tax-calculator', { income, status: 'single' }, 'Solidarity surcharge')), pct(n('de-income-tax-calculator', { income, status: 'single' }, 'Effective tax rate'), 1)]),
   }),
   'au-income-tax-calculator': () => ({
     question: 'How much income tax and Medicare levy do I pay at common incomes?',

@@ -23,7 +23,7 @@ describe('country rules for calculators', () => {
   it('formats the new currencies with their own symbol and grouping', () => {
     expect(formatMoney(1234567, 'CAD')).toBe('CA$1,234,567');
     expect(formatMoney(1234567.5, 'AUD', 2)).toBe('A$1,234,567.50');
-    expect(formatMoney(1234567, 'EUR')).toBe('€1.234.567');
+    expect(formatMoney(1234567, 'EUR')).toBe('€1,234,567');
     expect(currencyByCode('GBP').symbol).toBe('£');
   });
 

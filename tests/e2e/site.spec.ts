@@ -3,7 +3,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { CALCULATORS, calcPath, liveGroups } from '../../src/lib/calc';
 import { GUIDES, guidePath } from '../../src/lib/guides';
 
-const STATIC = ['/', '/calculators/', '/guides/', '/tax/', '/tax/in/', '/tax/us/', '/tax/uk/', '/tax/ca/', '/tax/au/', '/chat/', '/roadmap/', '/request/', '/feedback/', '/support/', '/settings/', '/about/', '/privacy/', '/terms/'];
+const STATIC = ['/', '/calculators/', '/guides/', '/tax/', '/tax/in/', '/tax/us/', '/tax/uk/', '/tax/ca/', '/tax/au/', '/tax/de/', '/chat/', '/roadmap/', '/request/', '/feedback/', '/support/', '/settings/', '/about/', '/privacy/', '/terms/'];
 const CALC_PATHS = CALCULATORS.map((c) => calcPath(c.slug));
 const GUIDE_PATHS = GUIDES.map((g) => guidePath(g.slug));
 

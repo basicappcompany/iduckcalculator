@@ -18,7 +18,7 @@ Last synced 2026-11-22. Live: https://iduckcalculator.com. Detail and owners: `d
 - [x] Localization stages 2 to 4: every calculator (text, form labels, results, notes and errors), every guide, the calculators and guides lists, About, Roadmap, Support, How we check and the search window, in all 11 languages. Privacy, Terms, the helper chat, Feedback, Request and Settings stay English
 - [x] CI (verify + build + e2e) green on main
 
-## Step 3: calculators (57 live of 60 planned)
+## Step 3: calculators (58 live of 61 planned)
 ### Loans & EMI
 - [x] EMI  - [x] Home loan EMI  - [x] Car loan EMI  - [x] Personal loan EMI  - [x] Loan prepayment savings  - [x] Loan eligibility
 ### Savings & investing
@@ -27,13 +27,15 @@ Last synced 2026-11-22. Live: https://iduckcalculator.com. Detail and owners: `d
 ### Tax & salary (India) - rules MUST be looked up on official sources first
 - [x] Income tax old vs new (tax year 2026-27, read from official sources on 2026-11-14)  - [ ] In-hand salary from CTC  - [x] HRA exemption (Income-tax Rules 2026, rule 279, read on 2026-11-14)  - [x] Gratuity (Code on Social Security, read on 2026-11-14)  - [x] GST add/remove (rates read from PIB and CBIC on 2026-11-14)  - [ ] TDS basics
 ### Tax & salary (United States) - rules read from IRS pages on 2026-11-15
-- [x] US federal income tax (tax year 2026)  - [x] US take-home pay (federal income tax, Social Security, Medicare)  - [x] UK (see below)  - [x] Canada (see below)  - [x] Australia (see below)  - [ ] Germany (plan: `docs/country-tax-design.md`)
+- [x] US federal income tax (tax year 2026)  - [x] US take-home pay (federal income tax, Social Security, Medicare)  - [x] UK (see below)  - [x] Canada (see below)  - [x] Australia (see below)  - [x] Germany income tax (see below; take-home pay still to build) (plan: `docs/country-tax-design.md`)
 ### Tax & salary (United Kingdom) - rules read from GOV.UK pages on 2026-11-15
 - [x] UK Income Tax (2026 to 2027, England, Wales, Northern Ireland and Scotland)  - [x] UK take-home pay (Income Tax and employee National Insurance)
 ### Tax & salary (Canada) - rules read from CRA pages on 2026-11-15
 - [x] Canada federal income tax (2026)  - [x] Canada take-home pay (federal tax, CPP, EI; provincial tax NOT included)
 ### Tax & salary (Australia) - rules read from ATO pages (pasted by the owner) on 2026-11-22
 - [x] Australia income tax (2026-27, with the low income tax offset and the Medicare levy)  - [x] Australia take-home pay (income tax and Medicare levy; employer super is not taken off)
+### Tax & salary (Germany) - rules read from gesetze-im-internet.de on 2026-11-23
+- [x] Germany income tax (2026: the section 32a tariff, splitting tariff, Solidarity Surcharge)  - [ ] Germany take-home pay (needs the BMF payroll algorithm, the PAP 2026; social insurance figures already read, see CLAUDE.md)
 ### Everyday maths
 - [x] Percentage (all forms)  - [x] Percentage change  - [x] Discount  - [x] Profit and loss  - [x] Average  - [x] Ratio  - [x] Fraction
 - [x] Scientific  - [x] Basic
@@ -46,7 +48,7 @@ Last synced 2026-11-22. Live: https://iduckcalculator.com. Detail and owners: `d
 
 ## Step 4: guides
 - [x] How EMI is calculated  - [x] Old vs new tax regime  - [x] SIP vs lumpsum  - [x] How to calculate percentage
-- [x] 48 more how-to guides (58 in all), covering all 57 calculators (loans, savings, tax and schemes, maths, dates, health, students), grouped on the guides page
+- [x] 48 more how-to guides (59 in all), covering all 58 calculators (loans, savings, tax and schemes, maths, dates, health, students), grouped on the guides page
 
 ## Step 5: checks
 - [x] Every calculator spot-checked against a known answer (unit tests)
@@ -63,7 +65,7 @@ Measured 2026-11-22: 652 unit tests passing (1 skipped) in 18 files (`pnpm verif
 - Mobile Lighthouse (PageSpeed Insights, 13 Nov): the home page, the EMI page and a guide score 100 on Performance, Accessibility, Best Practices and SEO. Other pages were not measured.
 - Security headers: A+ on securityheaders.com and Mozilla Observatory (13 Nov). Search Console (Success) and Bing (Processing) have the sitemap; keep the Google verification TXT record in DNS.
 - Needs the account owner (steps in AUDIT.md): GitHub two-factor login and Dependabot alerts (secret scanning and branch protection need a paid plan), Cloudflare TLS and bot settings, Crawler Hints, DNSSEC, GoDaddy lock and auto-renew, the SPF and DMARC decision.
-- Country tax and salary calculators (US, UK, Canada, Australia, Germany): plan in `docs/country-tax-design.md`. Built: the plumbing (country and currency fields, group renamed "Tax & salary"), the `/tax/` hubs, the US federal slice (income tax and take-home pay, two guides, IRS sources read 2026-11-15, state tax and credits left out) and the UK (Income Tax with Scotland, take-home pay with National Insurance, two guides, GOV.UK sources read 2026-11-15, student loans and pension relief left out) and Canada (federal income tax, take-home pay with CPP and EI, two guides, CRA sources read 2026-11-15, provincial tax left out) and Australia (income tax with the low income tax offset and the Medicare levy, take-home pay, two guides, ATO pages read 2026-11-22, other offsets, HELP and the Medicare levy surcharge left out; the Medicare levy thresholds are the 2025-26 ones, the latest published). Next: Germany; provinces later.
+- Country tax and salary calculators (US, UK, Canada, Australia, Germany): plan in `docs/country-tax-design.md`. Built: the plumbing (country and currency fields, group renamed "Tax & salary"), the `/tax/` hubs, the US federal slice (income tax and take-home pay, two guides, IRS sources read 2026-11-15, state tax and credits left out) and the UK (Income Tax with Scotland, take-home pay with National Insurance, two guides, GOV.UK sources read 2026-11-15, student loans and pension relief left out) and Canada (federal income tax, take-home pay with CPP and EI, two guides, CRA sources read 2026-11-15, provincial tax left out) and Australia (income tax with the low income tax offset and the Medicare levy, take-home pay, two guides, ATO pages read 2026-11-22, other offsets, HELP and the Medicare levy surcharge left out; the Medicare levy thresholds are the 2025-26 ones, the latest published). and Germany (income tax from the section 32a tariff with the Solidarity Surcharge and the splitting tariff, one guide, laws read on gesetze-im-internet.de 2026-11-23; church tax, child allowances and special rules left out). Next: Germany take-home pay, built on the BMF payroll algorithm (PAP 2026), which has to be read first; provinces later.
 - Hardening done 2026-11-16 (PRs 29 to 32): a weekly check of the official tax pages (`scripts/rules-watch.mjs`; India and Germany not covered, Australia cannot be because the ATO returns 403 to scripts; the workflow had a YAML error on its first run, fixed; a manual run on 2026-11-16 succeeded), `scripts/i18n/orphans.mjs` to keep translations when English is reworded, an extra machine-translation warning on tax pages in the nine unreviewed languages (decision: keep all 11 languages), and browser tests that serve the existing build (`E2E_NO_BUILD=1`). Still open from the architecture review: rules as versioned data files, a shared tax engine, the English-only pages, generated doc counts.
 - **Needs the account owner now:** GitHub Actions will not start jobs ("recent account payments have failed or your spending limit needs to be increased", 2026-11-22, the CI run for the #41 merge failed in 4 seconds with no steps). Open github.com/settings/billing as `basicappcompany`, check Actions usage and the payment method, raise the limit or wait for the monthly reset. Until then code pull requests cannot get a green CI result; main has no CI result for #41 (verified locally: `pnpm verify`, `pnpm build`, seo and i18n audits). Docs-only pull requests start no run. The footer "Last updated" date (`LAST_UPDATED` in `src/lib/seo.ts`) is still 2026-11-16 and waits for CI.
 - CI minutes (2026-11-22, PR #40): Dependabot now runs monthly with minor and patch updates grouped into one pull request, TypeScript major versions are ignored (`astro check` does not support TypeScript 7), and a change to `.github/dependabot.yml` starts no run. Merged on 2026-11-22: astro 7.4.13, @astrojs/sitemap 3.7.6, @astrojs/preact 6.1.6 and the dev-tooling group (eslint 10.15.0, prettier 3.10.1, typescript-eslint 8.73.0, vitest 5.1.1, @playwright/test 1.65.1).
