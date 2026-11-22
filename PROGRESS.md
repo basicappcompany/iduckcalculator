@@ -6,7 +6,7 @@ Workflow: never push to main. Branch, PR, fix CI on the same PR, merge when gree
 Last synced 2026-11-22. Live: https://iduckcalculator.com. Detail and owners: `docs/status.html`.
 
 ## Step 0 and 1: setup
-- [x] Account check: GitHub logged in as basicappcompany, primary email the company inbox (verified)
+- [x] Account check: GitHub logged in as basicappcompany, primary email set to the company inbox (verified)
 - [x] Studied sister repos (iduckpdf = Expo, iDuckIMG = Astro). Chose Astro (iDuckIMG) as the template
 - [x] Repo created (meant to be private like the sisters, but it is PUBLIC; found on 2026-11-23, the owner keeps it public)
 - [x] Scaffold: config, theme (global.css), shell (sidebar, top bar, Ctrl K, theme toggle, language switch, footer)
