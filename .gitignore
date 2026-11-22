@@ -15,3 +15,6 @@ test-results/
 
 # translation work files (source strings, chunks and translator output); the catalogs in src/i18n/catalog are what is kept
 i18n-work/
+
+# local launcher for switching Claude Code accounts: it holds credentials, never commit it
+claude-toggle.bat
