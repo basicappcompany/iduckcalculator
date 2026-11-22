@@ -43,6 +43,8 @@ export const ANSWER_META: Record<string, AnswerMeta> = {
   'uk-take-home-pay-calculator': { topic: 'UK take-home pay', what: 'Take-home pay is your salary minus Income Tax and employee National Insurance.' },
   'ca-income-tax-calculator': { topic: 'Canadian federal income tax', what: 'Canadian federal income tax is charged in brackets.' },
   'ca-take-home-pay-calculator': { topic: 'Canadian take-home pay', what: 'Take-home pay is your salary minus federal income tax, CPP and EI, before provincial tax.' },
+  'au-income-tax-calculator': { topic: 'Australian income tax', what: 'Australian income tax is charged in brackets.' },
+  'au-take-home-pay-calculator': { topic: 'Australian take-home pay', what: 'Take-home pay is your salary minus income tax and the Medicare levy.' },
   'percentage-calculator': { topic: 'a percentage', what: 'A percentage is a number out of 100, and this tool answers the five questions people ask most, from percent of to increase and decrease.' },
   'percentage-change-calculator': { topic: 'percentage change', what: 'Percentage change measures how much a value rose or fell compared with where it started, and a negative result means a fall.' },
   'discount-calculator': { topic: 'a discount', what: 'A discount takes a percentage off a price, and a second discount applies to the price already reduced.' },

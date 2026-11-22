@@ -33,6 +33,7 @@ const rs = (v: number) => `₹${inr(v)}`;
 const usd = (v: number) => `$${formatNumber(Math.round(v), 0, 'en-US')}`;
 const gbp = (v: number) => `£${formatNumber(Math.round(v), 0, 'en-GB')}`;
 const cad = (v: number) => `$${formatNumber(Math.round(v), 0, 'en-CA')}`;
+const aud = (v: number) => `$${formatNumber(Math.round(v), 0, 'en-AU')}`;
 const pct = (v: number, dp = 2) => `${String(Math.round(v * 10 ** dp) / 10 ** dp)}%`;
 const noDay = (d: string) => d.replace(/^[A-Za-z]+, /, '');
 const yrs = (y: number) => `${y} year${y === 1 ? '' : 's'}`;
@@ -159,6 +160,18 @@ const TABLES: Record<string, () => Reference> = {
     note: 'Tax year 2026 for an employee outside Quebec: salary minus federal income tax, CPP and EI. Provincial and territorial tax is not included, so real pay is lower.',
     columns: ['Salary per year', 'Take-home per year', 'Take-home per month', 'Share you keep'],
     rows: [40000, 60000, 75000, 100000, 150000, 250000].map((salary) => [cad(salary), cad(n('ca-take-home-pay-calculator', { salary }, 'Take-home pay per year')), cad(n('ca-take-home-pay-calculator', { salary }, 'Take-home pay per month')), pct(n('ca-take-home-pay-calculator', { salary }, 'Share of your pay'), 1)]),
+  }),
+  'au-income-tax-calculator': () => ({
+    question: 'How much income tax and Medicare levy do I pay at common incomes?',
+    note: 'Income year 2026–27 for a resident for the whole year, with the low income tax offset and the Medicare levy (2025–26 low-income thresholds). Other offsets and the Medicare levy surcharge are not included. Rounded to the dollar.',
+    columns: ['Taxable income per year', 'Income tax', 'Medicare levy', 'Effective rate'],
+    rows: [30000, 45000, 60000, 90000, 135000, 200000].map((income) => [aud(income), aud(n('au-income-tax-calculator', { income }, 'Income tax payable')), aud(n('au-income-tax-calculator', { income }, 'Medicare levy')), pct(n('au-income-tax-calculator', { income }, 'Effective tax rate'), 1)]),
+  }),
+  'au-take-home-pay-calculator': () => ({
+    question: 'What is my take-home pay at common salaries?',
+    note: 'Income year 2026–27 for a resident employee: salary minus income tax and the Medicare levy. Employer super is paid on top and is not taken off.',
+    columns: ['Salary per year', 'Take-home per year', 'Take-home per month', 'Share you keep'],
+    rows: [40000, 60000, 80000, 100000, 150000, 250000].map((salary) => [aud(salary), aud(n('au-take-home-pay-calculator', { salary }, 'Take-home pay per year')), aud(n('au-take-home-pay-calculator', { salary }, 'Take-home pay per month')), pct(n('au-take-home-pay-calculator', { salary }, 'Share of your pay'), 1)]),
   }),
   // ---- everyday maths
   'percentage-calculator': () => ({

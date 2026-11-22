@@ -5,6 +5,7 @@ import { GUIDES_MATHS } from './guides-maths';
 import { GUIDES_SAVINGS } from './guides-savings';
 import { GUIDES_STUDENTS } from './guides-students';
 import { GUIDES_TAX } from './guides-tax';
+import { GUIDES_AU_TAX } from './guides-au-tax';
 import { GUIDES_CA_TAX } from './guides-ca-tax';
 import { GUIDES_UK_TAX } from './guides-uk-tax';
 import { GUIDES_US_TAX } from './guides-us-tax';
@@ -161,7 +162,7 @@ const CORE: readonly Guide[] = [
 ];
 
 /** Every guide, grouped as the guides index shows them: loans, savings, maths, dates, health, students. */
-export const GUIDES: readonly Guide[] = [...CORE, ...GUIDES_LOANS, ...GUIDES_SAVINGS, ...GUIDES_TAX, ...GUIDES_US_TAX, ...GUIDES_UK_TAX, ...GUIDES_CA_TAX, ...GUIDES_MATHS, ...GUIDES_DATES, ...GUIDES_HEALTH, ...GUIDES_STUDENTS];
+export const GUIDES: readonly Guide[] = [...CORE, ...GUIDES_LOANS, ...GUIDES_SAVINGS, ...GUIDES_TAX, ...GUIDES_US_TAX, ...GUIDES_UK_TAX, ...GUIDES_CA_TAX, ...GUIDES_AU_TAX, ...GUIDES_MATHS, ...GUIDES_DATES, ...GUIDES_HEALTH, ...GUIDES_STUDENTS];
 
 export const guidePath = (slug: string): string => `/guides/${slug}/`;
 export const guideBySlug = (slug: string): Guide | undefined => GUIDES.find((g) => g.slug === slug);

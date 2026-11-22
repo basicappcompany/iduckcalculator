@@ -3,6 +3,7 @@ import { GUIDES, guideBySlug } from '../../src/lib/guides';
 import { CALCULATORS, calcBySlug, defaultValues } from '../../src/lib/calc';
 import { evaluate } from '../../src/lib/calc/expr';
 import { incomeTax } from '../../src/lib/calc/defs/tax';
+import { auTax } from '../../src/lib/calc/defs/au-tax';
 import { caEmployeeTax, caFederalTax } from '../../src/lib/calc/defs/ca-tax';
 import { ukIncomeTax, ukNationalInsurance } from '../../src/lib/calc/defs/uk-tax';
 import { usIncomeTax, usPayrollTax } from '../../src/lib/calc/defs/us-tax';
@@ -55,6 +56,8 @@ const usTax = L('how-to-calculate-us-federal-income-tax', 'us-income-tax-calcula
 const usPay = L('how-to-calculate-us-take-home-pay', 'us-take-home-pay-calculator');
 const ukTax = L('how-to-calculate-uk-income-tax', 'uk-income-tax-calculator');
 const ukPay = L('how-to-calculate-uk-take-home-pay', 'uk-take-home-pay-calculator');
+const auTaxG = L('how-to-calculate-australian-income-tax', 'au-income-tax-calculator');
+const auPay = L('how-to-calculate-australian-take-home-pay', 'au-take-home-pay-calculator');
 const caTax = L('how-to-calculate-canadian-federal-income-tax', 'ca-income-tax-calculator');
 const caPay = L('how-to-calculate-canadian-take-home-pay', 'ca-take-home-pay-calculator');
 const taxg = L('how-to-choose-old-or-new-tax-regime', 'income-tax-calculator');
@@ -196,6 +199,13 @@ const CLAIMS: Claim[] = [
   caPay({}, 'Share of your pay', 'num'),
   caPay({ salary: 40000 }, 'Take-home pay per year', 'us'), caPay({ salary: 40000 }, 'Federal income tax', 'us'),
   caPay({ salary: 90000 }, 'Take-home pay per year', 'us'), caPay({ salary: 90000 }, 'Federal income tax', 'us'),
+  // ---- Australia tax (rules read from the ATO pages on 2026-11-22)
+  auTaxG({}, 'Income tax payable', 'us'), auTaxG({}, 'Medicare levy', 'us'), auTaxG({}, 'Total income tax and Medicare levy', 'us'), auTaxG({}, 'Effective tax rate', 'num'),
+  auTaxG({ income: 30000 }, 'Income tax payable', 'us'), auTaxG({ income: 30000 }, 'Medicare levy', 'us2'), auTaxG({ income: 30000 }, 'Total income tax and Medicare levy', 'us2'), auTaxG({ income: 30000 }, 'Effective tax rate', 'num'),
+  auTaxG({ income: 100000 }, 'Income tax payable', 'us'), auTaxG({ income: 100000 }, 'Medicare levy', 'us'), auTaxG({ income: 100000 }, 'Total income tax and Medicare levy', 'us'), auTaxG({ income: 100000 }, 'Effective tax rate', 'num'),
+  auPay({}, 'Take-home pay per year', 'us'), auPay({}, 'Take-home pay per month', 'us'), auPay({}, 'Income tax payable', 'us'), auPay({}, 'Medicare levy', 'us'), auPay({}, 'Share of your pay', 'num'),
+  auPay({ salary: 40000 }, 'Take-home pay per year', 'us'), auPay({ salary: 40000 }, 'Take-home pay per month', 'us'), auPay({ salary: 40000 }, 'Income tax payable', 'us'), auPay({ salary: 40000 }, 'Medicare levy', 'us'),
+  auPay({ salary: 100000 }, 'Take-home pay per year', 'us'), auPay({ salary: 100000 }, 'Take-home pay per month', 'us'), auPay({ salary: 100000 }, 'Income tax payable', 'us'), auPay({ salary: 100000 }, 'Medicare levy', 'us'), auPay({ salary: 100000 }, 'Share of your pay', 'num'),
   // ---- everyday maths
   pchg({}, 'Percentage increase', 'num'), pchg({ from: 100, to: 80 }, 'Percentage decrease', 'num'), pchg({ from: 50, to: 75 }, 'Percentage increase', 'num'), pchg({ from: 200, to: 150 }, 'Percentage decrease', 'num'),
   disc({}, 'You pay', 'inr'), disc({}, 'You save', 'inr'), disc({}, 'Effective discount', 'num'),
@@ -441,6 +451,26 @@ describe('guides quote the maths the calculators give', () => {
     const e90 = caEmployeeTax(90_000);
     expect([e90.payroll.cpp, e90.payroll.cpp2, e90.payroll.ei]).toEqual([4_230.45, 416, 1_123.07]);
     for (const s of ['$3,500', '$74,600', '$85,000', '$68,900', '$3,361.75', '$9,678', '$10,400', '$416', '$4,230.45', '$1,123.07']) expect(pay, s).toContain(s);
+  });
+
+  it('quotes the Australia tax figures worked by hand', () => {
+    const t = (slug: string) => JSON.stringify(guideBySlug(slug));
+    const tax = t('how-to-calculate-australian-income-tax');
+    const r = auTax(60_000);
+    expect([r.gross, r.offset, r.tax, r.medicare, r.total]).toEqual([8_520, 100, 8_420, 1_200, 9_620]);
+    expect(r.bands.map((b) => [b.rate, b.income, b.tax])).toEqual([[0, 18_200, 0], [0.15, 26_800, 4_020], [0.3, 15_000, 4_500]]);
+    const low = auTax(30_000);
+    expect([low.gross, low.offset, low.tax, low.bands[1]!.income]).toEqual([1_770, 700, 1_070, 11_800]);
+    expect(low.medicare).toBeCloseTo(198.9, 6);
+    const high = auTax(100_000);
+    expect([high.gross, high.offset, high.tax, high.medicare, high.total]).toEqual([20_520, 0, 20_520, 2_000, 22_520]);
+    expect(high.bands.map((b) => [b.income, b.tax]).slice(1)).toEqual([[26_800, 4_020], [55_000, 16_500]]);
+    for (const s of ['$18,200', '$45,000', '$135,000', '$190,000', '$700', '$37,500', '$66,667', '$8,520', '$8,420', '$1,200', '$9,620', '$4,020', '$4,500', '$100', '$1,770', '$1,070', '$11,800', '$28,011', '$20,520', '$16,500', '$26,800', '$55,000', '$22,520', '$2,000']) expect(tax, s).toContain(s);
+    const pay = t('how-to-calculate-australian-take-home-pay');
+    const forty = auTax(40_000);
+    expect([forty.gross, forty.offset, forty.tax, forty.medicare]).toEqual([3_270, 575, 2_695, 800]);
+    expect(Math.round((40_000 - forty.total) / 12)).toBe(3_042);
+    for (const s of ['$8,520', '$8,420', '$1,200', '$9,620', '$50,380', '$4,198', '$2,695', '$575', '$800', '$36,505', '$3,042', '$20,520', '$2,000', '$77,480', '$6,457', '$28,011']) expect(pay, s).toContain(s);
   });
 
   it('links every live calculator from at least one guide', () => {
