@@ -18,3 +18,24 @@ i18n-work/
 
 # local launcher for switching Claude Code accounts: it holds credentials, never commit it
 claude-toggle.bat
+
+# This repository is public. Credentials and machine-local files must never be committed.
+# (GitHub secret scanning and push protection should also be on, see AUDIT.md A5b.)
+*.pem
+*.key
+*.p12
+*.pfx
+.dev.vars
+.npmrc
+.netrc
+credentials*.json
+service-account*.json
+secrets/
+*.sqlite
+*.db
+*.log
+# Claude Code: per-machine settings and local launchers
+.claude/settings.local.json
+.claude/*.local.*
+claude-toggle.*
+*-toggle.bat
