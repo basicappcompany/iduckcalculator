@@ -65,7 +65,7 @@ Started 2026-11-13. Each item is **Fixed**, **Already fine** or **Needs you**. T
 1. **Cloudflare, AI crawlers (zone iduckcalculator.com):** Security, Bots (it may be called "AI Crawl Control" or "Block AI bots"): make sure AI crawlers are **allowed** and that "Manage your robots.txt" / managed robots.txt is off, so Cloudflare does not add its own rules on top of ours. Caching, Configuration: turn on "Crawler Hints" (IndexNow).
 2. **Search Console and Bing:** done (see B2a and B2b). In a day or two, look at the Pages report in Search Console to see how many URLs Google has indexed, and keep the verification TXT record in DNS.
 3. **Sister sites:** iduckimg.com has no link to iduckcalculator.com in its page source; iduckpdf.com's links could not be read. Add a link from each if you want them to point here.
-4. **Leaked API key (urgent):** rotate the key that was in `claude-toggle.bat` (Anthropic Console: revoke, create a new one, check usage since 2026-11-14), delete the old private repository `iduckcalculator-old` once the site is served from the new repository (it still holds the key in its history), and turn on secret scanning and push protection (A5b).
+4. **Leaked API key (urgent):** rotate the key that was in `claude-toggle.bat` (Anthropic Console: revoke, create a new one, check usage since 2026-11-14), delete the old private repository `iduckcalculator-old` (the site has been served from the new repository since 2026-11-24; the old one still holds the key in its history), and turn on secret scanning and push protection (A5b).
 
 ## Log
 - 2026-11-13: Search Console and Bing set up; PageSpeed re-run; AI-crawler fetch test.

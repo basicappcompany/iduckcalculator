@@ -17,7 +17,7 @@ Astro 7.4.13 (static output), Preact 11.2.0 islands, Tailwind 4.3.5, TypeScript 
 - Ask for an explicit yes in chat before changing DNS records or nameservers.
 
 ## Deploy
-Cloudflare Pages git integration deploys `main` (project `iduckcalculator`, build `pnpm build`, output `dist`). Until the owner creates a new Pages project for the recreated repo and moves the domain (docs/status.html 11.19), the existing project is still connected to the old repo `iduckcalculator-old`, so merges to the new repo do not deploy yet. Domain on Cloudflare DNS, registrar GoDaddy. `iduckcalculator.pages.dev` sends `X-Robots-Tag: noindex`; the real domain must not (`public/_headers`, never a bare `/*` noindex rule).
+Cloudflare Pages git integration deploys `main` (project `iduckcalculator`, build `pnpm build`, output `dist`). Pages links a project to a repository by its GitHub ID, not its name, so when the repo was recreated on 2026-11-23 the same-named new repo was unknown to the project. On 2026-11-24 the owner reconnected the existing project to the new repo in the dashboard (the Cloudflare GitHub app first needed the new repo under Repository access in GitHub, Settings, Applications). No new project, domain move or DNS change was needed; Cloudflare reported a successful deploy of `main` and the live site answers. If the repo is ever recreated again, expect the same: fix the app access, then reconnect the project. Domain on Cloudflare DNS, registrar GoDaddy. `iduckcalculator.pages.dev` sends `X-Robots-Tag: noindex`; the real domain must not (`public/_headers`, never a bare `/*` noindex rule).
 Contact mail: Cloudflare Email Routing forwards hello@ and feedback@iduckcalculator.com to the company inbox (receive only, catch-all off).
 
 ## Layout
