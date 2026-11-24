@@ -168,6 +168,12 @@ const TABLES: Record<string, () => Reference> = {
     columns: ['Taxable income per year', 'Income tax', 'Solidarity surcharge', 'Effective rate'],
     rows: [20000, 35000, 50000, 80000, 120000, 300000].map((income) => [eur(income), eur(n('de-income-tax-calculator', { income, status: 'single' }, 'Income tax payable')), eur(n('de-income-tax-calculator', { income, status: 'single' }, 'Solidarity surcharge')), pct(n('de-income-tax-calculator', { income, status: 'single' }, 'Effective tax rate'), 1)]),
   }),
+  'de-take-home-pay-calculator': () => ({
+    question: 'What is my take-home pay at common salaries?',
+    note: 'Tax year 2026 for an employee in tax class I with no children and statutory health insurance (2.9% additional contribution, outside Saxony): salary minus wage tax, the Solidarity Surcharge and social insurance. Church tax is not included.',
+    columns: ['Salary per year', 'Take-home per year', 'Take-home per month', 'Share you keep'],
+    rows: [30000, 45000, 60000, 80000, 100000, 150000].map((salary) => [eur(salary), eur(n('de-take-home-pay-calculator', { salary }, 'Take-home pay per year')), eur(n('de-take-home-pay-calculator', { salary }, 'Take-home pay per month')), pct(n('de-take-home-pay-calculator', { salary }, 'Share of your pay'), 1)]),
+  }),
   'au-income-tax-calculator': () => ({
     question: 'How much income tax and Medicare levy do I pay at common incomes?',
     note: 'Income year 2026–27 for a resident for the whole year, with the low income tax offset and the Medicare levy (2025–26 low-income thresholds). Other offsets and the Medicare levy surcharge are not included. Rounded to the dollar.',

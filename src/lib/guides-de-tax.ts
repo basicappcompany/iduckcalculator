@@ -56,4 +56,55 @@ export const GUIDES_DE_TAX: readonly Guide[] = [
     published: '2026-11-23',
     updated: '2026-11-23',
   },
+  {
+    slug: 'how-to-calculate-german-take-home-pay',
+    title: 'How to calculate German take-home pay for 2026',
+    description: 'Work out your German net salary for 2026 step by step: wage tax by tax class, social insurance shares, the Solidarity Surcharge and an example.',
+    intro: 'Your German take-home pay is your gross salary minus wage tax, the Solidarity Surcharge and your half of social insurance. In 2026 a single employee on €60,000 in tax class I, with no children, keeps €37,741 a year, about €3,145 a month, which is 62.9% of gross pay.',
+    steps: [
+      'Start with your gross salary (Brutto) for the year and your tax class (Steuerklasse) from your payslip.',
+      'Work out your social insurance: pension 9.3% and unemployment 1.3% of salary up to €101,400, plus health 7.0% (and half your fund\'s additional contribution) and care insurance 1.8% of salary up to €69,750. Care is higher in Saxony and for people without children.',
+      'Find the wage tax. Your employer takes off the €1,230 employee allowance, a €36 flat amount and a flat estimate of your insurance contributions (the Vorsorgepauschale), rounds down to whole euros and applies the income tax tariff for your tax class.',
+      'If the wage tax is above €20,350 (€40,700 in tax class III), add the Solidarity Surcharge of 5.5%, limited to 11.9% of the amount above the limit.',
+      'Subtract wage tax, Solidarity Surcharge and social insurance from your gross salary. Or enter your salary and tax class in the Germany take-home pay calculator to see each line at once.',
+    ],
+    sections: [
+      {
+        h: 'A worked example: €60,000 in tax class I',
+        p: [
+          'Take a single employee with no children, a 2.9% additional health contribution and a job outside Saxony. Pension is €5,580, unemployment €780, health €5,070 (8.45%) and care €1,440 (2.4%), so social insurance is €12,870.',
+          'For the wage tax, the payroll method deducts a flat insurance estimate of €12,090 (€5,580 for pension plus €6,510 for health and care). The amount taxed is €60,000 − €1,230 − €36 − €12,090 = €46,644, which gives €9,389 of wage tax and no Solidarity Surcharge. You keep €60,000 − €9,389 − €12,870 = €37,741 a year, or €3,145 a month.',
+        ],
+      },
+      {
+        h: 'Lower and higher pay',
+        p: [
+          'On €36,000 in tax class I the wage tax is €3,517 and social insurance is €7,722, so you keep €24,761. On €100,000 the wage tax is €23,248, which is above €20,350, so the Solidarity Surcharge applies: 5.5% would be higher than 11.9% of the €2,898 above the limit, so it is €344.86. Social insurance is €18,167.88 because health and care stop rising at €69,750 and pension at €101,400. You keep €58,239.26.',
+        ],
+      },
+      {
+        h: 'Why the tax class matters',
+        p: [
+          'Tax class III halves the amount taxed and doubles the tax, so on €60,000 the wage tax is €4,822 instead of €9,389 and the take-home pay is €42,308. A partner in class V pays far more: on the same €60,000 the wage tax is €15,364. Couples often pick classes III and V, or both IV, but the final tax in the tax return is the same whichever classes are used.',
+        ],
+      },
+      {
+        h: 'What this leaves out',
+        p: [
+          'The calculator uses the 2026 payroll method of the Federal Ministry of Finance and the 2026 social insurance rates, read on 24 November 2026. It does not include church tax, child allowances, private health insurance, allowances on your tax card, bonuses or special employment such as mini jobs. Your own payslip is the final word, because your health fund\'s additional contribution and your tax data may differ.',
+        ],
+      },
+    ],
+    faqs: [
+      { q: 'Will my payslip match this exactly?', a: 'Often within a few euros a month, but not always. Your payslip depends on your fund\'s real additional contribution, church tax, allowances on your tax card and bonuses, which the calculator does not include.' },
+      { q: 'What is the Vorsorgepauschale?', a: 'A flat estimate of your social insurance that the payroll method deducts before working out the wage tax. The real contributions are only counted in your tax return, so the final tax can differ from the wage tax withheld.' },
+      { q: 'Is church tax included?', a: 'No. Church tax is 8% or 9% of the wage tax depending on the state, and it lowers your take-home pay if you pay it.' },
+      { q: 'Why does having children change my net pay?', a: 'Here only through the care insurance: without children you pay a 0.6% surcharge, and from the second child under 25 the rate is 0.25 points lower for each child. Child allowances affect only the Solidarity Surcharge and church tax.' },
+      { q: 'Which health fund rate does it use?', a: 'The 2026 average additional contribution of 2.9%, of which you pay half. Enter your own fund\'s rate for a closer figure.' },
+    ],
+    calcs: ['de-take-home-pay-calculator', 'de-income-tax-calculator', 'percentage-calculator'],
+    related: ['how-to-calculate-german-income-tax', 'how-to-calculate-percentage'],
+    published: '2026-11-24',
+    updated: '2026-11-24',
+  },
 ];

@@ -44,6 +44,7 @@ export const ANSWER_META: Record<string, AnswerMeta> = {
   'ca-income-tax-calculator': { topic: 'Canadian federal income tax', what: 'Canadian federal income tax is charged in brackets.' },
   'ca-take-home-pay-calculator': { topic: 'Canadian take-home pay', what: 'Take-home pay is your salary minus federal income tax, CPP and EI, before provincial tax.' },
   'de-income-tax-calculator': { topic: 'German income tax', what: 'German income tax follows a formula with five zones, not fixed brackets.' },
+  'de-take-home-pay-calculator': { topic: 'German take-home pay', what: 'Net pay is what is left after payroll deductions.' },
   'au-income-tax-calculator': { topic: 'Australian income tax', what: 'Australian income tax is charged in brackets.' },
   'au-take-home-pay-calculator': { topic: 'Australian take-home pay', what: 'Take-home pay is your salary minus income tax and the Medicare levy.' },
   'percentage-calculator': { topic: 'a percentage', what: 'A percentage is a number out of 100, and this tool answers the five questions people ask most, from percent of to increase and decrease.' },

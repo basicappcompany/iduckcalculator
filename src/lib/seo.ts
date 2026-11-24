@@ -116,4 +116,4 @@ export function serialize(data: unknown): string {
 }
 
 /** The date shown in the footer ("Last updated"). The docs-sync skill updates it when it re-checks the site. */
-export const LAST_UPDATED = '2026-11-16';
+export const LAST_UPDATED = '2026-11-24';
