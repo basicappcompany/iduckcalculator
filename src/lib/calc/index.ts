@@ -6,6 +6,7 @@ import { TAX } from './defs/tax';
 import { AU_TAX } from './defs/au-tax';
 import { CA_TAX } from './defs/ca-tax';
 import { DE_TAX } from './defs/de-tax';
+import { DE_PAYROLL } from './defs/de-payroll';
 import { UK_TAX } from './defs/uk-tax';
 import { US_TAX } from './defs/us-tax';
 import { MATHS } from './defs/maths';
@@ -17,7 +18,7 @@ export { CALC_GROUPS };
 export type { CalcDef, GroupId };
 
 /** Every live calculator, in sidebar order. The home page, sidebar, search, sitemap and related links all read this list. */
-export const CALCULATORS: readonly CalcDef[] = [...LOANS, ...SAVINGS, ...SCHEMES, ...TAX, ...US_TAX, ...UK_TAX, ...CA_TAX, ...AU_TAX, ...DE_TAX, ...MATHS, ...DATES, ...HEALTH, ...STUDENTS];
+export const CALCULATORS: readonly CalcDef[] = [...LOANS, ...SAVINGS, ...SCHEMES, ...TAX, ...US_TAX, ...UK_TAX, ...CA_TAX, ...AU_TAX, ...DE_TAX, ...DE_PAYROLL, ...MATHS, ...DATES, ...HEALTH, ...STUDENTS];
 
 /** The home page's "Popular right now", in this order. Slugs that are not live yet are skipped. */
 const POPULAR = ['emi-calculator', 'sip-calculator', 'income-tax-calculator', 'gst-calculator', 'percentage-calculator', 'age-calculator', 'bmi-calculator', 'cgpa-to-percentage-calculator'];

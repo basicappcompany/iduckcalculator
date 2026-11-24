@@ -160,7 +160,7 @@ export const DE_TAX: CalcDef[] = [
       { q: 'What is the difference between the basic and the splitting tariff?', a: 'Single people use the basic tariff. Married couples assessed together use the splitting tariff: twice the tax on half of their combined taxable income, which usually lowers the tax when the incomes differ.' },
       { q: 'Is this my take-home pay?', a: 'No. It taxes your taxable income. It leaves out social insurance contributions and the way a payslip calculates tax during the year, so it is not your net salary.' },
     ],
-    related: ['percentage-calculator', 'percentage-change-calculator', 'average-calculator'],
+    related: ['de-take-home-pay-calculator', 'percentage-calculator', 'percentage-change-calculator'],
     rules: DE_INCOME_TAX_RULES,
   },
 ];
